@@ -88,7 +88,6 @@
             letter-spacing: 1px;
         }
 
-        /* Variações de fundo por bloco */
         #bloco-dias-amando { background-color: #ffebeb; }
         #bloco-coisinhas-dela { background-color: #fff0f5; }
         #bloco-coisas-minhas { background-color: #e6f2ff; }
@@ -103,9 +102,7 @@
             transition: transform 0.2s;
         }
 
-        .contador-bloco:active {
-            transform: scale(0.98);
-        }
+        .contador-bloco:active { transform: scale(0.98); }
 
         .contador-bloco:first-child {
             margin-bottom: 20px;
@@ -140,7 +137,7 @@
         }
 
         /* ==========================================================================
-           4. CARDS DE CONTEÚDO (MIMOS E DECLARAÇÕES)
+           4. CARDS DE CONTEÚDO
            ========================================================================== */
         .data-card {
             font-size: 0.8rem;
@@ -157,27 +154,10 @@
             opacity: 0.9;
         }
 
-        .pdf-link {
-            text-decoration: none;
-            display: block;
-        }
-
-        .pdf-bloco {
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-            position: relative;
-        }
-
-        .pdf-bloco:active {
-            transform: scale(0.98);
-        }
-
-        .pdf-subtitulo {
-            font-size: 0.85rem;
-            color: var(--secondary);
-            margin-top: 4px;
-        }
+        .pdf-link { text-decoration: none; display: block; }
+        .pdf-bloco { text-align: center; cursor: pointer; transition: transform 0.2s; position: relative; }
+        .pdf-bloco:active { transform: scale(0.98); }
+        .pdf-subtitulo { font-size: 0.85rem; color: var(--secondary); margin-top: 4px; }
 
         .numero-card {
             display: inline-flex;
@@ -205,14 +185,10 @@
             display: block;
         }
 
-        .moldura-imagem img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-        }
+        .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
         /* ==========================================================================
-           5. FORMULÁRIOS E INPUTS (PAINEL DE UPLOAD E COMENTÁRIOS)
+           5. FORMULÁRIOS E INPUTS
            ========================================================================== */
         .painel-upload {
             background-color: #ffffff;
@@ -236,16 +212,8 @@
             color: var(--text-color);
         }
 
-        .select-custom {
-            padding: 12px;
-            background: #fff8f7;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-
-        .input-custom::placeholder {
-            color: #bfa3a0;
-        }
+        .select-custom { padding: 12px; appearance: none; -webkit-appearance: none; }
+        .input-custom::placeholder { color: #bfa3a0; }
 
         .btn-postar {
             width: 100%;
@@ -274,11 +242,7 @@
             text-align: left;
         }
 
-        .form-comentario {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
+        .form-comentario { display: flex; gap: 8px; margin-bottom: 15px; }
 
         .input-comentario {
             flex: 1;
@@ -293,7 +257,6 @@
         }
 
         .input-comentario::placeholder { color: #bfa3a0; }
-
         .btn-comentar {
             background-color: var(--primary);
             color: white;
@@ -305,7 +268,6 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-
         .btn-comentar:hover { background-color: var(--secondary); }
 
         .lista-comentarios {
@@ -318,10 +280,7 @@
         }
 
         .lista-comentarios::-webkit-scrollbar { width: 4px; }
-        .lista-comentarios::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
+        .lista-comentarios::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
         .item-comentario {
             background-color: rgba(255, 255, 255, 0.5);
@@ -335,11 +294,7 @@
             animation: fadeIn 0.3s ease;
         }
 
-        .texto-comentario {
-            flex: 1;
-            padding-right: 10px;
-            line-height: 1.3;
-        }
+        .texto-comentario { flex: 1; padding-right: 10px; line-height: 1.3; }
 
         .btn-excluir-comentario {
             background: none;
@@ -353,20 +308,9 @@
             opacity: 0.6;
             transition: opacity 0.2s, background 0.2s;
         }
+        .btn-excluir-comentario:hover { opacity: 1; background-color: rgba(217, 83, 79, 0.1); }
 
-        .btn-excluir-comentario:hover {
-            opacity: 1;
-            background-color: rgba(217, 83, 79, 0.1);
-        }
-
-        /* Ações administrativas do Card */
-        .acoes-card-custom {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
+        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
         .btn-acao-card {
             background: none;
             border: none;
@@ -378,35 +322,16 @@
             padding: 5px 10px;
             border-radius: 10px;
         }
-
         .btn-acao-card:hover { opacity: 1; }
         .btn-editar { color: #428bca; }
         .btn-editar:hover { background-color: rgba(66, 139, 202, 0.1); }
         .btn-excluir { color: #d9534f; }
         .btn-excluir:hover { background-color: rgba(217, 83, 79, 0.1); }
 
-        /* ==========================================================================
-           7. ANIMAÇÕES & MEDIA QUERIES
-           ========================================================================== */
-        #canvas-hearts {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
-        }
+        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
 
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.02); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 600px) {
             header h1 { font-size: 2rem; }
@@ -440,7 +365,7 @@
             <div class="secao-comentarios">
                 <div class="form-comentario">
                     <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo..." onkeypress="verificarEnter(event, 'cronometro')">
-                    <button class="btn-comentar" onclick="adicionarComentario('cronometro')">❤️</button>
+                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('cronometro')">❤️</button>
                 </div>
                 <div id="lista-cronometro" class="lista-comentarios"></div>
             </div>
@@ -460,7 +385,7 @@
             <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo (Google Drive, etc)">
             <input type="date" id="post-data" class="input-custom">
             
-            <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagem()">Publicar no Nosso Canto ❤️</button>
+            <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar no Nosso Canto ❤️</button>
         </section>
 
         <section class="bloco-separado" id="bloco-coisinhas-dela">
@@ -483,7 +408,7 @@
                 <div class="secao-comentarios">
                     <div class="form-comentario">
                         <input type="text" id="input-dela-1" class="input-comentario" placeholder="Escreva algo sobre esse mimo dela..." onkeypress="verificarEnter(event, 'dela-1')">
-                        <button class="btn-comentar" onclick="adicionarComentario('dela-1')">✨</button>
+                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('dela-1')">✨</button>
                     </div>
                     <div id="lista-dela-1" class="lista-comentarios"></div>
                 </div>
@@ -512,7 +437,7 @@
                 <div class="secao-comentarios">
                     <div class="form-comentario">
                         <input type="text" id="input-meu-1" class="input-comentario" placeholder="O que achou do meu objetivo?..." onkeypress="verificarEnter(event, 'meu-1')">
-                        <button class="btn-comentar" onclick="adicionarComentario('meu-1')">💞</button>
+                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-1')">💞</button>
                     </div>
                     <div id="lista-meu-1" class="lista-comentarios"></div>
                 </div>
@@ -535,7 +460,7 @@
                 <div class="secao-comentarios">
                     <div class="form-comentario">
                         <input type="text" id="input-meu-2" class="input-comentario" placeholder="Comente sobre essa declaração..." onkeypress="verificarEnter(event, 'meu-2')">
-                        <button class="btn-comentar" onclick="adicionarComentario('meu-2')">🌹</button>
+                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-2')">🌹</button>
                     </div>
                     <div id="lista-meu-2" class="lista-comentarios"></div>
                 </div>
@@ -545,209 +470,43 @@
         </section>
     </div>
 
-    <script>
-        // Configuração Inicial de Datas
-        const CONFIG_DATAS = {
-            amor: new Date(2026, 4, 14, 0, 0, 0),   
-            namoro: new Date(2026, 7, 12, 0, 0, 0)  
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ⚠️ SUBSTITUA COM AS SUAS CREDENCIAIS COPIADAS DO FIREBASE ABAIXO:
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
+            authDomain: "nosso-canto-5d714.firebaseapp.com",
+            projectId: "nosso-canto-5d714",
+            storageBucket: "nosso-canto-5d714.firebasestorage.app",
+            messagingSenderId: "1042257316625",
+            appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
         };
 
-        /* --- CONTROLADORES DE TEMPO (CRONÔMETRO) --- */
-        function atualizarContadores() {
-            renderizarTempo(CONFIG_DATAS.amor, 'contador-amor');
-            renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro');
-        }
+        // Inicializar Firebase e Banco de Dados
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        function renderizarTempo(dataAlvo, elementoId) {
-            const elemento = document.getElementById(elementoId);
-            if (!elemento) return;
+        // Tornando funções acessíveis globalmente para os botões HTML funcionarem
+        window.salvarPostagemFirebase = salvarPostagemFirebase;
+        window.removerPostagemFirebase = removerPostagemFirebase;
+        window.prepararEdicaoFirebase = prepararEdicaoFirebase;
+        window.adicionarComentarioFirebase = adicionarComentarioFirebase;
+        window.excluirComentarioFirebase = excluirComentarioFirebase;
 
-            const diferenca = new Date().getTime() - dataAlvo.getTime();
-
-            if (diferenca < 0) {
-                elemento.innerHTML = "Contando as horas... ✨";
-                elemento.className = "contador-tempo contador-bloqueado";
-                return;
-            }
-
-            elemento.className = "contador-tempo ativo";
-
-            const dias = Math.floor(diferenca / 86400000);
-            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
-            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
-            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
-
-            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
-        }
-
-
-        /* --- ANIMAÇÃO CANVAS DOS CORAÇÕES --- */
-        const canvas = document.getElementById('canvas-hearts');
-        const ctx = canvas.getContext('2d');
-        let listaCoracoes = [];
-
-        function redimensionarCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', redimensionarCanvas);
-        redimensionarCanvas();
-
-        class Coracao {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 10 + 6;
-                this.speed = Math.random() * 3 + 2;
-                this.opacity = 1;
-                this.colorValue = 140 + Math.floor(Math.random() * 40);
-            }
-            atualizar() {
-                this.y -= this.speed;
-                this.x += Math.sin(this.y / 30) * 0.5;
-                this.opacity -= 0.005;
-            }
-            desenhar() {
-                ctx.save();
-                ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
-                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
-                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        function animarLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            listaCoracoes = listaCoracoes.filter(c => {
-                c.atualizar();
-                c.desenhar();
-                return c.opacity > 0 && c.y >= -20;
-            });
-            requestAnimationFrame(animarLoop);
-        }
-
-        function celebrarAmor() {
-            for (let i = 0; i < 35; i++) {
-                setTimeout(() => listaCoracoes.push(new Coracao()), i * 30);
-            }
-        }
-
-
-        /* --- SISTEMA DE COMENTÁRIOS --- */
-        function carregarComentarios() {
-            const idsPadrao = ['cronometro', 'dela-1', 'meu-1', 'meu-2'];
-            const postsCustomizados = JSON.parse(localStorage.getItem('novas-postagens')) || [];
-            
-            const todosIds = [...idsPadrao, ...postsCustomizados.map(p => p.id)];
-
-            todosIds.forEach(id => {
-                const containerLista = document.getElementById(`lista-${id}`);
-                if (!containerLista) return;
-
-                containerLista.innerHTML = '';
-                const comentarios = JSON.parse(localStorage.getItem(`comentarios-${id}`)) || [];
-                
-                comentarios.forEach((texto, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'item-comentario';
-                    item.innerHTML = `
-                        <div class="texto-comentario">${sanitizarHTML(texto)}</div>
-                        <button class="btn-excluir-comentario" onclick="excluirComentario('${id}', ${index})">Excluir</button>
-                    `;
-                    containerLista.appendChild(item);
-                });
-            });
-        }
-
-        function adicionarComentario(id) {
-            const input = document.getElementById(`input-${id}`);
-            const texto = input?.value.trim();
-            if (!texto) return;
-
-            const comentarios = JSON.parse(localStorage.getItem(`comentarios-${id}`)) || [];
-            comentarios.push(texto);
-            localStorage.setItem(`comentarios-${id}`, JSON.stringify(comentarios));
-            
-            input.value = '';
-            carregarComentarios();
-        }
-
-        function excluirComentario(id, index) {
-            const comentarios = JSON.parse(localStorage.getItem(`comentarios-${id}`)) || [];
-            comentarios.splice(index, 1);
-            localStorage.setItem(`comentarios-${id}`, JSON.stringify(comentarios));
-            carregarComentarios();
-        }
-
-        function verificarEnter(event, id) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                adicionarComentario(id);
-            }
-        }
-
-        function sanitizarHTML(str) {
-            return str.replace(/[&<>'"]/g, tag => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-            }[tag] || tag));
-        }
-
-
-        /* --- SISTEMA DE GERENCIAMENTO DE CARDS (POSTS) --- */
-        function salvarPostagem() {
-            const idEditando = document.getElementById('editando-id').value;
-            const destino = document.getElementById('post-destino').value;
-            const titulo = document.getElementById('post-titulo').value.trim();
-            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
-            const imagem = document.getElementById('post-imagem').value.trim();
-            const link = document.getElementById('post-link').value.trim();
-            const dataInput = document.getElementById('post-data').value;
-
-            if (!titulo || !imagem || !link || !dataInput) {
-                alert('Por favor, preencha todos os campos obrigatórios! ❤️');
-                return;
-            }
-
-            const [ano, mes, dia] = dataInput.split('-');
-            const dataFormatada = `${dia}/${mes}/${ano}`;
-
-            let antigasPostagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
-
-            if (idEditando) {
-                antigasPostagens = antigasPostagens.map(post => {
-                    if (post.id === idEditando) {
-                        return { ...post, destino, titulo, subtitulo, imagem, link, data: dataFormatada };
-                    }
-                    return post;
-                });
-                alert('Card atualizado com sucesso! ✨');
-            } else {
-                const idUnico = `custom-${destino}-${Date.now()}`;
-                antigasPostagens.push({
-                    id: idUnico, destino, titulo, subtitulo, imagem, link, data: dataFormatada, numero: 0
-                });
-            }
-
-            localStorage.setItem('novas-postagens', JSON.stringify(antigasPostagens));
-            resetarFormulario();
-            renderizarPostagensCustomizadas();
-            carregarComentarios();
-        }
-
-        function renderizarPostagensCustomizadas() {
+        /* --- SINCRONIZAÇÃO EM TEMPO REAL COM O BANCO --- */
+        // Ouvir novos Cards automaticamente
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
+        onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
-
-            const postagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
             
             let numDela = 1;
             let numMeu = 2;
 
-            postagens.forEach(post => {
+            snapshot.forEach((docSnap) => {
+                const post = { id: docSnap.id, ...docSnap.data() };
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
 
@@ -772,34 +531,88 @@
                     <div class="secao-comentarios">
                         <div class="form-comentario">
                             <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo..." onkeypress="verificarEnter(event, '${post.id}')">
-                            <button class="btn-comentar" onclick="adicionarComentario('${post.id}')">❤️</button>
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️</button>
                         </div>
                         <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
                     <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-editar" onclick="prepararEdicao('${post.id}')">Editar ✏️</button>
-                        <button class="btn-acao-card btn-excluir" onclick="removerPostagem('${post.id}')">Excluir 🗑️</button>
+                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                     </div>
                 `;
                 container.appendChild(bloco);
             });
+        });
 
-            localStorage.setItem('novas-postagens', JSON.stringify(postagens));
+        // Ouvir comentários em tempo real de todas as seções conhecidas
+        const idsPadrao = ['cronometro', 'dela-1', 'meu-1', 'meu-2'];
+        onSnapshot(collection(db, "comentarios"), (snapshot) => {
+            // Limpa as listas primeiro
+            const listas = document.querySelectorAll('.lista-comentarios');
+            listas.forEach(l => l.innerHTML = '');
+
+            snapshot.forEach((docSnap) => {
+                const com = { id: docSnap.id, ...docSnap.data() };
+                const containerLista = document.getElementById(`lista-${com.secaoId}`);
+                if (!containerLista) return;
+
+                const item = document.createElement('div');
+                item.className = 'item-comentario';
+                item.innerHTML = `
+                    <div class="texto-comentario">${sanitizarHTML(com.texto)}</div>
+                    <button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>
+                `;
+                containerLista.appendChild(item);
+            });
+        });
+
+        /* --- FUNÇÕES DO FIREBASE --- */
+        async function salvarPostagemFirebase() {
+            const idEditando = document.getElementById('editando-id').value;
+            const destino = document.getElementById('post-destino').value;
+            const titulo = document.getElementById('post-titulo').value.trim();
+            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
+            const imagem = document.getElementById('post-imagem').value.trim();
+            const link = document.getElementById('post-link').value.trim();
+            const dataInput = document.getElementById('post-data').value;
+
+            if (!titulo || !imagem || !link || !dataInput) {
+                alert('Por favor, preencha todos os campos obrigatórios! ❤️');
+                return;
+            }
+
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            if (idEditando) {
+                const docRef = doc(db, "posts", idEditando);
+                await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
+                alert('Card atualizado na nuvem! ✨');
+            } else {
+                await addDoc(collection(db, "posts"), {
+                    destino, titulo, subtitulo, imagem, link, data: dataFormatada, criadoEm: Date.now()
+                });
+                alert('Novo card publicado para vocês dois! ❤️');
+            }
+            resetarFormulario();
         }
 
-        function prepararEdicao(id) {
-            const postagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
-            const post = postagens.find(p => p.id === id);
-            if (!post) return;
+        async function removerPostagemFirebase(id) {
+            if (confirm("Tem certeza que deseja apagar essa lembrança permanentemente? 🥺")) {
+                await deleteDoc(doc(db, "posts", id));
+                resetarFormulario();
+            }
+        }
 
-            document.getElementById('editando-id').value = post.id;
-            document.getElementById('post-destino').value = post.destino;
-            document.getElementById('post-titulo').value = post.titulo;
-            document.getElementById('post-subtitulo').value = post.subtitulo;
-            document.getElementById('post-imagem').value = post.imagem;
-            document.getElementById('post-link').value = post.link;
+        function prepararEdicaoFirebase(id, destino, titulo, subtitulo, imagem, link, data) {
+            document.getElementById('editando-id').value = id;
+            document.getElementById('post-destino').value = destino;
+            document.getElementById('post-titulo').value = titulo;
+            document.getElementById('post-subtitulo').value = subtitulo;
+            document.getElementById('post-imagem').value = imagem;
+            document.getElementById('post-link').value = link;
 
-            const [dia, mes, ano] = post.data.split('/');
+            const [dia, mes, ano] = data.split('/');
             document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
 
             document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
@@ -807,20 +620,87 @@
             document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function removerPostagem(id) {
-            if (confirm("Tem certeza que deseja apagar essa lembrança permanentemente? 🥺")) {
-                let postagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
-                postagens = postagens.filter(p => p.id !== id);
-                
-                localStorage.removeItem(`comentarios-${id}`);
-                localStorage.setItem('novas-postagens', JSON.stringify(postagens));
-                
-                resetarFormulario();
-                renderizarPostagensCustomizadas();
-                carregarComentarios();
+        async function adicionarComentarioFirebase(secaoId) {
+            const input = document.getElementById(`input-${secaoId}`);
+            const texto = input?.value.trim();
+            if (!texto) return;
+
+            await addDoc(collection(db, "comentarios"), { secaoId, texto, criadoEm: Date.now() });
+            input.value = '';
+        }
+
+        async function excluirComentarioFirebase(id) {
+            await deleteDoc(doc(db, "comentarios", id));
+        }
+    </script>
+
+    <script>
+        const CONFIG_DATAS = {
+            amor: new Date(2026, 4, 14, 0, 0, 0),   
+            namoro: new Date(2026, 7, 12, 0, 0, 0)  
+        };
+
+        function atualizarContadores() {
+            renderizarTempo(CONFIG_DATAS.amor, 'contador-amor');
+            renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro');
+        }
+
+        function renderizarTempo(dataAlvo, elementoId) {
+            const elemento = document.getElementById(elementoId);
+            if (!elemento) return;
+            const diferenca = new Date().getTime() - dataAlvo.getTime();
+
+            if (diferenca < 0) {
+                elemento.innerHTML = "Contando as horas... ✨";
+                elemento.className = "contador-tempo contador-bloqueado";
+                return;
+            }
+            elemento.className = "contador-tempo ativo";
+            const dias = Math.floor(diferenca / 86400000);
+            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
+            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
+            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
+            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
+        }
+
+        const canvas = document.getElementById('canvas-hearts');
+        const ctx = canvas.getContext('2d');
+        let listaCoracoes = [];
+
+        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', redimensionarCanvas);
+        redimensionarCanvas();
+
+        class Coracao {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 20;
+                this.size = Math.random() * 10 + 6;
+                this.speed = Math.random() * 3 + 2;
+                this.opacity = 1;
+                this.colorValue = 140 + Math.floor(Math.random() * 40);
+            }
+            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.5; this.opacity -= 0.005; }
+            desenhar() {
+                ctx.save(); ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
+                ctx.beginPath(); ctx.moveTo(this.x, this.y);
+                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
+                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
+                ctx.fill(); ctx.restore();
             }
         }
 
+        function animarLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
+            requestAnimationFrame(animarLoop);
+        }
+
+        function celebrarAmor() { for (let i = 0; i < 35; i++) { setTimeout(() => listaCoracoes.push(new Coracao()), i * 30); } }
+        function verificarEnter(event, id) { if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); } }
+        function sanitizarHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
+        
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
             document.getElementById('post-titulo').value = '';
@@ -832,14 +712,10 @@
             document.getElementById('btn-salvar-post').innerText = 'Publicar no Nosso Canto ❤️';
         }
 
-
-        /* --- INICIALIZADOR GLOBAL --- */
         document.addEventListener('DOMContentLoaded', () => {
             atualizarContadores();
             setInterval(atualizarContadores, 1000);
             animarLoop();
-            renderizarPostagensCustomizadas();
-            carregarComentarios();
         });
     </script>
 </body>
