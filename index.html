@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Canto 🤍</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. VARIÁVEIS E CONFIGURAÇÕES GERAIS
+           ========================================================================== */
+        :root {
+            --primary: #8c625d;
+            --secondary: #a68580;
+            --border-color: #e6b3a8;
+            --bg-card: #ffffff;
+            --text-color: #4a3e3d;
+            --font-main: 'Comfortaa', cursive;
+            --font-title: 'Playfair Display', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: transparent; 
+            color: var(--text-color);
+            font-family: var(--font-main);
+            padding-bottom: 50px;
+            overflow-x: hidden;
+        }
+
+        /* ==========================================================================
+           2. LAYOUT & COMPONENTES ESTRUTURAIS
+           ========================================================================== */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px 20px;
+        }
+
+        header h1 {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            font-style: italic;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+
+        .container-blocos {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .bloco-separado {
+            background-color: var(--bg-card);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
+            margin-bottom: 25px;
+        }
+
+        .card-separador-interno {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .titulo-secao {
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-transform: lowercase;
+            letter-spacing: 1px;
+        }
+
+        /* Variações de fundo por bloco */
+        #bloco-dias-amando { background-color: #ffebeb; }
+        #bloco-coisinhas-dela { background-color: #fff0f5; }
+        #bloco-coisas-minhas { background-color: #e6f2ff; }
+
+        /* ==========================================================================
+           3. CONTADORES (CRONÔMETROS)
+           ========================================================================== */
+        .contador-bloco {
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .contador-bloco:active {
+            transform: scale(0.98);
+        }
+
+        .contador-bloco:first-child {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .contador-titulo {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .contador-tempo {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: var(--primary);
+            transition: color 0.5s ease;
+        }
+
+        .contador-tempo.ativo span {
+            display: inline-block;
+            animation: pulse 1s infinite alternate;
+        }
+
+        .contador-bloqueado {
+            color: #bfa3a0;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        /* ==========================================================================
+           4. CARDS DE CONTEÚDO (MIMOS E DECLARAÇÕES)
+           ========================================================================== */
+        .data-card {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: 1.5px;
+            text-transform: lowercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            opacity: 0.9;
+        }
+
+        .pdf-link {
+            text-decoration: none;
+            display: block;
+        }
+
+        .pdf-bloco {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .pdf-bloco:active {
+            transform: scale(0.98);
+        }
+
+        .pdf-subtitulo {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            margin-top: 4px;
+        }
+
+        .numero-card {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border: 1.5px solid var(--secondary);
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 15px; 
+        }
+
+        .moldura-imagem {
+            width: 100%;
+            max-width: 250px; 
+            aspect-ratio: 16 / 9; 
+            margin: 0 auto 15px auto; 
+            border-radius: 12px;
+            overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid rgba(255,255,255,0.5);
+            display: block;
+        }
+
+        .moldura-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+
+        /* ==========================================================================
+           5. FORMULÁRIOS E INPUTS (PAINEL DE UPLOAD E COMENTÁRIOS)
+           ========================================================================== */
+        .painel-upload {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(140, 98, 93, 0.08);
+        }
+
+        .input-custom, .select-custom {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            outline: none;
+            background: #fff8f7;
+            color: var(--text-color);
+        }
+
+        .select-custom {
+            padding: 12px;
+            background: #fff8f7;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .input-custom::placeholder {
+            color: #bfa3a0;
+        }
+
+        .btn-postar {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 20px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-postar:hover { background-color: var(--secondary); }
+        .btn-postar:active { transform: scale(0.99); }
+
+        /* ==========================================================================
+           6. SISTEMA DE COMENTÁRIOS
+           ========================================================================== */
+        .secao-comentarios {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            text-align: left;
+        }
+
+        .form-comentario {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .input-comentario {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            color: var(--text-color);
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .input-comentario::placeholder { color: #bfa3a0; }
+
+        .btn-comentar {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 20px;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-comentar:hover { background-color: var(--secondary); }
+
+        .lista-comentarios {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 5px;
+        }
+
+        .lista-comentarios::-webkit-scrollbar { width: 4px; }
+        .lista-comentarios::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .item-comentario {
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            word-break: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .texto-comentario {
+            flex: 1;
+            padding-right: 10px;
+            line-height: 1.3;
+        }
+
+        .btn-excluir-comentario {
+            background: none;
+            border: none;
+            color: #d9534f;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 4px 6px;
+            border-radius: 6px;
+            opacity: 0.6;
+            transition: opacity 0.2s, background 0.2s;
+        }
+
+        .btn-excluir-comentario:hover {
+            opacity: 1;
+            background-color: rgba(217, 83, 79, 0.1);
+        }
+
+        /* Ações administrativas do Card */
+        .acoes-card-custom {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn-acao-card {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: var(--font-main);
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+
+        .btn-acao-card:hover { opacity: 1; }
+        .btn-editar { color: #428bca; }
+        .btn-editar:hover { background-color: rgba(66, 139, 202, 0.1); }
+        .btn-excluir { color: #d9534f; }
+        .btn-excluir:hover { background-color: rgba(217, 83, 79, 0.1); }
+
+        /* ==========================================================================
+           7. ANIMAÇÕES & MEDIA QUERIES
+           ========================================================================== */
+        #canvas-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.02); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .contador-tempo { font-size: 1.15rem; }
+            .moldura-imagem { max-width: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-hearts"></canvas>
+
+    <header>
+        <h1>Nosso Lugar no Mundo</h1>
+        <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
+    </header>
+
+    <div class="container-blocos">
+        
+        <section class="bloco-separado" id="bloco-dias-amando">
+            <div class="contador-bloco" onclick="celebrarAmor()">
+                <div class="contador-titulo">❤️ Dias se amando</div>
+                <div id="contador-amor" class="contador-tempo">Carregando momentos...</div>
+            </div>
+            
+            <div class="contador-bloco">
+                <div class="contador-titulo">💍 Dias de namoro</div>
+                <div id="contador-namoro" class="contador-tempo">Carregando momentos...</div>
+            </div>
+
+            <div class="secao-comentarios">
+                <div class="form-comentario">
+                    <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo..." onkeypress="verificarEnter(event, 'cronometro')">
+                    <button class="btn-comentar" onclick="adicionarComentario('cronometro')">❤️</button>
+                </div>
+                <div id="lista-cronometro" class="lista-comentarios"></div>
+            </div>
+        </section>
+
+        <section class="painel-upload" id="painel-de-postagem">
+            <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card</div>
+            <input type="hidden" id="editando-id" value="">
+            
+            <select id="post-destino" class="select-custom">
+                <option value="dela">Postar em: Coisinhas Dela</option>
+                <option value="meu">Postar em: Coisas Minhas</option>
+            </select>
+            <input type="text" id="post-titulo" class="input-custom" placeholder="Título (ex: O objetivo de amor)">
+            <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link (ex: Ver apresentação)">
+            <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem (Imgur, etc)">
+            <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo (Google Drive, etc)">
+            <input type="date" id="post-data" class="input-custom">
+            
+            <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagem()">Publicar no Nosso Canto ❤️</button>
+        </section>
+
+        <section class="bloco-separado" id="bloco-coisinhas-dela">
+            <div class="titulo-secao">✨ coisinhas dela</div>
+            
+            <div class="card-separador-interno">
+                <div class="data-card">🗓️ 17/05/2026</div>
+                <a href="https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk" target="_blank" class="pdf-link">
+                    <div class="pdf-bloco">
+                        <div class="numero-card">1</div>
+                        <div class="moldura-imagem">
+                            <img src="https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Pra você!">
+                        </div>
+                        <div class="contador-titulo">A fofura que ela fez para mim 🥰</div>
+                        <div class="contador-tempo">Clique para abrir 📂</div>
+                        <div class="pdf-subtitulo">Ver apresentação</div>
+                    </div>
+                </a>
+
+                <div class="secao-comentarios">
+                    <div class="form-comentario">
+                        <input type="text" id="input-dela-1" class="input-comentario" placeholder="Escreva algo sobre esse mimo dela..." onkeypress="verificarEnter(event, 'dela-1')">
+                        <button class="btn-comentar" onclick="adicionarComentario('dela-1')">✨</button>
+                    </div>
+                    <div id="lista-dela-1" class="lista-comentarios"></div>
+                </div>
+            </div>
+
+            <div id="novos-cards-dela"></div>
+        </section>
+
+        <section class="bloco-separado" id="bloco-coisas-minhas">
+            <div class="titulo-secao">✨ coisinhas minhas</div>
+            
+            <div class="card-separador-interno">
+                <div class="data-card">🗓️ 18/05/2026</div>
+                <a href="https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk" target="_blank" class="pdf-link">
+                    <div class="pdf-bloco">
+                        <div class="numero-card">1</div>
+                        <div class="moldura-imagem">
+                            <img src="https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Um amooooor">
+                        </div>
+                        <div class="contador-titulo">meu objetivo de amoor</div>
+                        <div class="contador-tempo">Clique para abrir 📂</div>
+                        <div class="pdf-subtitulo">Ver apresentação</div>
+                    </div>
+                </a>
+                
+                <div class="secao-comentarios">
+                    <div class="form-comentario">
+                        <input type="text" id="input-meu-1" class="input-comentario" placeholder="O que achou do meu objetivo?..." onkeypress="verificarEnter(event, 'meu-1')">
+                        <button class="btn-comentar" onclick="adicionarComentario('meu-1')">💞</button>
+                    </div>
+                    <div id="lista-meu-1" class="lista-comentarios"></div>
+                </div>
+            </div>
+            
+            <div class="card-separador-interno">
+                <div class="data-card">🗓️ 25/05/2026</div>
+                <a href="https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1" target="_blank" class="pdf-link">
+                    <div class="pdf-bloco">
+                        <div class="numero-card">2</div>
+                        <div class="moldura-imagem">
+                            <img src="https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Para o amor da minha vida">
+                        </div>
+                        <div class="contador-titulo">para o amor da minha vida</div>
+                        <div class="contador-tempo">Clique para abrir 📂</div>
+                        <div class="pdf-subtitulo">ver declaração</div>
+                    </div>
+                </a>
+
+                <div class="secao-comentarios">
+                    <div class="form-comentario">
+                        <input type="text" id="input-meu-2" class="input-comentario" placeholder="Comente sobre essa declaração..." onkeypress="verificarEnter(event, 'meu-2')">
+                        <button class="btn-comentar" onclick="adicionarComentario('meu-2')">🌹</button>
+                    </div>
+                    <div id="lista-meu-2" class="lista-comentarios"></div>
+                </div>
+            </div>
+
+            <div id="novos-cards-meu"></div>
+        </section>
+    </div>
+
+    <script>
+        // Configuração Inicial de Datas
+        const CONFIG_DATAS = {
+            amor: new Date(2026, 4, 14, 0, 0, 0),   
+            namoro: new Date(2026, 7, 12, 0, 0, 0)  
+        };
+
+        /* --- CONTROLADORES DE TEMPO (CRONÔMETRO) --- */
+        function atualizarContadores() {
+            renderizarTempo(CONFIG_DATAS.amor, 'contador-amor');
+            renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro');
+        }
+
+        function renderizarTempo(dataAlvo, elementoId) {
+            const elemento = document.getElementById(elementoId);
+            if (!elemento) return;
+
+            const diferenca = new Date().getTime() - dataAlvo.getTime();
+
+            if (diferenca < 0) {
+                elemento.innerHTML = "Contando as horas... ✨";
+                elemento.className = "contador-tempo contador-bloqueado";
+                return;
+            }
+
+            elemento.className = "contador-tempo ativo";
+
+            const dias = Math.floor(diferenca / 86400000);
+            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
+            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
+            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
+
+            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
+        }
+
+
+        /* --- ANIMAÇÃO CANVAS DOS CORAÇÕES --- */
+        const canvas = document.getElementById('canvas-hearts');
+        const ctx = canvas.getContext('2d');
+        let listaCoracoes = [];
+
+        function redimensionarCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', redimensionarCanvas);
+        redimensionarCanvas();
+
+        class Coracao {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 20;
+                this.size = Math.random() * 10 + 6;
+                this.speed = Math.random() * 3 + 2;
+                this.opacity = 1;
+                this.colorValue = 140 + Math.floor(Math.random() * 40);
+            }
+            atualizar() {
+                this.y -= this.speed;
+                this.x += Math.sin(this.y / 30) * 0.5;
+                this.opacity -= 0.005;
+            }
+            desenhar() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
+                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function animarLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            listaCoracoes = listaCoracoes.filter(c => {
+                c.atualizar();
+                c.desenhar();
+                return c.opacity > 0 && c.y >= -20;
+            });
+            requestAnimationFrame(animarLoop);
+        }
+
+        function celebrarAmor() {
+            for (let i = 0; i < 35; i++) {
+                setTimeout(() => listaCoracoes.push(new Coracao()), i * 30);
+            }
+        }
+
+
+        /* --- SISTEMA DE COMENTÁRIOS --- */
+        function carregarComentarios() {
+            const idsPadrao = ['cronometro', 'dela-1', 'meu-1', 'meu-2'];
+            const postsCustomizados = JSON.parse(localStorage.getItem('novas-postagens')) || [];
+            
+            const todosIds = [...idsPadrao, ...postsCustomizados.map(p => p.id)];
+
+            todosIds.forEach(id => {
+                const containerLista = document.getElementById(`lista-${id}`);
+                if (!containerLista) return;
+
+                containerLista.innerHTML = '';
+                const comentarios = JSON.parse(localStorage.getItem(`comentarios-${id}`)) || [];
+                
+                comentarios.forEach((texto, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'item-comentario';
+                    item.innerHTML = `
+                        <div class="texto-comentario">${sanitizarHTML(texto)}</div>
+                        <button class="btn-excluir-comentario" onclick="excluirComentario('${id}', ${index})">Excluir</button>
+                    `;
+                    containerLista.appendChild(item);
+                });
+            });
+        }
+
+        function adicionarComentario(id) {
+            const input = document.getElementById(`input-${id}`);
+            const texto = input?.value.trim();
+            if (!texto) return;
+
+            const comentarios = JSON.parse(localStorage.getItem(`comentarios-${id}`)) || [];
+            comentarios.push(texto);
+            localStorage.setItem(`comentarios-${id}`, JSON.stringify(comentarios));
+            
+            input.value = '';
+            carregarComentarios();
+        }
+
+        function excluirComentario(id, index) {
+            const comentarios = JSON.parse(localStorage.getItem(`comentarios-${id}`)) || [];
+            comentarios.splice(index, 1);
+            localStorage.setItem(`comentarios-${id}`, JSON.stringify(comentarios));
+            carregarComentarios();
+        }
+
+        function verificarEnter(event, id) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                adicionarComentario(id);
+            }
+        }
+
+        function sanitizarHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
+
+        /* --- SISTEMA DE GERENCIAMENTO DE CARDS (POSTS) --- */
+        function salvarPostagem() {
+            const idEditando = document.getElementById('editando-id').value;
+            const destino = document.getElementById('post-destino').value;
+            const titulo = document.getElementById('post-titulo').value.trim();
+            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
+            const imagem = document.getElementById('post-imagem').value.trim();
+            const link = document.getElementById('post-link').value.trim();
+            const dataInput = document.getElementById('post-data').value;
+
+            if (!titulo || !imagem || !link || !dataInput) {
+                alert('Por favor, preencha todos os campos obrigatórios! ❤️');
+                return;
+            }
+
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            let antigasPostagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
+
+            if (idEditando) {
+                antigasPostagens = antigasPostagens.map(post => {
+                    if (post.id === idEditando) {
+                        return { ...post, destino, titulo, subtitulo, imagem, link, data: dataFormatada };
+                    }
+                    return post;
+                });
+                alert('Card atualizado com sucesso! ✨');
+            } else {
+                const idUnico = `custom-${destino}-${Date.now()}`;
+                antigasPostagens.push({
+                    id: idUnico, destino, titulo, subtitulo, imagem, link, data: dataFormatada, numero: 0
+                });
+            }
+
+            localStorage.setItem('novas-postagens', JSON.stringify(antigasPostagens));
+            resetarFormulario();
+            renderizarPostagensCustomizadas();
+            carregarComentarios();
+        }
+
+        function renderizarPostagensCustomizadas() {
+            document.getElementById('novos-cards-dela').innerHTML = '';
+            document.getElementById('novos-cards-meu').innerHTML = '';
+
+            const postagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
+            
+            let numDela = 1;
+            let numMeu = 2;
+
+            postagens.forEach(post => {
+                const container = document.getElementById(`novos-cards-${post.destino}`);
+                if (!container) return;
+
+                if (post.destino === 'dela') { numDela++; post.numero = numDela; } 
+                else { numMeu++; post.numero = numMeu; }
+
+                const bloco = document.createElement('div');
+                bloco.className = 'card-separador-interno';
+                bloco.innerHTML = `
+                    <div class="data-card">🗓️ ${post.data}</div>
+                    <a href="${post.link}" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">${post.numero}</div>
+                            <div class="moldura-imagem">
+                                <img src="${post.imagem}" alt="${post.titulo}">
+                            </div>
+                            <div class="contador-titulo">${post.titulo}</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">${post.subtitulo}</div>
+                        </div>
+                    </a>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo..." onkeypress="verificarEnter(event, '${post.id}')">
+                            <button class="btn-comentar" onclick="adicionarComentario('${post.id}')">❤️</button>
+                        </div>
+                        <div id="lista-${post.id}" class="lista-comentarios"></div>
+                    </div>
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick="prepararEdicao('${post.id}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagem('${post.id}')">Excluir 🗑️</button>
+                    </div>
+                `;
+                container.appendChild(bloco);
+            });
+
+            localStorage.setItem('novas-postagens', JSON.stringify(postagens));
+        }
+
+        function prepararEdicao(id) {
+            const postagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
+            const post = postagens.find(p => p.id === id);
+            if (!post) return;
+
+            document.getElementById('editando-id').value = post.id;
+            document.getElementById('post-destino').value = post.destino;
+            document.getElementById('post-titulo').value = post.titulo;
+            document.getElementById('post-subtitulo').value = post.subtitulo;
+            document.getElementById('post-imagem').value = post.imagem;
+            document.getElementById('post-link').value = post.link;
+
+            const [dia, mes, ano] = post.data.split('/');
+            document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
+
+            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
+            document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
+            document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function removerPostagem(id) {
+            if (confirm("Tem certeza que deseja apagar essa lembrança permanentemente? 🥺")) {
+                let postagens = JSON.parse(localStorage.getItem('novas-postagens')) || [];
+                postagens = postagens.filter(p => p.id !== id);
+                
+                localStorage.removeItem(`comentarios-${id}`);
+                localStorage.setItem('novas-postagens', JSON.stringify(postagens));
+                
+                resetarFormulario();
+                renderizarPostagensCustomizadas();
+                carregarComentarios();
+            }
+        }
+
+        function resetarFormulario() {
+            document.getElementById('editando-id').value = '';
+            document.getElementById('post-titulo').value = '';
+            document.getElementById('post-subtitulo').value = '';
+            document.getElementById('post-imagem').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('post-data').value = '';
+            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card';
+            document.getElementById('btn-salvar-post').innerText = 'Publicar no Nosso Canto ❤️';
+        }
+
+
+        /* --- INICIALIZADOR GLOBAL --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            atualizarContadores();
+            setInterval(atualizarContadores, 1000);
+            animarLoop();
+            renderizarPostagensCustomizadas();
+            carregarComentarios();
+        });
+    </script>
+</body>
+</html>
