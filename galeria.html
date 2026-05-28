@@ -3,302 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosso Feed de Memórias 🤍</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Nossa Galeria 🤍</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #8c625d;
-            --secondary: #a68580;
-            --bg: #fdf6f0;
-            --card-bg: #ffffff;
-            --text: #4a3e3d;
-            --border: #e6b3a8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Comfortaa', cursive;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 20px 10px 60px 10px;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .btn-voltar {
-            text-decoration: none;
-            color: var(--primary);
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--primary);
-            font-size: 1.6rem;
-            margin-bottom: 25px;
-        }
-
-        /* Painel de Upload Superior */
-        .painel-upload {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(140, 98, 93, 0.08);
-            margin-bottom: 30px;
-            border: 1px solid rgba(230, 179, 168, 0.3);
-        }
-
-        .painel-upload h2 {
-            font-size: 1rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .input-custom {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-            outline: none;
-            background: #fff8f7;
-            color: var(--text);
-        }
-
-        textarea.input-custom {
-            height: 80px;
-            resize: none;
-        }
-
-        .btn-publicar {
-            width: 100%;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 18px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-publicar:active {
-            background-color: #734f4a;
-        }
-
-        /* Feed / Cards de Memórias */
-        .post-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 18px;
-            box-shadow: 0 10px 30px rgba(140, 98, 93, 0.06);
-            margin-bottom: 25px;
-            border: 1px solid rgba(230, 179, 168, 0.2);
-            position: relative;
-        }
-
-        .post-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.75rem;
-        }
-
-        .post-autor {
-            font-weight: bold;
-            color: var(--primary);
-            background: #fff0f0;
-            padding: 4px 10px;
-            border-radius: 12px;
-        }
-
-        .post-data {
-            color: var(--secondary);
-        }
-
-        .media-container {
-            width: 100%;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #faf5f4;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
-            margin-bottom: 12px;
-        }
-
-        .media-container img, .media-container video {
-            width: 100%;
-            max-height: 450px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .post-info {
-            margin-bottom: 15px;
-        }
-
-        .post-titulo {
-            font-size: 1.05rem;
-            font-weight: bold;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .post-desc {
-            font-size: 0.85rem;
-            color: #615554;
-            line-height: 1.4;
-        }
-
-        /* Ações: Curtir, Compartilhar, Editar, Excluir */
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 12px;
-            border-top: 1px dashed rgba(230, 179, 168, 0.4);
-            margin-bottom: 15px;
-        }
-
-        .action-group {
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn-action {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text);
-            font-weight: 600;
-            padding: 6px 10px;
-            border-radius: 12px;
-            transition: background 0.2s;
-        }
-
-        .btn-action:hover {
-            background: #fff0f0;
-        }
-
-        .btn-action.like-active {
-            color: #e05252;
-        }
-
-        .btn-action.btn-delete { color: #d9534f; }
-        .btn-action.btn-edit { color: #428bca; }
-
-        /* Seção de Comentários Integrada */
-        .comentarios-section {
-            background: #fffcfb;
-            border-radius: 16px;
-            padding: 12px;
-            border: 1px solid #f5ebe6;
-        }
-
-        .comentario-form {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .input-comentario {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            font-size: 0.8rem;
-            outline: none;
-            background: white;
-        }
-
-        .btn-comentar {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 14px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        .comentarios-lista {
-            max-height: 150px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .comentario-item {
-            background: white;
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 0.78rem;
-            border: 1px solid #f5ebe6;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .comentario-conteudo strong {
-            color: var(--primary);
-        }
-
-        .btn-deletar-comentario {
-            background: none;
-            border: none;
-            color: #ccc;
-            cursor: pointer;
-            font-size: 0.7rem;
-            margin-left: 5px;
-        }
-        .btn-deletar-comentario:hover { color: #d9534f; }
+        :root { --primary: #8c625d; --bg: #fff3f2; }
+        body { background: var(--bg); font-family: 'Comfortaa', cursive; padding: 20px; color: #4a3e3d; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .post-card { background: white; padding: 15px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .upload-box { background: white; padding: 20px; border-radius: 20px; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .media { width: 100%; border-radius: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <a href="index.html" class="btn-voltar">👈 Voltar para o Canto</a>
-        <h1>Nosso Feed de Memórias 🤍</h1>
-
-        <div class="painel-upload">
-            <h2 id="titulo-painel">📸 Guardar um Momento Novo</h2>
-            <input type="hidden" id="editando-id" value="">
-            <input type="text" id="post-url" class="input-custom" placeholder="Link da foto ou vídeo (Drive, Imgur, etc.)">
-            <input type="text" id="post-titulo" class="input-custom" placeholder="Título do momento (opcional)">
-            <textarea id="post-desc" class="input-custom" placeholder="Escreva uma legenda ou história especial... (opcional)"></textarea>
-            <button class="btn-publicar" id="btn-salvar" onclick="salvarLembranca()">Publicar no Feed ❤️</button>
+        <a href="index.html">👈 Voltar</a>
+        <h1>Nossa Galeria 🤍</h1>
+        
+        <div class="upload-box">
+            <input type="text" id="url-foto" placeholder="Link da imagem/vídeo">
+            <input type="text" id="titulo-foto" placeholder="Título (opcional)">
+            <button onclick="postar()">Publicar no Mural</button>
         </div>
 
-        <div id="feed-mural"></div>
+        <div id="feed"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -308,229 +42,33 @@
             messagingSenderId: "1042257316625",
             appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
         };
+        const db = getFirestore(initializeApp(firebaseConfig));
+        const usuario = sessionStorage.getItem('user_canto') || "Anônimo";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const usuarioLogado = sessionStorage.getItem('user_canto') || "Amor";
-
-        // Função utilitária para verificar se o link é vídeo
-        function ehVideo(url) {
-            return url.includes('.mp4') || url.includes('.mov') || url.includes('.webm') || url.includes('drive.google.com/file') && url.includes('/view');
-        }
-
-        // Função para converter link do drive comum para link direto (incorporável)
-        function formatarLinkDrive(url) {
-            if (url.includes('drive.google.com')) {
-                // Transforma links de visualização em links brutos/embed
-                if (url.includes('/view')) {
-                    return url.replace('/view', '/preview');
-                }
-            }
-            return url;
-        }
-
-        // Publicar ou Editar uma Lembrança
-        window.salvarLembranca = async function() {
-            const idEditando = document.getElementById('editando-id').value;
-            let url = document.getElementById('post-url').value.trim();
-            const titulo = document.getElementById('post-titulo').value.trim();
-            const desc = document.getElementById('post-desc').value.trim();
-
-            if (!url) {
-                alert('Por favor, coloque o link da imagem ou vídeo! 🥰');
-                return;
-            }
-
-            url = formatarLinkDrive(url);
-            const dataAtual = new Date().toLocaleDateString('pt-BR');
-
-            try {
-                if (idEditando) {
-                    // Modo Edição
-                    const docRef = doc(db, "galeria_feed", idEditando);
-                    await updateDoc(docRef, { url, titulo, desc });
-                    alert('Lembrança atualizada! ✨');
-                } else {
-                    // Modo Nova Postagem
-                    await addDoc(collection(db, "galeria_feed"), {
-                        url, titulo, desc,
-                        autor: usuarioLogado,
-                        data: dataAtual,
-                        likes: 0,
-                        criadoEm: Date.now()
-                    });
-                }
-                resetarFormulario();
-            } catch (err) {
-                console.error("Erro ao salvar:", err);
-            }
-        };
-
-        // Excluir Lembrança
-        window.excluirLembranca = async function(id) {
-            if (confirm("Tem certeza que deseja apagar permanentemente este momento do feed? 🥺")) {
-                await deleteDoc(doc(db, "galeria_feed", id));
-            }
-        };
-
-        // Preparar interface para Edição
-        window.prepararEdicao = function(id, url, titulo, desc) {
-            document.getElementById('editando-id').value = id;
-            document.getElementById('post-url').value = url;
-            document.getElementById('post-titulo').value = titulo;
-            document.getElementById('post-desc').value = desc;
-
-            document.getElementById('titulo-painel').innerText = "✏️ Editar Seu Momento";
-            document.getElementById('btn-salvar').innerText = "Atualizar Momento ❤️";
-            document.getElementById('titulo-painel').scrollIntoView({ behavior: 'smooth' });
-        };
-
-        function resetarFormulario() {
-            document.getElementById('editando-id').value = '';
-            document.getElementById('post-url').value = '';
-            document.getElementById('post-titulo').value = '';
-            document.getElementById('post-desc').value = '';
-            document.getElementById('titulo-painel').innerText = "📸 Guardar um Momento Novo";
-            document.getElementById('btn-salvar').innerText = "Publicar no Feed ❤️";
-        }
-
-        // Sistema Transacional de Curtidas (Evita bugs se clicarem juntos)
-        window.curtirPost = async function(id) {
-            const sfDocRef = doc(db, "galeria_feed", id);
-            try {
-                await runTransaction(db, async (transaction) => {
-                    const sfDoc = await transaction.get(sfDocRef);
-                    if (!sfDoc.exists()) return;
-                    const novosLikes = (sfDoc.data().likes || 0) + 1;
-                    transaction.update(sfDocRef, { likes: novosLikes });
-                });
-            } catch (e) { console.error("Erro ao curtir:", e); }
-        };
-
-        // Adicionar Comentário no Post
-        window.comentarPost = async function(postId) {
-            const input = document.getElementById(`input-coment-${postId}`);
-            const texto = input.value.trim();
-            if (!texto) return;
-
-            try {
-                await addDoc(collection(db, "galeria_feed_comentarios"), {
-                    postId, texto,
-                    autor: usuarioLogado,
-                    criadoEm: Date.now()
-                });
-                input.value = '';
-            } catch (e) { console.error(e); }
-        };
-
-        window.excluirComentario = async function(comentId) {
-            await deleteDoc(doc(db, "galeria_feed_comentarios", comentId));
-        };
-
-        // Compartilhar (Copia o link da mídia para a área de transferência)
-        window.compartilharPost = function(url) {
-            navigator.clipboard.writeText(url).then(() => {
-                alert("Link da imagem/vídeo copiado! Agora você pode enviar no WhatsApp do seu amor. 🥰🔗");
-            }).catch(() => {
-                alert("Link direto: " + url);
+        window.postar = async () => {
+            const url = document.getElementById('url-foto').value;
+            const titulo = document.getElementById('titulo-foto').value;
+            if(!url) return alert("Cole o link primeiro!");
+            
+            await addDoc(collection(db, "galeria"), { 
+                url, titulo, autor: usuario, criadoEm: Date.now() 
             });
+            document.getElementById('url-foto').value = '';
+            document.getElementById('titulo-foto').value = '';
         };
 
-        // Escutar posts em tempo real
-        const qPosts = query(collection(db, "galeria_feed"), orderBy("criadoEm", "desc"));
-        onSnapshot(qPosts, (snapshot) => {
-            const container = document.getElementById('feed-mural');
-            container.innerHTML = '';
-
-            if(snapshot.empty) {
-                container.innerHTML = `<p style="text-align:center; color: var(--secondary); font-size:0.85rem; margin-top:20px;">Nenhuma foto por aqui ainda. Que tal postar a primeira? 🤍</p>`;
-                return;
-            }
-
-            snapshot.forEach((docSnap) => {
-                const p = docSnap.data();
-                const id = docSnap.id;
-
-                const card = document.createElement('div');
-                card.className = 'post-card';
-
-                // Detectar se é vídeo ou imagem (incluindo tratamento para preview do Drive)
-                let midiaHtml = '';
-                if (p.url.includes('drive.google.com/file') || ehVideo(p.url)) {
-                    if (p.url.includes('drive.google.com')) {
-                        midiaHtml = `<iframe src="${p.url}" width="100%" height="320" allow="autoplay" style="border:none; border-radius:16px;"></iframe>`;
-                    } else {
-                        midiaHtml = `<video controls src="${p.url}"></video>`;
-                    }
-                } else {
-                    midiaHtml = `<img src="${p.url}" alt="Nossos momentos" onclick="window.open('${p.url}')">`;
-                }
-
-                // Mostrar botões de ações apenas para quem criou o post
-                const eMeuPost = (p.autor === usuarioLogado);
-                const botoesGestao = eMeuPost ? `
-                    <button class="btn-action btn-edit" onclick="prepararEdicao('${id}', '${p.url}', '${p.titulo || ''}', '${p.desc || ''}')">✏️</button>
-                    <button class="btn-action btn-delete" onclick="excluirLembranca('${id}')">🗑️</button>
-                ` : '';
-
-                card.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-autor">👤 ${p.autor}</span>
-                        <span class="post-data">🗓️ ${p.data}</span>
-                    </div>
-                    <div class="media-container">
-                        ${midiaHtml}
-                    </div>
-                    <div class="post-info">
-                        ${p.titulo ? `<div class="post-titulo">${p.titulo}</div>` : ''}
-                        ${p.desc ? `<div class="post-desc">${p.desc}</div>` : ''}
-                    </div>
-                    <div class="post-actions">
-                        <div class="action-group">
-                            <button class="btn-action" onclick="curtirPost('${id}')">❤️ <span>${p.likes || 0}</span></button>
-                            <button class="btn-action" onclick="compartilharPost('${p.url}')">🔗 Compartilhar</button>
-                        </div>
-                        <div class="action-group">
-                            ${botoesGestao}
-                        </div>
-                    </div>
-                    <div class="comentarios-section">
-                        <div class="comentario-form">
-                            <input type="text" id="input-coment-${id}" class="input-comentario" placeholder="Deixe um carinho nesta foto...">
-                            <button class="btn-comentar" onclick="comentarPost('${id}')">Enviar</button>
-                        </div>
-                        <div id="lista-coment-${id}" class="comentarios-lista"></div>
+        onSnapshot(query(collection(db, "galeria"), orderBy("criadoEm", "desc")), (snap) => {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '';
+            snap.forEach(doc => {
+                const item = doc.data();
+                feed.innerHTML += `
+                    <div class="post-card">
+                        <strong>${item.autor}</strong>
+                        ${item.titulo ? `<p>${item.titulo}</p>` : ''}
+                        <img src="${item.url}" class="media" onclick="window.open('${item.url}')">
                     </div>
                 `;
-
-                container.appendChild(card);
-
-                // Escutar comentários deste post específico em tempo real
-                const qComents = query(collection(db, "galeria_feed_comentarios"), orderBy("criadoEm", "asc"));
-                onSnapshot(qComents, (comentSnap) => {
-                    const listaDiv = document.getElementById(`lista-coment-${id}`);
-                    if (!listaDiv) return;
-                    listaDiv.innerHTML = '';
-
-                    comentSnap.forEach((cDoc) => {
-                        const c = cDoc.data();
-                        if (c.postId === id) {
-                            const item = document.createElement('div');
-                            item.className = 'comentario-item';
-                            const eMeuComent = (c.autor === usuarioLogado);
-                            const bExcluirComent = eMeuComent ? `<button class="btn-deletar-comentario" onclick="excluirComentario('${cDoc.id}')">✕</button>` : '';
-                            
-                            item.innerHTML = `
-                                <div class="comentario-conteudo">
-                                    <strong>${c.autor}:</strong> ${c.texto}
-                                </div>
-                                ${bExcluirComent}
-                            `;
-                            listaDiv.appendChild(item);
-                        }
-                    });
-                });
             });
         });
     </script>
