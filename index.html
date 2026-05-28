@@ -33,7 +33,7 @@
             background-color: transparent; 
             color: var(--text-color);
             font-family: var(--font-main);
-            padding-bottom: 50px;
+            padding-bottom: 90px; /* Espaço para o balão flutuante */
             overflow-x: hidden;
         }
 
@@ -68,6 +68,77 @@
 
         #conteudo-site {
             display: none; /* Oculto até logar */
+        }
+
+        /* ==========================================================================
+           BALÃO FLUTUANTE (ESTILO MENU WHATSAPP/INSTAGRAM)
+           ========================================================================== */
+        .menu-flutuante-container {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .botao-flutuante-principal {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(140, 98, 93, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .botao-flutuante-principal:active {
+            transform: scale(0.9);
+        }
+
+        .menu-opcoes-flutuantes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .menu-opcoes-flutuantes.aberto {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .item-opcao-flutuante {
+            text-decoration: none;
+            background-color: white;
+            color: var(--text-color);
+            padding: 12px 18px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(230, 179, 168, 0.5);
+            transition: transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .item-opcao-flutuante:active {
+            transform: scale(0.95);
         }
 
         /* ==========================================================================
@@ -389,6 +460,7 @@
 </head>
 <body>
 
+    <!-- 🔒 TELA DE LOGIN INTERNA -->
     <div id="tela-login">
         <div class="box-login">
             <h2>Quem está entrando? 🤍</h2>
@@ -398,6 +470,7 @@
         </div>
     </div>
 
+    <!-- 🌐 CONTEÚDO PROTEGIDO DO SITE -->
     <div id="conteudo-site">
         <canvas id="canvas-hearts"></canvas>
 
@@ -406,6 +479,14 @@
             <h1>Nosso Lugar no Mundo</h1>
             <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
         </header>
+
+        <!-- 🎈 BALÃO FLUTUANTE COM MENU DE OPÇÕES -->
+        <div class="menu-flutuante-container">
+            <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
+                <a href="chat.html" class="item-opcao-flutuante">💬 Chat Secreto</a>
+            </div>
+            <button class="botao-flutuante-principal" onclick="alternarMenuBalao()">❤️</button>
+        </div>
 
         <div class="container-blocos">
             
@@ -449,6 +530,7 @@
             <section class="bloco-separado" id="bloco-coisinhas-dela">
                 <div class="titulo-secao">✨ coisinhas dela</div>
                 
+                <!-- Card Inicial Fixo -->
                 <div class="card-separador-interno">
                     <div class="data-card">
                         <span>🗓️ 17/05/2026</span>
@@ -481,6 +563,7 @@
             <section class="bloco-separado" id="bloco-coisas-minhas">
                 <div class="titulo-secao">✨ coisinhas minhas</div>
                 
+                <!-- Card Inicial Fixo 1 -->
                 <div class="card-separador-interno">
                     <div class="data-card">
                         <span>🗓️ 18/05/2026</span>
@@ -507,6 +590,7 @@
                     </div>
                 </div>
                 
+                <!-- Card Inicial Fixo 2 -->
                 <div class="card-separador-interno">
                     <div class="data-card">
                         <span>🗓️ 25/05/2026</span>
@@ -538,6 +622,9 @@
         </div>
     </div>
 
+    <!-- ==========================================================================
+       7. SCRIPT PRINCIPAL (LOGICA, AUTENTICAÇÃO & FIREBASE)
+       ========================================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -554,7 +641,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Estado do usuário atual (salvo na sessão do navegador)
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
         function sanitizarHTML(str) { 
@@ -581,7 +667,6 @@
         window.realizarLoginExterno = function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
-
             const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
 
             if ((nomeFormatado === 'Fabricio' || nomeFormatado === 'Maria') && senhaInput === 'winchester') {
@@ -598,6 +683,10 @@
             sessionStorage.removeItem('user_canto');
             usuarioLogado = null;
             verificarSessao();
+        };
+
+        window.alternarMenuBalao = function() {
+            document.getElementById('opcoes-menu-balao').classList.toggle('aberto');
         };
 
         function resetarFormulario() {
@@ -700,12 +789,11 @@
             }
         };
 
-        /* --- RECOMPOSIÇÃO EM TEMPO REAL (REALTIME SNAPSHOTS) --- */
+        /* --- RECOMPOSIÇÃO EM TEMPO REAL --- */
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
-            
             let numDela = 1; let numMeu = 2;
 
             snapshot.forEach((docSnap) => {
@@ -716,7 +804,6 @@
                 if (post.destino === 'dela') { numDela++; post.numero = numDela; } 
                 else { numMeu++; post.numero = numMeu; }
 
-                // Segurança: só exibe controles se o autor logado for o dono do card
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
                         <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
@@ -765,7 +852,6 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
-                // Só exibe botão de excluir no comentário do próprio autor
                 const botaoExcluir = (com.autor === usuarioLogado) ? `
                     <button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>
                 ` : '';
@@ -786,10 +872,12 @@
             });
         });
 
-        // Executar checagem inicial
         verificarSessao();
     </script>
 
+    <!-- ==========================================================================
+       8. SCRIPT VISUAL (CRONÔMETROS & CANVAS)
+       ========================================================================== -->
     <script>
         const CONFIG_DATAS = {
             amor: new Date(2026, 4, 14, 0, 0, 0),   
