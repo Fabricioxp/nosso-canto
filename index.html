@@ -474,7 +474,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ⚠️ SUBSTITUA COM AS SUAS CREDENCIAIS COPIADAS DO FIREBASE ABAIXO:
+        // Credenciais do seu Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
             authDomain: "nosso-canto-5d714.firebaseapp.com",
@@ -484,19 +484,110 @@
             appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
         };
 
-        // Inicializar Firebase e Banco de Dados
+        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Tornando funções acessíveis globalmente para os botões HTML funcionarem
-        window.salvarPostagemFirebase = salvarPostagemFirebase;
-        window.removerPostagemFirebase = removerPostagemFirebase;
-        window.prepararEdicaoFirebase = prepararEdicaoFirebase;
-        window.adicionarComentarioFirebase = adicionarComentarioFirebase;
-        window.excluirComentarioFirebase = excluirComentarioFirebase;
+        // Tratamento de segurança para caracteres especiais nas mensagens
+        function sanitizarHTML(str) { 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+        }
 
-        /* --- SINCRONIZAÇÃO EM TEMPO REAL COM O BANCO --- */
-        // Ouvir novos Cards automaticamente
+        function resetarFormulario() {
+            document.getElementById('editando-id').value = '';
+            document.getElementById('post-titulo').value = '';
+            document.getElementById('post-subtitulo').value = '';
+            document.getElementById('post-imagem').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('post-data').value = '';
+            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card';
+            document.getElementById('btn-salvar-post').innerText = 'Publicar no Nosso Canto ❤️';
+        }
+
+        /* --- EXPOSIÇÃO DAS FUNÇÕES PARA O ESCOPO GLOBAL --- */
+        window.salvarPostagemFirebase = async function() {
+            const idEditando = document.getElementById('editando-id').value;
+            const destino = document.getElementById('post-destino').value;
+            const titulo = document.getElementById('post-titulo').value.trim();
+            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
+            const imagem = document.getElementById('post-imagem').value.trim();
+            const link = document.getElementById('post-link').value.trim();
+            const dataInput = document.getElementById('post-data').value;
+
+            if (!titulo || !imagem || !link || !dataInput) {
+                alert('Por favor, preencha todos os campos obrigatórios! ❤️');
+                return;
+            }
+
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            try {
+                if (idEditando) {
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
+                    alert('Card atualizado na nuvem! ✨');
+                } else {
+                    await addDoc(collection(db, "posts"), {
+                        destino, titulo, subtitulo, imagem, link, data: dataFormatada, criadoEm: Date.now()
+                    });
+                    alert('Novo card publicado para vocês dois! ❤️');
+                }
+                resetarFormulario();
+            } catch (error) {
+                console.error("Erro ao salvar card:", error);
+            }
+        };
+
+        window.removerPostagemFirebase = async function(id) {
+            if (confirm("Tem certeza que deseja apagar essa lembrança permanentemente? 🥺")) {
+                await deleteDoc(doc(db, "posts", id));
+                resetarFormulario();
+            }
+        };
+
+        window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
+            document.getElementById('editando-id').value = id;
+            document.getElementById('post-destino').value = destino;
+            document.getElementById('post-titulo').value = titulo;
+            document.getElementById('post-subtitulo').value = subtitulo;
+            document.getElementById('post-imagem').value = imagem;
+            document.getElementById('post-link').value = link;
+
+            const [dia, mes, ano] = data.split('/');
+            document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
+
+            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
+            document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
+            document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.adicionarComentarioFirebase = async function(secaoId) {
+            const input = document.getElementById(`input-${secaoId}`);
+            const texto = input?.value.trim();
+            if (!texto) return;
+
+            try {
+                await addDoc(collection(db, "comentarios"), { secaoId, texto, criadoEm: Date.now() });
+                if (input) input.value = '';
+            } catch (error) {
+                console.error("Erro ao enviar comentário:", error);
+            }
+        };
+
+        window.excluirComentarioFirebase = async function(id) {
+            await deleteDoc(doc(db, "comentarios", id));
+        };
+
+        window.verificarEnter = function(event, id) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                window.adicionarComentarioFirebase(id);
+            }
+        };
+
+        /* --- ESCUTA EM TEMPO REAL (REALTIME SNAPSHOTS) --- */
+        // Atualização automática dos Cards Dinâmicos
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
@@ -544,10 +635,9 @@
             });
         });
 
-        // Ouvir comentários em tempo real de todas as seções conhecidas
-        const idsPadrao = ['cronometro', 'dela-1', 'meu-1', 'meu-2'];
-        onSnapshot(collection(db, "comentarios"), (snapshot) => {
-            // Limpa as listas primeiro
+        // Atualização automática dos comentários (Fixos + Dinâmicos)
+        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentarios, (snapshot) => {
             const listas = document.querySelectorAll('.lista-comentarios');
             listas.forEach(l => l.innerHTML = '');
 
@@ -565,73 +655,6 @@
                 containerLista.appendChild(item);
             });
         });
-
-        /* --- FUNÇÕES DO FIREBASE --- */
-        async function salvarPostagemFirebase() {
-            const idEditando = document.getElementById('editando-id').value;
-            const destino = document.getElementById('post-destino').value;
-            const titulo = document.getElementById('post-titulo').value.trim();
-            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
-            const imagem = document.getElementById('post-imagem').value.trim();
-            const link = document.getElementById('post-link').value.trim();
-            const dataInput = document.getElementById('post-data').value;
-
-            if (!titulo || !imagem || !link || !dataInput) {
-                alert('Por favor, preencha todos os campos obrigatórios! ❤️');
-                return;
-            }
-
-            const [ano, mes, dia] = dataInput.split('-');
-            const dataFormatada = `${dia}/${mes}/${ano}`;
-
-            if (idEditando) {
-                const docRef = doc(db, "posts", idEditando);
-                await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                alert('Card atualizado na nuvem! ✨');
-            } else {
-                await addDoc(collection(db, "posts"), {
-                    destino, titulo, subtitulo, imagem, link, data: dataFormatada, criadoEm: Date.now()
-                });
-                alert('Novo card publicado para vocês dois! ❤️');
-            }
-            resetarFormulario();
-        }
-
-        async function removerPostagemFirebase(id) {
-            if (confirm("Tem certeza que deseja apagar essa lembrança permanentemente? 🥺")) {
-                await deleteDoc(doc(db, "posts", id));
-                resetarFormulario();
-            }
-        }
-
-        function prepararEdicaoFirebase(id, destino, titulo, subtitulo, imagem, link, data) {
-            document.getElementById('editando-id').value = id;
-            document.getElementById('post-destino').value = destino;
-            document.getElementById('post-titulo').value = titulo;
-            document.getElementById('post-subtitulo').value = subtitulo;
-            document.getElementById('post-imagem').value = imagem;
-            document.getElementById('post-link').value = link;
-
-            const [dia, mes, ano] = data.split('/');
-            document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
-
-            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
-            document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
-            document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        async function adicionarComentarioFirebase(secaoId) {
-            const input = document.getElementById(`input-${secaoId}`);
-            const texto = input?.value.trim();
-            if (!texto) return;
-
-            await addDoc(collection(db, "comentarios"), { secaoId, texto, criadoEm: Date.now() });
-            input.value = '';
-        }
-
-        async function excluirComentarioFirebase(id) {
-            await deleteDoc(doc(db, "comentarios", id));
-        }
     </script>
 
     <script>
@@ -663,6 +686,7 @@
             elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
+        // Configuração gráfica dos corações flutuantes ao clicar no cronômetro
         const canvas = document.getElementById('canvas-hearts');
         const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
@@ -698,19 +722,6 @@
         }
 
         function celebrarAmor() { for (let i = 0; i < 35; i++) { setTimeout(() => listaCoracoes.push(new Coracao()), i * 30); } }
-        function verificarEnter(event, id) { if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); } }
-        function sanitizarHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
-        
-        function resetarFormulario() {
-            document.getElementById('editando-id').value = '';
-            document.getElementById('post-titulo').value = '';
-            document.getElementById('post-subtitulo').value = '';
-            document.getElementById('post-imagem').value = '';
-            document.getElementById('post-link').value = '';
-            document.getElementById('post-data').value = '';
-            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card';
-            document.getElementById('btn-salvar-post').innerText = 'Publicar no Nosso Canto ❤️';
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             atualizarContadores();
