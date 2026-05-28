@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nosso Mural Secreto 🖼️</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-app: #fdf6f0;
+            --bg-header: #ffffff;
+            --primary: #8c625d;
+            --primary-light: #f5ebe6;
+            --text-main: #3a302f;
+            --text-sub: #9c8a87;
+            --border-color: #e6b3a8;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Comfortaa', cursive; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            background-color: var(--bg-app);
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Tela de Bloqueio caso falte login */
+        #bloqueio-galeria {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff; z-index: 99999; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; text-align: center;
+        }
+        #bloqueio-galeria h2 { color: var(--primary); margin-bottom: 10px; font-size: 1.6rem; }
+        #bloqueio-galeria p { color: var(--text-sub); margin-bottom: 25px; font-size: 0.9rem; }
+        .btn-bloqueio {
+            background: var(--primary); color: white; padding: 14px 28px;
+            border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 0.9rem;
+        }
+
+        /* Topo */
+        .header-galeria {
+            background: var(--bg-header);
+            height: 70px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 15px rgba(140, 98, 93, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-link { text-decoration: none; color: var(--primary); font-size: 1.3rem; padding: 5px; }
+        .perfil-container { display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; }
+        .perfil-container h3 { font-size: 0.95rem; font-weight: 700; color: var(--primary); }
+        .subtitulo-galeria { font-size: 0.7rem; color: var(--text-sub); margin-top: 2px; }
+
+        /* Container de Upload integrado */
+        .painel-upload-galeria {
+            background: #ffffff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.06);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .painel-upload-galeria h4 {
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .input-galeria {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            outline: none;
+            background: #fff8f7;
+            color: var(--text-main);
+        }
+        .btn-enviar-foto {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-enviar-foto:active { background: #734f4a; }
+
+        /* Grid de fotos estilo Instax / Polaroid elegante */
+        .area-fotos {
+            flex: 1;
+            padding: 10px 16px 40px 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 400px) {
+            .area-fotos {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+        }
+
+        .polaroid-card {
+            background: #ffffff;
+            padding: 10px 10px 14px 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(140, 98, 93, 0.08);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        
+        .polaroid-card:hover {
+            transform: scale(1.02);
+        }
+
+        .moldura-foto {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #faf5f4;
+        }
+
+        .moldura-foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .legenda-foto {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .autor-foto-tag {
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .data-foto-tag {
+            font-size: 0.6rem;
+            color: var(--text-sub);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .btn-deletar-foto {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #d9534f;
+            color: white;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 0.65rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bloqueio-galeria">
+        <h2>Acesso Negado 🔒</h2>
+        <p>Aceda à página inicial e faça o login primeiro para entrar na nossa galeria!</p>
+        <a href="index.html" class="btn-bloqueio">Fazer Login</a>
+    </div>
+
+    <div class="header-galeria">
+        <a href="index.html" class="back-link">👈</a>
+        <div class="perfil-container">
+            <h3 id="nome-par-galeria">Nossos Momentos</h3>
+            <div class="subtitulo-galeria">Espaço Secreto de Fotos ✨</div>
+        </div>
+        <div style="width: 30px;"></div> </div>
+
+    <div class="painel-upload-galeria">
+        <h4>📸 Guardar Nova Lembrança</h4>
+        <input type="text" id="url-foto-galeria" class="input-galeria" placeholder="Cole o link da foto (URL)...">
+        <button class="btn-enviar-foto" onclick="publicarFotoNoMural()">Colocar no Nosso Mural ❤️</button>
+    </div>
+
+    <div class="area-fotos" id="mural-scroller"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
+            authDomain: "nosso-canto-5d714.firebaseapp.com",
+            projectId: "nosso-canto-5d714",
+            storageBucket: "nosso-canto-5d714.firebasestorage.app",
+            messagingSenderId: "1042257316625",
+            appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const usuarioLogado = sessionStorage.getItem('user_canto');
+        
+        if (!usuarioLogado || usuarioLogado.trim() === "") {
+            document.getElementById('bloqueio-galeria').style.display = 'flex';
+        } else {
+            const parDoUsuario = (usuarioLogado === 'Fabricio') ? 'Maria' : 'Fabricio';
+            document.getElementById('nome-par-galeria').innerText = `${usuarioLogado} & ${parDoUsuario}`;
+            inicializarMuralRealtime();
+        }
+
+        window.publicarFotoNoMural = async function() {
+            const inputUrl = document.getElementById('url-foto-galeria');
+            const urlValor = inputUrl.value.trim();
+
+            if (!urlValor) {
+                alert('Por favor, cole o link de uma imagem! 🥰');
+                return;
+            }
+
+            const agora = new Date();
+            const dataString = agora.toLocaleDateString('pt-BR');
+
+            try {
+                await addDoc(collection(db, "galeria_privada"), {
+                    url: urlValor,
+                    autor: usuarioLogado,
+                    dataPostagem: dataString,
+                    criadoEm: Date.now()
+                });
+                inputUrl.value = '';
+            } catch (err) { console.error(err); }
+        };
+
+        window.apagarFotoDoMural = async function(id) {
+            if(confirm("Tem certeza que deseja remover essa foto do mural? 🥺")) {
+                await deleteDoc(doc(db, "galeria_privada", id));
+            }
+        };
+
+        function inicializarMuralRealtime() {
+            const qMural = query(collection(db, "galeria_privada"), orderBy("criadoEm", "desc"));
+            
+            onSnapshot(qMural, (snapshot) => {
+                const container = document.getElementById('mural-scroller');
+                container.innerHTML = '';
+
+                snapshot.forEach((docSnap) => {
+                    const foto = docSnap.data();
+                    const id = docSnap.id;
+                    const eMinha = (foto.autor === usuarioLogado);
+
+                    const botaoDeletar = eMinha ? `<button class="btn-deletar-foto" onclick="apagarFotoDoMural('${id}')">✕</button>` : '';
+
+                    const card = document.createElement('div');
+                    card.className = 'polaroid-card';
+                    card.innerHTML = `
+                        ${botaoDeletar}
+                        <div class="moldura-foto">
+                            <img src="${foto.url}" onclick="window.open('${foto.url}')" alt="Momento nosso">
+                        </div>
+                        <div class="legenda-foto">
+                            <span class="autor-foto-tag">📸 ${foto.autor}</span>
+                            <span class="data-foto-tag">${foto.dataPostagem}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
