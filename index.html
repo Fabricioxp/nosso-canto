@@ -37,12 +37,55 @@
             overflow-x: hidden;
         }
 
+        /* TELA DE LOGIN */
+        #tela-login {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #fff3f2;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .box-login {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(140, 98, 93, 0.15);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+
+        .box-login h2 {
+            font-family: var(--font-title);
+            color: var(--primary);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        #conteudo-site {
+            display: none; /* Oculto até logar */
+        }
+
         /* ==========================================================================
            2. LAYOUT & COMPONENTES ESTRUTURAIS
            ========================================================================== */
         header {
             text-align: center;
             padding: 60px 20px 40px 20px;
+            position: relative;
+        }
+
+        .btn-logout {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none; border: 1px solid var(--border-color);
+            padding: 6px 12px; border-radius: 12px;
+            font-size: 0.75rem; font-family: var(--font-main);
+            color: var(--secondary); cursor: pointer;
         }
 
         header h1 {
@@ -130,28 +173,29 @@
             animation: pulse 1s infinite alternate;
         }
 
-        .contador-bloqueado {
-            color: #bfa3a0;
-            font-size: 1.2rem;
-            opacity: 0.7;
-        }
-
         /* ==========================================================================
            4. CARDS DE CONTEÚDO
            ========================================================================== */
         .data-card {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             color: var(--secondary);
             text-align: center;
             margin-bottom: 10px;
-            letter-spacing: 1.5px;
-            text-transform: lowercase;
+            letter-spacing: 0.5px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 2px;
             opacity: 0.9;
+        }
+
+        .autor-tag {
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-style: italic;
+            font-weight: normal;
         }
 
         .pdf-link { text-decoration: none; display: block; }
@@ -268,7 +312,6 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        .btn-comentar:hover { background-color: var(--secondary); }
 
         .lista-comentarios {
             max-height: 200px;
@@ -286,41 +329,45 @@
             background-color: rgba(255, 255, 255, 0.5);
             padding: 10px 12px;
             border-radius: 12px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .meta-comentario {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            color: var(--secondary);
+            border-bottom: 1px dotted rgba(140, 98, 93, 0.2);
+            padding-bottom: 2px;
+        }
+
+        .autor-comentario { font-weight: bold; color: var(--primary); }
+
+        .corpo-comentario {
             display: flex;
             justify-content: space-between;
             align-items: center;
             word-break: break-word;
-            animation: fadeIn 0.3s ease;
         }
 
-        .texto-comentario { flex: 1; padding-right: 10px; line-height: 1.3; }
+        .texto-comentario { flex: 1; padding-right: 10px; line-height: 1.3; color: var(--text-color); }
 
         .btn-excluir-comentario {
-            background: none;
-            border: none;
-            color: #d9534f;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-            padding: 4px 6px;
-            border-radius: 6px;
-            opacity: 0.6;
-            transition: opacity 0.2s, background 0.2s;
+            background: none; border: none; color: #d9534f;
+            cursor: pointer; font-size: 0.7rem; font-weight: bold;
+            padding: 2px 4px; border-radius: 4px; opacity: 0.6;
         }
         .btn-excluir-comentario:hover { opacity: 1; background-color: rgba(217, 83, 79, 0.1); }
 
         .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
         .btn-acao-card {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: var(--font-main);
-            opacity: 0.6;
-            transition: opacity 0.2s;
-            padding: 5px 10px;
-            border-radius: 10px;
+            background: none; border: none; cursor: pointer;
+            font-size: 0.8rem; font-family: var(--font-main);
+            opacity: 0.6; transition: opacity 0.2s; padding: 5px 10px; border-radius: 10px;
         }
         .btn-acao-card:hover { opacity: 1; }
         .btn-editar { color: #428bca; }
@@ -342,139 +389,159 @@
 </head>
 <body>
 
-    <canvas id="canvas-hearts"></canvas>
+    <div id="tela-login">
+        <div class="box-login">
+            <h2>Quem está entrando? 🤍</h2>
+            <input type="text" id="login-nome" class="input-custom" placeholder="Seu nome (Fabricio ou Maria)">
+            <input type="password" id="login-senha" class="input-custom" placeholder="Senha secreta">
+            <button class="btn-postar" onclick="realizarLoginExterno()">Entrar no Nosso Canto</button>
+        </div>
+    </div>
 
-    <header>
-        <h1>Nosso Lugar no Mundo</h1>
-        <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
-    </header>
+    <div id="conteudo-site">
+        <canvas id="canvas-hearts"></canvas>
 
-    <div class="container-blocos">
-        
-        <section class="bloco-separado" id="bloco-dias-amando">
-            <div class="contador-bloco" onclick="celebrarAmor()">
-                <div class="contador-titulo">❤️ Dias se amando</div>
-                <div id="contador-amor" class="contador-tempo">Carregando momentos...</div>
-            </div>
+        <header>
+            <button class="btn-logout" onclick="fazerLogout()">Sair 🚪</button>
+            <h1>Nosso Lugar no Mundo</h1>
+            <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
+        </header>
+
+        <div class="container-blocos">
             
-            <div class="contador-bloco">
-                <div class="contador-titulo">💍 Dias de namoro</div>
-                <div id="contador-namoro" class="contador-tempo">Carregando momentos...</div>
-            </div>
-
-            <div class="secao-comentarios">
-                <div class="form-comentario">
-                    <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo..." onkeypress="verificarEnter(event, 'cronometro')">
-                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('cronometro')">❤️</button>
+            <section class="bloco-separado" id="bloco-dias-amando">
+                <div class="contador-bloco" onclick="celebrarAmor()">
+                    <div class="contador-titulo">❤️ Dias se amando</div>
+                    <div id="contador-amor" class="contador-tempo">Carregando momentos...</div>
                 </div>
-                <div id="lista-cronometro" class="lista-comentarios"></div>
-            </div>
-        </section>
-
-        <section class="painel-upload" id="painel-de-postagem">
-            <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card</div>
-            <input type="hidden" id="editando-id" value="">
-            
-            <select id="post-destino" class="select-custom">
-                <option value="dela">Postar em: Coisinhas Dela</option>
-                <option value="meu">Postar em: Coisas Minhas</option>
-            </select>
-            <input type="text" id="post-titulo" class="input-custom" placeholder="Título (ex: O objetivo de amor)">
-            <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link (ex: Ver apresentação)">
-            <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem (Imgur, etc)">
-            <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo (Google Drive, etc)">
-            <input type="date" id="post-data" class="input-custom">
-            
-            <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar no Nosso Canto ❤️</button>
-        </section>
-
-        <section class="bloco-separado" id="bloco-coisinhas-dela">
-            <div class="titulo-secao">✨ coisinhas dela</div>
-            
-            <div class="card-separador-interno">
-                <div class="data-card">🗓️ 17/05/2026</div>
-                <a href="https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk" target="_blank" class="pdf-link">
-                    <div class="pdf-bloco">
-                        <div class="numero-card">1</div>
-                        <div class="moldura-imagem">
-                            <img src="https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Pra você!">
-                        </div>
-                        <div class="contador-titulo">A fofura que ela fez para mim 🥰</div>
-                        <div class="contador-tempo">Clique para abrir 📂</div>
-                        <div class="pdf-subtitulo">Ver apresentação</div>
-                    </div>
-                </a>
-
-                <div class="secao-comentarios">
-                    <div class="form-comentario">
-                        <input type="text" id="input-dela-1" class="input-comentario" placeholder="Escreva algo sobre esse mimo dela..." onkeypress="verificarEnter(event, 'dela-1')">
-                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('dela-1')">✨</button>
-                    </div>
-                    <div id="lista-dela-1" class="lista-comentarios"></div>
-                </div>
-            </div>
-
-            <div id="novos-cards-dela"></div>
-        </section>
-
-        <section class="bloco-separado" id="bloco-coisas-minhas">
-            <div class="titulo-secao">✨ coisinhas minhas</div>
-            
-            <div class="card-separador-interno">
-                <div class="data-card">🗓️ 18/05/2026</div>
-                <a href="https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk" target="_blank" class="pdf-link">
-                    <div class="pdf-bloco">
-                        <div class="numero-card">1</div>
-                        <div class="moldura-imagem">
-                            <img src="https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Um amooooor">
-                        </div>
-                        <div class="contador-titulo">meu objetivo de amoor</div>
-                        <div class="contador-tempo">Clique para abrir 📂</div>
-                        <div class="pdf-subtitulo">Ver apresentação</div>
-                    </div>
-                </a>
                 
+                <div class="contador-bloco">
+                    <div class="contador-titulo">💍 Dias de namoro</div>
+                    <div id="contador-namoro" class="contador-tempo">Carregando momentos...</div>
+                </div>
+
                 <div class="secao-comentarios">
                     <div class="form-comentario">
-                        <input type="text" id="input-meu-1" class="input-comentario" placeholder="O que achou do meu objetivo?..." onkeypress="verificarEnter(event, 'meu-1')">
-                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-1')">💞</button>
+                        <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo..." onkeypress="verificarEnter(event, 'cronometro')">
+                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('cronometro')">❤️</button>
                     </div>
-                    <div id="lista-meu-1" class="lista-comentarios"></div>
+                    <div id="lista-cronometro" class="lista-comentarios"></div>
                 </div>
-            </div>
-            
-            <div class="card-separador-interno">
-                <div class="data-card">🗓️ 25/05/2026</div>
-                <a href="https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1" target="_blank" class="pdf-link">
-                    <div class="pdf-bloco">
-                        <div class="numero-card">2</div>
-                        <div class="moldura-imagem">
-                            <img src="https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Para o amor da minha vida">
+            </section>
+
+            <section class="painel-upload" id="painel-de-postagem">
+                <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card</div>
+                <input type="hidden" id="editando-id" value="">
+                
+                <select id="post-destino" class="select-custom">
+                    <option value="dela">Postar em: Coisinhas Dela</option>
+                    <option value="meu">Postar em: Coisas Minhas</option>
+                </select>
+                <input type="text" id="post-titulo" class="input-custom" placeholder="Título (ex: O objetivo de amor)">
+                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link (ex: Ver apresentação)">
+                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem (Imgur, etc)">
+                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo (Google Drive, etc)">
+                <input type="date" id="post-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar no Nosso Canto ❤️</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-coisinhas-dela">
+                <div class="titulo-secao">✨ coisinhas dela</div>
+                
+                <div class="card-separador-interno">
+                    <div class="data-card">
+                        <span>🗓️ 17/05/2026</span>
+                        <span class="autor-tag">Postado por: Maria</span>
+                    </div>
+                    <a href="https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">1</div>
+                            <div class="moldura-imagem">
+                                <img src="https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Pra você!">
+                            </div>
+                            <div class="contador-titulo">A fofura que ela fez para mim 🥰</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">Ver apresentação</div>
                         </div>
-                        <div class="contador-titulo">para o amor da minha vida</div>
-                        <div class="contador-tempo">Clique para abrir 📂</div>
-                        <div class="pdf-subtitulo">ver declaração</div>
-                    </div>
-                </a>
+                    </a>
 
-                <div class="secao-comentarios">
-                    <div class="form-comentario">
-                        <input type="text" id="input-meu-2" class="input-comentario" placeholder="Comente sobre essa declaração..." onkeypress="verificarEnter(event, 'meu-2')">
-                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-2')">🌹</button>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-dela-1" class="input-comentario" placeholder="Escreva algo sobre esse mimo dela..." onkeypress="verificarEnter(event, 'dela-1')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('dela-1')">✨</button>
+                        </div>
+                        <div id="lista-dela-1" class="lista-comentarios"></div>
                     </div>
-                    <div id="lista-meu-2" class="lista-comentarios"></div>
                 </div>
-            </div>
 
-            <div id="novos-cards-meu"></div>
-        </section>
+                <div id="novos-cards-dela"></div>
+            </section>
+
+            <section class="bloco-separado" id="bloco-coisas-minhas">
+                <div class="titulo-secao">✨ coisinhas minhas</div>
+                
+                <div class="card-separador-interno">
+                    <div class="data-card">
+                        <span>🗓️ 18/05/2026</span>
+                        <span class="autor-tag">Postado por: Fabricio</span>
+                    </div>
+                    <a href="https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">1</div>
+                            <div class="moldura-imagem">
+                                <img src="https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Um amooooor">
+                        </div>
+                            <div class="contador-titulo">meu objetivo de amoor</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">Ver apresentação</div>
+                        </div>
+                    </a>
+                    
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-meu-1" class="input-comentario" placeholder="O que achou do meu objetivo?..." onkeypress="verificarEnter(event, 'meu-1')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-1')">💞</button>
+                        </div>
+                        <div id="lista-meu-1" class="lista-comentarios"></div>
+                    </div>
+                </div>
+                
+                <div class="card-separador-interno">
+                    <div class="data-card">
+                        <span>🗓️ 25/05/2026</span>
+                        <span class="autor-tag">Postado por: Fabricio</span>
+                    </div>
+                    <a href="https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">2</div>
+                            <div class="moldura-imagem">
+                                <img src="https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Para o amor da minha vida">
+                            </div>
+                            <div class="contador-titulo">para o amor da minha vida</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">ver declaração</div>
+                        </div>
+                    </a>
+
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-meu-2" class="input-comentario" placeholder="Comente sobre essa declaração..." onkeypress="verificarEnter(event, 'meu-2')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-2')">🌹</button>
+                        </div>
+                        <div id="lista-meu-2" class="lista-comentarios"></div>
+                    </div>
+                </div>
+
+                <div id="novos-cards-meu"></div>
+            </section>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Credenciais do seu Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
             authDomain: "nosso-canto-5d714.firebaseapp.com",
@@ -484,14 +551,54 @@
             appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Tratamento de segurança para caracteres especiais nas mensagens
+        // Estado do usuário atual (salvo na sessão do navegador)
+        let usuarioLogado = sessionStorage.getItem('user_canto') || null;
+
         function sanitizarHTML(str) { 
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
+
+        function obterDataHoraAtual() {
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return `${data} às ${hora}`;
+        }
+
+        function verificarSessao() {
+            if (usuarioLogado) {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('conteudo-site').style.display = 'block';
+            } else {
+                document.getElementById('tela-login').style.display = 'flex';
+                document.getElementById('conteudo-site').style.display = 'none';
+            }
+        }
+
+        window.realizarLoginExterno = function() {
+            const nomeInput = document.getElementById('login-nome').value.trim();
+            const senhaInput = document.getElementById('login-senha').value.trim();
+
+            const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
+
+            if ((nomeFormatado === 'Fabricio' || nomeFormatado === 'Maria') && senhaInput === 'winchester') {
+                sessionStorage.setItem('user_canto', nomeFormatado);
+                usuarioLogado = nomeFormatado;
+                verificarSessao();
+                alert(`Bem-vindo de volta, meu amor! — ${nomeFormatado} ❤️`);
+            } else {
+                alert('Nome ou senha incorretos! Tente novamente, lindo(a). 🥺');
+            }
+        };
+
+        window.fazerLogout = function() {
+            sessionStorage.removeItem('user_canto');
+            usuarioLogado = null;
+            verificarSessao();
+        };
 
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
@@ -504,7 +611,7 @@
             document.getElementById('btn-salvar-post').innerText = 'Publicar no Nosso Canto ❤️';
         }
 
-        /* --- EXPOSIÇÃO DAS FUNÇÕES PARA O ESCOPO GLOBAL --- */
+        /* --- OPERAÇÕES FIREBASE --- */
         window.salvarPostagemFirebase = async function() {
             const idEditando = document.getElementById('editando-id').value;
             const destino = document.getElementById('post-destino').value;
@@ -529,13 +636,14 @@
                     alert('Card atualizado na nuvem! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        destino, titulo, subtitulo, imagem, link, data: dataFormatada, criadoEm: Date.now()
+                        destino, titulo, subtitulo, imagem, link, data: dataFormatada,
+                        autor: usuarioLogado, criadoEm: Date.now()
                     });
                     alert('Novo card publicado para vocês dois! ❤️');
                 }
                 resetarFormulario();
             } catch (error) {
-                console.error("Erro ao salvar card:", error);
+                console.error(error);
             }
         };
 
@@ -568,10 +676,16 @@
             if (!texto) return;
 
             try {
-                await addDoc(collection(db, "comentarios"), { secaoId, texto, criadoEm: Date.now() });
+                await addDoc(collection(db, "comentarios"), { 
+                    secaoId, 
+                    texto, 
+                    autor: usuarioLogado,
+                    dataHora: obterDataHoraAtual(),
+                    criadoEm: Date.now() 
+                });
                 if (input) input.value = '';
             } catch (error) {
-                console.error("Erro ao enviar comentário:", error);
+                console.error(error);
             }
         };
 
@@ -586,15 +700,13 @@
             }
         };
 
-        /* --- ESCUTA EM TEMPO REAL (REALTIME SNAPSHOTS) --- */
-        // Atualização automática dos Cards Dinâmicos
+        /* --- RECOMPOSIÇÃO EM TEMPO REAL (REALTIME SNAPSHOTS) --- */
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
             
-            let numDela = 1;
-            let numMeu = 2;
+            let numDela = 1; let numMeu = 2;
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
@@ -604,10 +716,21 @@
                 if (post.destino === 'dela') { numDela++; post.numero = numDela; } 
                 else { numMeu++; post.numero = numMeu; }
 
+                // Segurança: só exibe controles se o autor logado for o dono do card
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                    </div>
+                ` : '';
+
                 const bloco = document.createElement('div');
                 bloco.className = 'card-separador-interno';
                 bloco.innerHTML = `
-                    <div class="data-card">🗓️ ${post.data}</div>
+                    <div class="data-card">
+                        <span>🗓️ ${post.data}</span>
+                        <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span>
+                    </div>
                     <a href="${post.link}" target="_blank" class="pdf-link">
                         <div class="pdf-bloco">
                             <div class="numero-card">${post.numero}</div>
@@ -626,16 +749,12 @@
                         </div>
                         <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
-                    <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
-                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                    </div>
+                    ${controleModificacao}
                 `;
                 container.appendChild(bloco);
             });
         });
 
-        // Atualização automática dos comentários (Fixos + Dinâmicos)
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
             const listas = document.querySelectorAll('.lista-comentarios');
@@ -646,15 +765,29 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
+                // Só exibe botão de excluir no comentário do próprio autor
+                const botaoExcluir = (com.autor === usuarioLogado) ? `
+                    <button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>
+                ` : '';
+
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
                 item.innerHTML = `
-                    <div class="texto-comentario">${sanitizarHTML(com.texto)}</div>
-                    <button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>
+                    <div class="meta-comentario">
+                        <span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span>
+                        <span>⏱️ ${com.dataHora || 'Recentemente'}</span>
+                    </div>
+                    <div class="corpo-comentario">
+                        <div class="texto-comentario">${sanitizarHTML(com.texto)}</div>
+                        ${botaoExcluir}
+                    </div>
                 `;
                 containerLista.appendChild(item);
             });
         });
+
+        // Executar checagem inicial
+        verificarSessao();
     </script>
 
     <script>
@@ -686,7 +819,6 @@
             elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
-        // Configuração gráfica dos corações flutuantes ao clicar no cronômetro
         const canvas = document.getElementById('canvas-hearts');
         const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
