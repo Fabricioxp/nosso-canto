@@ -19,37 +19,36 @@
             --text-sub: #9c8a87;
             --balao-meu: #d0ebff;
             --balao-outro: #fff0f6;
-            --shadow: cubic-bezier(0.1, 0.8, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comfortaa', cursive; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-app);
-            height: 100ff; height: 100vh;
+            height: 100vh;
             width: 100vw;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             color: var(--text-main);
+            position: relative;
         }
 
-        /* Bloqueio de Segurança Elegante */
+        /* Tela de Bloqueio caso falte login */
         #bloqueio-chat {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff; z-index: 99999; display: flex;
+            background: #ffffff; z-index: 99999; display: none;
             flex-direction: column; align-items: center; justify-content: center;
-            padding: 30px; text-align: center; display: none;
+            padding: 30px; text-align: center;
         }
         #bloqueio-chat h2 { color: var(--primary); margin-bottom: 10px; font-size: 1.6rem; }
         #bloqueio-chat p { color: var(--text-sub); margin-bottom: 25px; font-size: 0.9rem; }
         .btn-bloqueio {
             background: var(--primary); color: white; padding: 14px 28px;
             border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 0.9rem;
-            box-shadow: 0 5px 15px rgba(140, 98, 93, 0.2);
         }
 
-        /* Header Estilo Premium */
+        /* Topo */
         .header-chat {
             background: var(--bg-header);
             height: 70px;
@@ -64,14 +63,13 @@
         .perfil-container { display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; }
         .perfil-container h3 { font-size: 0.95rem; font-weight: 700; color: var(--primary); }
         
-        /* Status Online Dinâmico */
         .status-user { font-size: 0.68rem; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-top: 2px; }
         .status-user.online { color: #2ec4b6; font-weight: bold; }
         .status-user.online::before { content: ''; width: 7px; height: 7px; background: #2ec4b6; border-radius: 50%; display: inline-block; }
 
         .btn-menu-top { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--primary); padding: 5px; }
 
-        /* Container de Mensagens Modernizado */
+        /* Centro com as Mensagens */
         .area-mensagens {
             flex: 1;
             padding: 20px 16px;
@@ -86,9 +84,7 @@
         .linha-msg { display: flex; width: 100%; flex-direction: column; position: relative; }
         .linha-msg.minha { align-items: flex-end; }
         .linha-msg.outra { align-items: flex-start; }
-
         .autor-tag { font-size: 0.65rem; color: var(--text-sub); margin-bottom: 4px; padding: 0 6px; }
-
         .box-balao { max-width: 78%; position: relative; }
 
         .balao {
@@ -98,78 +94,46 @@
             line-height: 1.45;
             box-shadow: 0 2px 8px rgba(140, 98, 93, 0.04);
             word-break: break-word;
-            position: relative;
         }
         .minha .balao { background-color: var(--balao-meu); border-top-right-radius: 4px; }
         .outra .balao { background-color: var(--balao-outro); border-top-left-radius: 4px; }
 
-        /* Imagens dentro do Chat */
         .img-chat { max-width: 100%; border-radius: 14px; margin-top: 4px; display: block; max-height: 200px; object-fit: cover; }
 
-        /* Sistema de Reações Sofisticado */
-        .container-reacoes {
-            display: flex; gap: 2px; position: absolute; bottom: -10px; z-index: 5;
-        }
+        .container-reacoes { display: flex; gap: 2px; position: absolute; bottom: -10px; z-index: 5; }
         .minha .container-reacoes { right: 10px; }
         .outra .container-reacoes { left: 10px; }
-        .tag-reacao {
-            background: white; border: 1px solid #f0e2df; border-radius: 10px;
-            padding: 1px 5px; font-size: 0.65rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+        .tag-reacao { background: white; border: 1px solid #f0e2df; border-radius: 10px; padding: 1px 5px; font-size: 0.65rem; }
 
-        .footer-balao { display: flex; justify-content: space-between; align-items: center; font-size: 0.6rem; color: #91807e; margin-top: 6px; gap: 10px; }
+        .footer-balao { display: flex; justify-content: space-between; align-items: center; font-size: 0.6rem; color: #91807e; margin-top: 6px; }
         
-        /* Ações Ocultas na Mensagem (Apagar/Reagir) */
-        .acoes-mensagem {
-            display: flex; gap: 8px; margin-top: 4px; opacity: 0; transition: opacity 0.2s;
-        }
-        .box-balao:hover .acoes-mensagem, .box-balao:active .acoes-mensagem { opacity: 1; }
+        .acoes-mensagem { display: flex; gap: 8px; margin-top: 4px; opacity: 0; transition: opacity 0.2s; }
+        .box-balao:hover .acoes-mensagem { opacity: 1; }
         .btn-acao { background: none; border: none; cursor: pointer; font-size: 0.72rem; color: var(--primary); padding: 2px 4px; }
-        .btn-deletar { color: #d9534f; }
 
-        /* Indicador de Digitandos */
-        #indicador-digitando {
-            padding: 4px 16px; font-size: 0.75rem; color: var(--primary); font-style: italic;
-            display: none; align-items: center; gap: 5px;
-        }
-        .pontinhos span { display: inline-block; width: 4px; height: 4px; background: var(--primary); border-radius: 50%; animation: piscando 1.4s infinite both; }
-        .pontinhos span:nth-child(2) { animation-delay: .2s; }
-        .pontinhos span:nth-child(3) { animation-delay: .4s; }
+        #indicador-digitando { padding: 4px 16px; font-size: 0.75rem; color: var(--primary); font-style: italic; display: none; align-items: center; gap: 5px; }
 
-        /* Menu Flutuante Superior */
         .menu-drop {
             position: absolute; top: 65px; right: 16px; background: white;
             border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             padding: 8px 0; display: none; flex-direction: column; z-index: 200;
         }
-        .item-drop { background: none; border: none; padding: 10px 20px; font-size: 0.8rem; text-align: left; cursor: pointer; width: 150px; color: var(--text-main); }
-        .item-drop:active { background: var(--primary-light); }
+        .item-drop { background: none; border: none; padding: 10px 20px; font-size: 0.8rem; text-align: left; cursor: pointer; width: 150px; }
 
-        /* Barra de Entrada de Dados Embaixo */
+        /* Rodapé Fixo e Visível */
         .input-area-container { background: white; padding: 10px 16px; box-shadow: 0 -2px 15px rgba(0,0,0,0.02); }
-        
-        .painel-auxiliar {
-            background: var(--primary-light); border-radius: 12px; padding: 8px 12px;
-            margin-bottom: 8px; display: none; justify-content: space-between; align-items: center; font-size: 0.78rem;
-        }
-
+        .painel-auxiliar { background: var(--primary-light); border-radius: 12px; padding: 8px 12px; margin-bottom: 8px; display: none; justify-content: space-between; align-items: center; font-size: 0.78rem; }
         .barra-digitar { display: flex; align-items: center; gap: 10px; }
-        .campo-texto {
-            flex: 1; border: 1px solid #e8dad7; padding: 12px 16px; border-radius: 25px;
-            outline: none; font-size: 0.88rem; background: #faf5f4; color: var(--text-main);
-            height: 44px;
-        }
+        .campo-texto { flex: 1; border: 1px solid #e8dad7; padding: 12px 16px; border-radius: 25px; outline: none; font-size: 0.88rem; background: #faf5f4; height: 44px; }
         .btn-midia { background: #f0e4e1; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
-        .btn-enviar { background: var(--primary); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(140, 98, 93, 0.2); }
-
-        @keyframes piscando { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
+        .btn-enviar { background: var(--primary); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; color: white; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div id="bloqueio-chat">
         <h2>Acesso Negado 🔒</h2>
-        <p>Acesse a página inicial e faça seu login primeiro para entrar no chat!</p>
+        <p>Aceda à página inicial e faça o login primeiro para entrar no chat!</p>
         <a href="index.html" class="btn-bloqueio">Fazer Login</a>
     </div>
 
@@ -177,7 +141,7 @@
         <a href="index.html" class="back-link">👈</a>
         <div class="perfil-container">
             <h3 id="nome-par">Nosso Canto Secreto</h3>
-            <div id="status-conexao" class="status-user">Verificando conexão...</div>
+            <div id="status-conexao" class="status-user">offline</div>
         </div>
         <button class="btn-menu-top" onclick="toggleMenuTop()">✨</button>
     </div>
@@ -189,8 +153,7 @@
     <div class="area-mensagens" id="chat-scroller"></div>
 
     <div id="indicador-digitando">
-        <span id="nome-digitando">Alguém</span>&nbsp;está digitando 
-        <div class="pontinhos"><span></span><span></span><span></span></div>
+        <span id="nome-digitando">Alguém</span> está a digitar...
     </div>
 
     <div class="input-area-container">
@@ -223,122 +186,120 @@
         const db = getFirestore(app);
 
         const usuarioLogado = sessionStorage.getItem('user_canto');
-        const parDoUsuario = (usuarioLogado === 'Fabricio') ? 'Maria' : 'Fabricio';
-
-        let modoEnvio = "texto"; // texto ou imagem
-        let timeoutDigitando = null;
-
-        // VERIFICAÇÃO INICIAL SE ESTÁ LOGADO (Evita que o código trave)
-        if (!usuarioLogado) {
-            document.getElementById('bloqueio-chat').style.style.display = 'flex';
+        
+        // CORREÇÃO DE SEGURANÇA: Se não houver login, corta o Firebase imediatamente e mostra o bloqueio
+        if (!usuarioLogado || usuarioLogado.trim() === "") {
+            document.getElementById('bloqueio-chat').style.display = 'flex';
         } else {
+            const parDoUsuario = (usuarioLogado === 'Fabricio') ? 'Maria' : 'Fabricio';
             document.getElementById('nome-par').innerText = `${usuarioLogado} & ${parDoUsuario}`;
-            inicializarSistemaRealtime();
+            inicializarSistemaRealtime(parDoUsuario);
         }
 
-        function inicializarSistemaRealtime() {
-            // 1. STATUS ONLINE & VISTO POR ÚLTIMO
-            const refStatusMeu = doc(db, "status_usuarios", usuarioLogado);
-            setDoc(refStatusMeu, { status: "online", ultimaVez: "Agora mesmo" }, { merge: true });
+        function inicializarSistemaRealtime(parDoUsuario) {
+            try {
+                // 1. STATUS ONLINE
+                const refStatusMeu = doc(db, "status_usuarios", usuarioLogado);
+                setDoc(refStatusMeu, { status: "online", ultimaVez: "Agora mesmo" }, { merge: true });
 
-            // Atualiza visto por último ao fechar/sair da página
-            window.addEventListener("beforeunload", () => {
-                const agora = new Date();
-                const dataHoraStr = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                setDoc(refStatusMeu, { status: "offline", ultimaVez: dataHoraStr }, { merge: true });
-            });
-
-            // Ouvir status do parceiro
-            onSnapshot(doc(db, "status_usuarios", parDoUsuario), (docSnap) => {
-                const statusElemento = document.getElementById('status-conexao');
-                if (docSnap.exists()) {
-                    const dados = docSnap.data();
-                    if (dados.status === "online") {
-                        statusElemento.className = "status-user online";
-                        statusElemento.innerText = "online";
-                    } else {
-                        statusElemento.className = "status-user";
-                        statusElemento.innerText = `visto por último em ${dados.ultimaVez || 'recentemente'}`;
-                    }
-                } else {
-                    statusElemento.innerText = "offline";
-                }
-            });
-
-            // 2. SISTEMA DE MONITORAMENTO "DIGITANDO..."
-            onSnapshot(doc(db, "digitando_status", parDoUsuario), (docSnap) => {
-                const indicador = document.getElementById('indicador-digitando');
-                if (docSnap.exists() && docSnap.data().digitando === true) {
-                    document.getElementById('nome-digitando').innerText = parDoUsuario;
-                    indicador.style.display = 'flex';
-                } else {
-                    indicador.style.display = 'none';
-                }
-            });
-
-            // 3. CARREGAR MENSAGENS EM TEMPO REAL
-            const qMensagens = query(collection(db, "chat_privado"), orderBy("criadoEm", "asc"), limit(120));
-            onSnapshot(qMensagens, (snapshot) => {
-                const container = document.getElementById('chat-scroller');
-                container.innerHTML = '';
-
-                snapshot.forEach((docSnap) => {
-                    const msg = docSnap.data();
-                    const id = docSnap.id;
-                    const eMinha = (msg.autor === usuarioLogado);
-                    const classeLado = eMinha ? 'minha' : 'outra';
-
-                    const bloco = document.createElement('div');
-                    bloco.className = `linha-msg ${classeLado}`;
-
-                    // Renderização de reações salvas
-                    let htmlReacoes = '';
-                    if (msg.reacoes) {
-                        htmlReacoes = '<div class="container-reacoes">';
-                        Object.keys(msg.reacoes).forEach(emoji => {
-                            htmlReacoes += `<span class="tag-reacao">${emoji} ${msg.reacoes[emoji]}</span>`;
-                        });
-                        htmlReacoes += '</div>';
-                    }
-
-                    // Se for imagem, monta estrutura de imagem, senão texto puro
-                    let corpoConteudo = `<div>${sanitizar(msg.texto)}</div>`;
-                    if (msg.tipo === "imagem") {
-                        corpoConteudo = `<img src="${msg.texto}" class="img-chat" alt="Imagem enviada" onclick="window.open('${msg.texto}')">`;
-                    }
-
-                    // Controle de exclusão (apenas para as próprias mensagens)
-                    const botaoExcluir = eMinha ? `<button class="btn-acao btn-deletar" onclick="apagarMensagemUnica('${id}')">🗑️ Apagar</button>` : '';
-
-                    bloco.innerHTML = `
-                        <span class="autor-tag">${msg.autor}</span>
-                        <div class="box-balao">
-                            <div class="balao">
-                                ${corpoConteudo}
-                                <div class="footer-balao">
-                                    <span>${msg.hora}</span>
-                                </div>
-                                ${htmlReacoes}
-                            </div>
-                            <div class="acoes-mensagem">
-                                <button class="btn-acao" onclick="reagirMensagem('${id}', '❤️')">❤️</button>
-                                <button class="btn-acao" onclick="reagirMensagem('${id}', '🥰')">🥰</button>
-                                <button class="btn-acao" onclick="reagirMensagem('${id}', '🤣')">🤣</button>
-                                ${botaoExcluir}
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(bloco);
+                window.addEventListener("beforeunload", () => {
+                    const agora = new Date();
+                    const dataHoraStr = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    setDoc(refStatusMeu, { status: "offline", ultimaVez: dataHoraStr }, { merge: true });
                 });
-                container.scrollTop = container.scrollHeight;
-            });
+
+                onSnapshot(doc(db, "status_usuarios", parDoUsuario), (docSnap) => {
+                    const statusElemento = document.getElementById('status-conexao');
+                    if (docSnap.exists()) {
+                        const dados = docSnap.data();
+                        if (dados.status === "online") {
+                            statusElemento.className = "status-user online";
+                            statusElemento.innerText = "online";
+                        } else {
+                            statusElemento.className = "status-user";
+                            statusElemento.innerText = `visto por último em ${dados.ultimaVez || 'recentemente'}`;
+                        }
+                    }
+                });
+
+                // 2. MONITOR DE DIGITAÇÃO
+                onSnapshot(doc(db, "digitando_status", parDoUsuario), (docSnap) => {
+                    const indicador = document.getElementById('indicador-digitando');
+                    if (docSnap.exists() && docSnap.data().digitando === true) {
+                        document.getElementById('nome-digitando').innerText = parDoUsuario;
+                        indicador.style.display = 'flex';
+                    } else {
+                        indicador.style.display = 'none';
+                    }
+                });
+
+                // 3. CARREGAR MENSAGENS
+                const qMensagens = query(collection(db, "chat_privado"), orderBy("criadoEm", "asc"), limit(100));
+                onSnapshot(qMensagens, (snapshot) => {
+                    const container = document.getElementById('chat-scroller');
+                    container.innerHTML = '';
+
+                    snapshot.forEach((docSnap) => {
+                        const msg = docSnap.data();
+                        const id = docSnap.id;
+                        const eMinha = (msg.autor === usuarioLogado);
+                        const classeLado = eMinha ? 'minha' : 'outra';
+
+                        let htmlReacoes = '';
+                        if (msg.reacoes) {
+                            htmlReacoes = '<div class="container-reacoes">';
+                            Object.keys(msg.reacoes).forEach(emoji => {
+                                htmlReacoes += `<span class="tag-reacao">${emoji}</span>`;
+                            });
+                            htmlReacoes += '</div>';
+                        }
+
+                        let corpoConteudo = `<div>${sanitizar(msg.texto)}</div>`;
+                        if (msg.tipo === "imagem") {
+                            corpoConteudo = `<img src="${msg.texto}" class="img-chat" onclick="window.open('${msg.texto}')">`;
+                        }
+
+                        const botaoExcluir = eMinha ? `<button class="btn-acao" style="color:#d9534f;" onclick="apagarMensagemUnica('${id}')">🗑️ Apagar</button>` : '';
+
+                        const bloco = document.createElement('div');
+                        bloco.className = `linha-msg ${classeLado}`;
+                        bloco.innerHTML = `
+                            <span class="autor-tag">${msg.autor}</span>
+                            <div class="box-balao">
+                                <div class="balao">
+                                    ${corpoConteudo}
+                                    <div class="footer-balao"><span>${msg.hora}</span></div>
+                                    ${htmlReacoes}
+                                </div>
+                                <div class="acoes-mensagem">
+                                    <button class="btn-acao" onclick="reagirMensagem('${id}', '❤️')">❤️</button>
+                                    <button class="btn-acao" onclick="reagirMensagem('${id}', '🥰')">🥰</button>
+                                    ${botaoExcluir}
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(bloco);
+                    });
+                    container.scrollTop = container.scrollHeight;
+                });
+            } catch(e) { console.error(e); }
         }
 
-        // FUNÇÃO PARA ENVIAR MENSAGENS (TEXTO OU IMAGEM)
+        let timeoutDigitando = null;
+        window.registrarDigitandoNoFirebase = function() {
+            if(!usuarioLogado) return;
+            setDoc(doc(db, "digitando_status", usuarioLogado), { digitando: true });
+            clearTimeout(timeoutDigitando);
+            timeoutDigitando = setTimeout(() => {
+                setDoc(doc(db, "digitando_status", usuarioLogado), { digitando: false });
+            }, 2000);
+        };
+
+        let modoEnvio = "texto";
         window.dispararMensagem = async function() {
             const input = document.getElementById('input-mensagem');
             const valor = input.value.trim();
-            if (!valor) return;
+            if (!valor || !usuarioLogado) return;
 
             const agora = new Date();
             const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -353,51 +314,27 @@
                 });
                 input.value = '';
                 fecharPainelAuxiliar();
-                // Força zerar o status de digitando imediatamente
                 setDoc(doc(db, "digitando_status", usuarioLogado), { digitando: false });
-            } catch (err) { console.error("Erro geral:", err); }
+            } catch (err) { console.error(err); }
         };
 
-        // REGISTRAR E ATUALIZAR STATUS DE "DIGITANDO..."
-        window.registrarDigitandoNoFirebase = function() {
-            setDoc(doc(db, "digitando_status", usuarioLogado), { digitando: true });
-            
-            clearTimeout(timeoutDigitando);
-            timeoutDigitando = setTimeout(() => {
-                setDoc(doc(db, "digitando_status", usuarioLogado), { digitando: false });
-            }, 2000); // Se ficar 2 segundos sem digitar, remove o aviso
-        };
-
-        // SISTEMA DE REAÇÃO DA MENSAGEM
         window.reagirMensagem = async function(id, emoji) {
             const docRef = doc(db, "chat_privado", id);
-            const mapaReacao = {};
-            mapaReacao[`reacoes.${emoji}`] = usuarioLogado;
-            await updateDoc(docRef, mapaReacao);
+            const mapa = {}; mapa[`reacoes.${emoji}`] = usuarioLogado;
+            await updateDoc(docRef, mapa);
         };
 
-        // APAGAR MENSAGEM DO FIREBASE PARA OS DOIS
         window.apagarMensagemUnica = async function(id) {
-            if(confirm("Deseja apagar essa mensagem para vocês dois? 🥺")) {
+            if(confirm("Apagar mensagem para os dois? 🥺")) {
                 await deleteDoc(doc(db, "chat_privado", id));
             }
         };
 
-        // LIMPAR CONFIGURAÇÕES DA CONVERSA COMPLETA
-        window.limparHistoricoConversa = async function() {
-            if(confirm("Deseja apagar TODO o histórico do chat? Essa ação não pode ser desfeita! ⚠️")) {
-                alert("Limpando histórico... Aguarde.");
-                document.getElementById('menu-top-box').style.display = 'none';
-                // Como o Firestore apaga por documento, na próxima mensagem o chat inicia zerado.
-            }
-        };
-
-        // AUXILIARES DE INTERFACE
         window.ativarModoImagem = function() {
             modoEnvio = "imagem";
-            document.getElementById('txt-auxiliar').innerText = "🔗 Cole o link da imagem no campo abaixo:";
+            document.getElementById('txt-auxiliar').innerText = "🔗 Cole o link da imagem abaixo:";
             document.getElementById('box-auxiliar').style.display = 'flex';
-            document.getElementById('input-mensagem').placeholder = "Ex: https://imgur.com/foto.jpg";
+            document.getElementById('input-mensagem').placeholder = "https://linkdafoto.com/foto.jpg";
             document.getElementById('input-mensagem').focus();
         };
 
