@@ -26,7 +26,9 @@
             box-sizing: border-box;
         }
 
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+        }
 
         body {
             background-color: #fff3f2; 
@@ -70,7 +72,9 @@
             margin-bottom: 20px;
         }
 
-        #conteudo-site { display: none; }
+        #conteudo-site {
+            display: none;
+        }
 
         .menu-flutuante-container {
             position: fixed;
@@ -99,7 +103,9 @@
             transition: transform 0.3s;
         }
 
-        .botao-flutuante-principal:active { transform: scale(0.9); }
+        .botao-flutuante-principal:active {
+            transform: scale(0.9);
+        }
 
         .menu-opcoes-flutuantes {
             display: flex;
@@ -133,7 +139,10 @@
             transition: transform 0.2s, background 0.2s;
             white-space: nowrap;
         }
-        .item-opcao-flutuante:hover { background-color: #fff0ee; }
+
+        .item-opcao-flutuante:hover {
+            background-color: #fff0ee;
+        }
 
         header {
             text-align: center;
@@ -143,11 +152,16 @@
 
         .btn-logout {
             position: absolute;
-            top: 20px; right: 20px;
-            background: none; border: 1px solid var(--border-color);
-            padding: 6px 12px; border-radius: 12px;
-            font-size: 0.85rem; font-family: var(--font-main);
-            color: var(--secondary); cursor: pointer;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-family: var(--font-main);
+            color: var(--secondary);
+            cursor: pointer;
             z-index: 10;
         }
 
@@ -160,7 +174,12 @@
             overflow-wrap: break-word;
         }
 
-        header p { font-size: 1rem; color: var(--secondary); word-wrap: break-word; overflow-wrap: break-word; }
+        header p {
+            font-size: 1rem;
+            color: var(--secondary);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
 
         .container-blocos {
             max-width: 450px;
@@ -198,8 +217,6 @@
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
         #bloco-dias-amando { background-color: #ffebeb; }
@@ -209,11 +226,41 @@
         #bloco-galeria-momentos { background-color: #fdf8f5; }
         #bloco-nossos-textos { background-color: #f7f3f9; }
 
-        .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
-        .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
-        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; word-wrap: break-word; overflow-wrap: break-word; }
-        .contador-tempo { font-size: 1.3rem; font-weight: bold; color: var(--primary); word-wrap: break-word; overflow-wrap: break-word; }
-        .contador-tempo.ativo span { display: inline-block; animation: pulse 1s infinite alternate; }
+        .contador-bloco {
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .contador-bloco:first-child {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .contador-titulo {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            font-weight: bold;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .contador-tempo {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .contador-tempo.ativo span {
+            display: inline-block;
+            animation: pulse 1s infinite alternate;
+        }
 
         .data-card {
             font-size: 0.8rem;
@@ -226,26 +273,65 @@
             gap: 2px;
         }
 
-        .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
+        .autor-tag {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: normal;
+        }
 
-        .pdf-link { text-decoration: none; display: block; position: relative; z-index: 2; max-width: 100%; }
-        .pdf-bloco { text-align: center; cursor: pointer; max-width: 100%; }
-        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; word-wrap: break-word; overflow-wrap: break-word; }
+        .pdf-link {
+            text-decoration: none;
+            display: block;
+            position: relative;
+            z-index: 2;
+            max-width: 100%;
+        }
+
+        .pdf-bloco {
+            text-align: center;
+            cursor: pointer;
+            max-width: 100%;
+        }
+
+        .pdf-subtitulo {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-top: 4px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
 
         .numero-card {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 26px; height: 26px; border: 1.5px solid var(--secondary);
-            border-radius: 50%; font-size: 0.85rem; font-weight: bold;
-            color: var(--secondary); margin-bottom: 15px; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border: 1.5px solid var(--secondary);
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 15px; 
         }
 
         .moldura-imagem {
-            width: 100%; max-width: 250px; aspect-ratio: 16 / 9; 
-            margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.5);
+            width: 100%;
+            max-width: 250px;
+            aspect-ratio: 16 / 9; 
+            margin: 0 auto 15px auto;
+            border-radius: 12px;
+            overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid rgba(255,255,255,0.5);
             display: block;
         }
-        .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
+
+        .moldura-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
         .painel-upload {
             background-color: #ffffff;
@@ -261,95 +347,444 @@
         }
 
         .input-custom, .select-custom, .textarea-custom {
-            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
-            border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
-            margin-bottom: 12px; outline: none; background: #fffbfb;
-            color: var(--text-color); transition: all 0.3s;
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(230, 179, 168, 0.6);
+            border-radius: 15px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            outline: none;
+            background: #fffbfb;
+            color: var(--text-color);
+            transition: all 0.3s;
         }
-        .textarea-custom { resize: vertical; min-height: 90px; }
+
+        .textarea-custom {
+            resize: vertical;
+            min-height: 90px;
+        }
+
         .input-custom:focus, .select-custom:focus, .textarea-custom:focus {
-            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
         }
 
         .btn-postar {
-            width: 100%; background-color: var(--primary); color: white; border: none;
-            padding: 14px; border-radius: 15px; font-family: var(--font-main);
-            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
-            word-wrap: break-word; overflow-wrap: break-word;
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 15px;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
-        .btn-postar:hover { background-color: #734f4b; }
 
-        .secao-comentarios { margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); position: relative; z-index: 5; }
-        .form-comentario { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-postar:hover {
+            background-color: #734f4b;
+        }
+
+        .secao-comentarios {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            position: relative;
+            z-index: 5;
+        }
+
+        .form-comentario {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
         .input-comentario {
-            flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
-            border-radius: 20px; font-family: var(--font-main); font-size: 0.9rem;
-            outline: none; background-color: rgba(255, 255, 255, 0.6);
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.6);
             min-width: 0;
         }
-        .btn-comentar { background-color: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 20px; cursor: pointer; flex-shrink: 0; }
 
-        .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; word-wrap: break-word; overflow-wrap: break-word; }
-        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; }
-        .autor-comentario { font-weight: bold; color: var(--primary); }
-        .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
-        .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
+        .btn-comentar {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
 
-        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
-        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
+        .lista-comentarios {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item-comentario {
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .meta-comentario {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-bottom: 4px;
+            gap: 5px;
+        }
+
+        .autor-comentario {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .corpo-comentario {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .texto-comentario {
+            flex: 1;
+            min-width: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .btn-excluir-comentario {
+            background: none;
+            border: none;
+            color: #d9534f;
+            cursor: pointer;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .acoes-card-custom {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 4;
+        }
+
+        .btn-acao-card {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: var(--font-main);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
 
-        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; }
+        #canvas-hearts {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none !important;
+            z-index: 1;
+        }
 
-        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
-        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
-        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 25; }
-        .opcoes-tres-pontos.visivel { display: block; }
-        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
-        .opcoes-tres-pontos button:hover { background: #fff0ee; }
+        .menu-acoes-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 20;
+        }
 
-        .quadro-polaroid { background: #ffffff; padding: 14px 14px 22px 14px; box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12); border-radius: 4px; margin: 20px auto 30px auto; max-width: 100%; border: 1px solid rgba(0,0,0,0.03); position: relative; word-wrap: break-word; overflow-wrap: break-word; }
-        .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; }
-        .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
-        .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; word-wrap: break-word; overflow-wrap: break-word; }
-        .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; }
-        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; gap: 10px; }
-        .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
-        .btn-coracao-minimalista:active { transform: scale(1.3); }
-        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; text-align: right; word-wrap: break-word; overflow-wrap: break-word; }
+        .btn-tres-pontos {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--secondary);
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+        }
 
-        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; word-wrap: break-word; overflow-wrap: break-word; }
-        .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
-        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; word-wrap: break-word; overflow-wrap: break-word; }
-        .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; word-wrap: break-word; overflow-wrap: break-word; }
+        .opcoes-tres-pontos {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 25px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            z-index: 25;
+        }
+
+        .opcoes-tres-pontos.visivel {
+            display: block;
+        }
+
+        .opcoes-tres-pontos button {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+
+        .opcoes-tres-pontos button:hover {
+            background: #fff0ee;
+        }
+
+        .quadro-polaroid {
+            background: #ffffff;
+            padding: 14px 14px 22px 14px;
+            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            border-radius: 4px;
+            margin: 20px auto 30px auto;
+            max-width: 100%;
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .polaroid-imagem {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #fafafa;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .polaroid-legenda-box {
+            text-align: center;
+            padding: 15px 5px 0 5px;
+        }
+
+        .polaroid-titulo-txt {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 4px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .polaroid-desc-txt {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            line-height: 1.4;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .barra-reacoes-polaroid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #f5e4e1;
+            gap: 10px;
+        }
+
+        .btn-coracao-minimalista {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .btn-coracao-minimalista:active {
+            transform: scale(1.3);
+        }
+
+        .contagem-likes {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: bold;
+            text-align: right;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .card-declaracao-texto {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+            margin-bottom: 25px;
+            border: 1px solid rgba(230, 179, 168, 0.3);
+            position: relative;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .tag-editado {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            font-style: italic;
+            display: inline-block;
+            margin-left: 5px;
+            font-weight: normal;
+        }
+
+        .declaracao-titulo-render {
+            font-family: var(--font-title);
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: bold;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .declaracao-corpo-render {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
 
         .card-musica {
-            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
-            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
-            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
-            transition: transform 0.2s; max-width: 100%; word-wrap: break-word; overflow-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08);
+            margin-bottom: 20px;
+            position: relative;
+            border: 1px solid rgba(230, 179, 168, 0.3);
+            transition: transform 0.2s;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
+
         .card-musica.destaque {
             border: 2px solid #ff4d4d;
             box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
             background: #fffafa;
         }
+
         .selo-destaque {
-            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            background: #ff4d4d; color: white; padding: 4px 12px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4); z-index: 2; white-space: nowrap;
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff4d4d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4);
+            z-index: 2;
+            white-space: nowrap;
         }
-        .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; width: 100%; }
-        .musica-capa { width: 75px; height: 75px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; flex-shrink: 0; }
-        .musica-info { flex: 1; min-width: 0; }
-        .musica-titulo { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; white-space: nowrap; }
-        .musica-link-btn:hover { background: var(--primary); }
+
+        .musica-layout {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .musica-capa {
+            width: 75px;
+            height: 75px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            background-color: #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .musica-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .musica-titulo {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .musica-dedicatoria {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .musica-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .musica-link-btn:hover {
+            background: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -578,7 +1013,7 @@
         emailjs.init("QqfTPDKvKPnqTCPsf"); 
 
         window.dispararNotificacaoEmail = function(tipo, titulo, autor) {
-            const templateParams = { tipo, autor, titulo };
+            const templateParams = { tipo: tipo, autor: autor, titulo: titulo };
             emailjs.send("service_bf4glbg", "template_n994c8j", templateParams)
             .then(
                 function(response) { console.log("E-mail enviado com sucesso!", response.status); },
@@ -619,7 +1054,7 @@
             }
         }
 
-        // --- ATRIBUIÇÃO DAS FUNÇÕES GLOBAIS NO MÓDULO (CORREÇÃO DO LOGIN) ---
+        // --- ASSOCIAÇÃO DOS EVENTOS DO MÓDULO (CORREÇÃO DE CLIQUES E LOGIN) ---
         document.getElementById('btn-login-trigger').addEventListener('click', function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
@@ -630,7 +1065,7 @@
                 usuarioLogado = nomeFormatado;
                 verificarSessao();
                 alert(`Bem-vindo, meu amor! — ${nomeFormatado} ❤️`);
-                window.location.reload(); // Recarrega para alinhar o escopo dos likes e binds
+                window.location.reload(); 
             } else {
                 alert('Nome ou senha incorretos! 🥺');
             }
@@ -690,11 +1125,11 @@
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo, link, imagem, destaque });
+                    await updateDoc(doc(db, "posts", idEditando), { titulo: titulo, link: link, imagem: imagem, destaque: destaque });
                     alert('Música atualizada! 🎶');
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        destino: 'playlist', titulo, link, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                        destino: 'playlist', titulo: titulo, link: link, imagem: imagem, destaque: destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
                     window.dispararNotificacaoEmail("Música na Playlist", titulo, usuarioLogado);
                     alert('Música dedicada com sucesso! ❤️');
@@ -747,10 +1182,10 @@
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card updated! ✨');
+                    await updateDoc(doc(db, "posts", idEditando), { destino: destino, titulo: titulo, subtitulo: subtitulo, imagem: imagem, link: link, data: dataFormatada });
+                    alert('Card atualizado! ✨');
                 } else {
-                    await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
+                    await addDoc(collection(db, "posts"), { destino: destino, titulo: titulo, subtitulo: subtitulo, imagem: imagem, link: link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
                     window.dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado);
                     alert('Card publicado! ❤️');
                 }
@@ -795,10 +1230,10 @@
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, data: dataFormatada });
+                    await updateDoc(doc(db, "posts", idEditando), { titulo: titulo, subtitulo: subtitulo, imagem: imagem, data: dataFormatada });
                     alert('Foto da galeria atualizada! 🖼️');
                 } else {
-                    await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
+                    await addDoc(collection(db, "posts"), { destino: 'galeria', titulo: titulo, subtitulo: subtitulo, imagem: imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
                     window.dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado);
                     alert('Momento guardado no nosso varal! 💞');
                 }
@@ -839,10 +1274,10 @@
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo, corpo, data: dataFormatada, editado: true });
+                    await updateDoc(doc(db, "posts", idEditando), { titulo: titulo, corpo: corpo, data: dataFormatada, editado: true });
                     alert('Sua linda carta foi atualizada! ✨');
                 } else {
-                    await addDoc(collection(db, "posts"), { destino: 'texto', titulo, corpo, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
+                    await addDoc(collection(db, "posts"), { destino: 'texto', titulo: titulo, corpo: corpo, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
                     window.dispararNotificacaoEmail("Carta / Declaração", titulo || "Alguém abriu o coração...", usuarioLogado);
                     alert('Sua declaração foi guardada! 📝');
                 }
@@ -874,7 +1309,7 @@
             const texto = input?.value.trim();
             if (!texto) return;
             try {
-                await addDoc(collection(db, "comentarios"), { secaoId, texto, autor: usuarioLogado, dataHora: obterDataHoraAtual(), criadoEm: Date.now() });
+                await addDoc(collection(db, "comentarios"), { secaoId: secaoId, texto: texto, autor: usuarioLogado, dataHora: obterDataHoraAtual(), criadoEm: Date.now() });
                 if (input) input.value = '';
             } catch (error) { console.error(error); }
         };
