@@ -39,7 +39,6 @@
             line-height: 1.5;
         }
 
-        /* Otimização global de cliques */
         button, input, select, textarea, a, .contador-bloco, .pdf-bloco {
             touch-action: manipulation;
             transform: translateZ(0);
@@ -75,7 +74,6 @@
 
         #conteudo-site { display: none; }
 
-        /* Menu Flutuante - Elevado para prioridade máxima de clique */
         .menu-flutuante-container {
             position: fixed;
             bottom: 25px;
@@ -294,7 +292,6 @@
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
 
-        /* Proteção para o Canvas não interceptar cliques de jeito nenhum */
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; }
 
         .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
@@ -568,14 +565,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // === CONFIGURAÇÃO DO EMAILJS CORRIGIDA ===
+        // === CONFIGURAÇÃO DO EMAILJS CORRIGIDA COM TÍTULO ===
         emailjs.init("QqfTPDKvKPnqTCPsf"); 
 
         window.dispararNotificacaoEmail = function(tipo, titulo, autor) {
             const templateParams = {
                 tipo: tipo,
                 autor: autor,
-                mensagem_extra: `Publicou algo novo: "${titulo}"`
+                titulo: titulo // Vinculado perfeitamente ao seu template {{titulo}}
             };
 
             emailjs.send("service_bjyc673", "template_n994c8j", templateParams)
@@ -584,7 +581,7 @@
                 function(error) { console.error("Erro no envio do EmailJS:", error); }
             );
         }
-        // =======================================
+        // ==================================================
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -766,7 +763,7 @@
                 if (idEditando) {
                     const docRef = doc(db, "posts", idEditando);
                     await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card updated! ✨');
+                    alert('Card atualizado! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino, titulo, subtitulo, imagem, link, data: dataFormatada,
@@ -1188,7 +1185,6 @@
             elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
-        // === SISTEMA AUTOMÁTICO DE MESVERSÁRIO ===
         function verificarEEnviarMesversario() {
             const hoje = new Date();
             const diaAtual = hoje.getDate();
