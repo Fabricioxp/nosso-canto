@@ -565,20 +565,20 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // === CONFIGURAÇÃO DO EMAILJS CORRIGIDA COM TÍTULO ===
+        // === CONFIGURAÇÃO DO EMAILJS ATUALIZADA ===
         emailjs.init("QqfTPDKvKPnqTCPsf"); 
 
         window.dispararNotificacaoEmail = function(tipo, titulo, autor) {
             const templateParams = {
                 tipo: tipo,
                 autor: autor,
-                titulo: titulo // Vinculado perfeitamente ao seu template {{titulo}}
+                titulo: titulo // Vinculado perfeitamente ao parâmetro {{titulo}} do seu novo template
             };
 
             emailjs.send("service_bjyc673", "template_n994c8j", templateParams)
             .then(
-                function(response) { console.log("E-mail enviado com sucesso!", response.status); },
-                function(error) { console.error("Erro no envio do EmailJS:", error); }
+                function(response) { console.log("✅ E-mail enviado ao EmailJS com sucesso!", response.status); },
+                function(error) { console.error("❌ Erro no envio do EmailJS:", error); }
             );
         }
         // ==================================================
