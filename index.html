@@ -437,91 +437,11 @@
 
             <section class="bloco-separado" id="bloco-coisinhas-dela">
                 <div class="titulo-secao">✨ coisinhas dela</div>
-                
-                <div class="card-separador-interno">
-                    <div class="data-card">
-                        <span>🗓️ 17/05/2026</span>
-                        <span class="autor-tag">Postado por: Maria</span>
-                    </div>
-                    <a href="https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk" target="_blank" class="pdf-link">
-                        <div class="pdf-bloco">
-                            <div class="numero-card">1</div>
-                            <div class="moldura-imagem">
-                                <img src="https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Pra você!">
-                            </div>
-                            <div class="contador-titulo">A fofura que ela fez para mim 🥰</div>
-                            <div class="contador-tempo">Clique para abrir 📂</div>
-                            <div class="pdf-subtitulo">Ver apresentação</div>
-                        </div>
-                    </a>
-
-                    <div class="secao-comentarios">
-                        <div class="form-comentario">
-                            <input type="text" id="input-dela-1" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, 'dela-1')">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('dela-1')">✨</button>
-                        </div>
-                        <div id="lista-dela-1" class="lista-comentarios"></div>
-                    </div>
-                </div>
-
                 <div id="novos-cards-dela"></div>
             </section>
 
             <section class="bloco-separado" id="bloco-coisas-minhas">
                 <div class="titulo-secao">✨ coisinhas minhas</div>
-                
-                <div class="card-separador-interno">
-                    <div class="data-card">
-                        <span>🗓️ 18/05/2026</span>
-                        <span class="autor-tag">Postado por: Fabricio</span>
-                    </div>
-                    <a href="https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk" target="_blank" class="pdf-link">
-                        <div class="pdf-bloco">
-                            <div class="numero-card">1</div>
-                            <div class="moldura-imagem">
-                                <img src="https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Um amooooor">
-                            </div>
-                            <div class="contador-titulo">meu objetivo de amoor</div>
-                            <div class="contador-tempo">Clique para abrir 📂</div>
-                            <div class="pdf-subtitulo">Ver apresentação</div>
-                        </div>
-                    </a>
-                    
-                    <div class="secao-comentarios">
-                        <div class="form-comentario">
-                            <input type="text" id="input-meu-1" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, 'meu-1')">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-1')">💞</button>
-                        </div>
-                        <div id="lista-meu-1" class="lista-comentarios"></div>
-                    </div>
-                </div>
-                
-                <div class="card-separador-interno">
-                    <div class="data-card">
-                        <span>🗓️ 25/05/2026</span>
-                        <span class="autor-tag">Postado por: Fabricio</span>
-                    </div>
-                    <a href="https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1" target="_blank" class="pdf-link">
-                        <div class="pdf-bloco">
-                            <div class="numero-card">2</div>
-                            <div class="moldura-imagem">
-                                <img src="https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Para o amor da minha vida">
-                            </div>
-                            <div class="contador-titulo">para o amor da minha vida</div>
-                            <div class="contador-tempo">Clique para abrir 📂</div>
-                            <div class="pdf-subtitulo">ver declaration</div>
-                        </div>
-                    </a>
-
-                    <div class="secao-comentarios">
-                        <div class="form-comentario">
-                            <input type="text" id="input-meu-2" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, 'meu-2')">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-2')">🌹</button>
-                        </div>
-                        <div id="lista-meu-2" class="lista-comentarios"></div>
-                    </div>
-                </div>
-
                 <div id="novos-cards-meu"></div>
             </section>
 
@@ -563,7 +483,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // === CONFIGURAÇÃO DO EMAILJS ATUALIZADA ===
         emailjs.init("QqfTPDKvKPnqTCPsf"); 
@@ -572,7 +492,7 @@
             const templateParams = {
                 tipo: tipo,
                 autor: autor,
-                titulo: titulo // Vinculado perfeitamente ao parâmetro {{titulo}} do seu novo template
+                titulo: titulo 
             };
 
             emailjs.send("service_bjyc673", "template_n994c8j", templateParams)
@@ -581,7 +501,6 @@
                 function(error) { console.error("❌ Erro no envio do EmailJS:", error); }
             );
         }
-        // ==================================================
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -596,6 +515,55 @@
         const db = getFirestore(app);
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
+
+        // Função para injetar os cards antigos originais no Firebase se eles ainda não estiverem lá
+        async function inicializarCardsOriginais() {
+            const postsRef = collection(db, "posts");
+            
+            const cardsOriginais = [
+                {
+                    identificadorUnico: "original_maria_1",
+                    destino: "dela",
+                    titulo: "A fofura que ela fez para mim 🥰",
+                    subtitulo: "Ver apresentação",
+                    imagem: "https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high",
+                    link: "https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk",
+                    data: "17/05/2026",
+                    autor: "Maria",
+                    criadoEm: 1715918400000 // Timestamp aproximado baseado na data antiga
+                },
+                {
+                    identificadorUnico: "original_fabricio_1",
+                    destino: "meu",
+                    titulo: "meu objetivo de amoor",
+                    subtitulo: "Ver apresentação",
+                    imagem: "https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high",
+                    link: "https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk",
+                    data: "18/05/2026",
+                    autor: "Fabricio",
+                    criadoEm: 1716004800000
+                },
+                {
+                    identificadorUnico: "original_fabricio_2",
+                    destino: "meu",
+                    titulo: "para o amor da minha vida",
+                    subtitulo: "ver declaration",
+                    imagem: "https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high",
+                    link: "https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1",
+                    data: "25/05/2026",
+                    autor: "Fabricio",
+                    criadoEm: 1716609600000
+                }
+            ];
+
+            for (const card of cardsOriginais) {
+                const q = query(postsRef, where("identificadorUnico", "==", card.identificadorUnico));
+                const snap = await getDocs(q);
+                if (snap.empty) {
+                    await addDoc(postsRef, card);
+                }
+            }
+        }
 
         function sanitizarHTML(str) { 
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
@@ -612,6 +580,7 @@
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('conteudo-site').style.display = 'block';
+                inicializarCardsOriginais(); // Inicia a verificação/injeção assim que logado
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('conteudo-site').style.display = 'none';
@@ -939,7 +908,7 @@
             document.getElementById('novos-cards-textos').innerHTML = '';
             document.getElementById('novos-cards-playlist').innerHTML = '';
             
-            let numDela = 1; let numMeu = 2;
+            let numDela = 0; let numMeu = 0;
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
