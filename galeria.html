@@ -3,37 +3,446 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nossa Galeria 🤍</title>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <title>WhatsApp</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <style>
-        :root { --primary: #8c625d; --bg: #fff3f2; }
-        body { background: var(--bg); font-family: 'Comfortaa', cursive; padding: 20px; color: #4a3e3d; }
-        .container { max-width: 500px; margin: 0 auto; }
-        .post-card { background: white; padding: 15px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .upload-box { background: white; padding: 20px; border-radius: 20px; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .media { width: 100%; border-radius: 10px; margin-top: 10px; }
+        :root {
+            --bg-principal: #0b141a;
+            --bg-barra: #1f2c34;
+            --bg-conversa: #111b21;
+            --texto-principal: #e9edef;
+            --texto-secundario: #8696a0;
+            --verde-whatsapp: #00a884;
+            --verde-badge: #25d366;
+            --bg-input: #2a3942;
+            --balao-eu: #005c4b;
+            --balao-outro: #202c33;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-principal);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Container simulando a tela do celular da imagem */
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background-color: var(--bg-conversa);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- TELA DA LISTA DE CONVERSAS --- */
+        #tela-lista {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .header-lista {
+            padding: 20px 16px 10px 16px;
+            background-color: var(--bg-conversa);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .header-top h1 {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            color: var(--texto-principal);
+        }
+
+        .search-container {
+            background-color: var(--bg-barra);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            gap: 12px;
+        }
+
+        .search-container input {
+            background: none;
+            border: none;
+            color: var(--texto-principal);
+            width: 100%;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-container input::placeholder {
+            color: var(--texto-secundario);
+        }
+
+        .search-container .material-icons-outlined {
+            color: var(--texto-secundario);
+            font-size: 20px;
+        }
+
+        .lista-conversas {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .item-conversa {
+            display: flex;
+            padding: 12px 16px;
+            gap: 15px;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .item-conversa:active {
+            background-color: var(--bg-barra);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #555;
+        }
+
+        .detalhes-conversa {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-bottom: 0.5px solid rgba(134, 150, 160, 0.15);
+            padding-bottom: 12px;
+        }
+
+        .linha-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nome-contato {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .horario-msg {
+            font-size: 12px;
+            color: var(--texto-secundario);
+        }
+
+        .ultima-msg {
+            font-size: 14px;
+            color: var(--texto-secundario);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 250px;
+        }
+
+        /* Menu inferior idêntico à imagem */
+        .nav-inferior {
+            height: 65px;
+            background-color: var(--bg-conversa);
+            border-top: 0.5px solid rgba(134, 150, 160, 0.15);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--texto-secundario);
+            font-size: 12px;
+            gap: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-item.ativo {
+            color: var(--texto-principal);
+        }
+
+        .nav-item.ativo .icon-wrapper {
+            background-color: #0f332d;
+            border-radius: 16px;
+            padding: 4px 16px;
+            color: #d1f4cc;
+        }
+
+        .badge-nav {
+            position: absolute;
+            top: -4px;
+            right: 6px;
+            background-color: var(--verde-badge);
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 1px 5px;
+        }
+
+        /* Botão flutuante verde de nova conversa */
+        .btn-flutuante {
+            position: absolute;
+            bottom: 85px;
+            right: 16px;
+            background-color: var(--verde-badge);
+            color: #111b21;
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        /* --- TELA DO CHAT (ABERTO) --- */
+        #tela-chat {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Wallpaper Clássico Escuro */
+            background-blend-mode: overlay;
+            background-color: rgba(11, 20, 26, 0.95);
+        }
+
+        .header-chat {
+            background-color: var(--bg-barra);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-voltar {
+            cursor: pointer;
+            color: var(--texto-principal);
+        }
+
+        .info-chat {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-chat-texto h2 {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .info-chat-texto p {
+            font-size: 12px;
+            color: var(--texto-secundario);
+        }
+
+        .area-mensagens {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .balao {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            position: relative;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .balao.enviado {
+            background-color: var(--balao-eu);
+            align-self: flex-end;
+            border-top-right-radius: 0;
+        }
+
+        .balao.recebido {
+            background-color: var(--balao-outro);
+            align-self: flex-start;
+            border-top-left-radius: 0;
+        }
+
+        .balao .hora-msg {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            float: right;
+            margin-top: 5px;
+            margin-left: 10px;
+        }
+
+        .footer-chat {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+        }
+
+        .input-chat-container {
+            flex: 1;
+            background-color: var(--bg-barra);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            gap: 10px;
+        }
+
+        .input-chat-container input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--texto-principal);
+            font-size: 16px;
+            outline: none;
+        }
+
+        .input-chat-container .material-icons-outlined {
+            color: var(--texto-secundario);
+            cursor: pointer;
+        }
+
+        .btn-enviar-msg {
+            background-color: var(--verde-whatsapp);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html">👈 Voltar</a>
-        <h1>Nossa Galeria 🤍</h1>
+
+    <div class="app-container">
         
-        <div class="upload-box">
-            <input type="text" id="url-foto" placeholder="Link da imagem/vídeo">
-            <input type="text" id="titulo-foto" placeholder="Título (opcional)">
-            <button onclick="postar()">Publicar no Mural</button>
+        <div id="tela-lista">
+            <div class="header-lista">
+                <div class="header-top">
+                    <h1>WhatsApp</h1>
+                    <div class="header-icons">
+                        <span class="material-icons-outlined">photo_camera</span>
+                        <span class="material-icons-outlined">more_vert</span>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <span class="material-icons-outlined">search</span>
+                    <input type="text" placeholder="Pergunte à Meta AI ou pesquise">
+                </div>
+            </div>
+
+            <div class="lista-conversas" id="container-lista-contatos">
+                </div>
+
+            <div class="btn-flutuante">
+                <span class="material-icons-outlined" style="font-weight: bold;">chat</span>
+            </div>
+
+            <div class="nav-inferior">
+                <div class="nav-item ativo">
+                    <div class="icon-wrapper">
+                        <span class="material-icons-outlined">chat</span>
+                    </div>
+                    <span>Conversas</span>
+                    <span class="badge-nav">71</span>
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons-outlined">update</span>
+                    <span>Atualizações</span>
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons-outlined">groups</span>
+                    <span>Comunidades</span>
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons-outlined">call</span>
+                    <span>Chamadas</span>
+                </div>
+            </div>
         </div>
 
-        <div id="feed"></div>
+        <div id="tela-chat">
+            <div class="header-chat">
+                <span class="material-icons-outlined btn-voltar" onclick="fecharChat()">arrow_back</span>
+                <div class="info-chat">
+                    <img id="chat-avatar" class="avatar" src="" alt="Avatar">
+                    <div class="info-chat-texto">
+                        <h2 id="chat-nome">Nome</h2>
+                        <p>online</p>
+                    </div>
+                </div>
+                <div class="header-icons" style="gap: 15px;">
+                    <span class="material-icons-outlined">videocam</span>
+                    <span class="material-icons-outlined">call</span>
+                    <span class="material-icons-outlined">more_vert</span>
+                </div>
+            </div>
+
+            <div class="area-mensagens" id="box-mensagens">
+                </div>
+
+            <div class="footer-chat">
+                <div class="input-chat-container">
+                    <span class="material-icons-outlined">sentiment_satisfied</span>
+                    <input type="text" id="input-mensagem" placeholder="Mensagem" onkeypress="verificarTecla(event)">
+                    <span class="material-icons-outlined">attach_file</span>
+                    <span class="material-icons-outlined">photo_camera</span>
+                </div>
+                <button class="btn-enviar-msg" onclick="enviarMensagem()">
+                    <span class="material-icons-outlined" id="icon-envio">mic</span>
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Sua configuração mantida intacta
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
             authDomain: "nosso-canto-5d714.firebaseapp.com",
@@ -42,35 +451,126 @@
             messagingSenderId: "1042257316625",
             appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
         };
+        
         const db = getFirestore(initializeApp(firebaseConfig));
-        const usuario = sessionStorage.getItem('user_canto') || "Anônimo";
 
-        window.postar = async () => {
-            const url = document.getElementById('url-foto').value;
-            const titulo = document.getElementById('titulo-foto').value;
-            if(!url) return alert("Cole o link primeiro!");
-            
-            await addDoc(collection(db, "galeria"), { 
-                url, titulo, autor: usuario, criadoEm: Date.now() 
-            });
-            document.getElementById('url-foto').value = '';
-            document.getElementById('titulo-foto').value = '';
+        // Detecta quem está logado (Se não houver ninguém, define Fabricio por padrão para testes)
+        const usuarioLogado = sessionStorage.getItem('user_canto') || "Fabricio"; 
+
+        // Definição do perfil oposto (sua namorada ou você)
+        let dadosContato = {
+            nome: "Maria",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" // Foto ilustrativa da Maria
         };
 
-        onSnapshot(query(collection(db, "galeria"), orderBy("criadoEm", "desc")), (snap) => {
-            const feed = document.getElementById('feed');
-            feed.innerHTML = '';
+        if (usuarioLogado.toLowerCase() === "maria") {
+            dadosContato.nome = "Fabricio";
+            dadosContato.avatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"; // Foto ilustrativa do Fabricio
+        }
+
+        // Renderiza o contato correto baseado no login na tela principal
+        const containerLista = document.getElementById('container-lista-contatos');
+        
+        function carregarListaConversas(ultimaMsg = "Clique para abrir a conversa", hora = "Agora") {
+            containerLista.innerHTML = `
+                <div class="item-conversa" onclick="abrirChat()">
+                    <img class="avatar" src="${dadosContato.avatar}" alt="${dadosContato.nome}">
+                    <div class="detalhes-conversa">
+                        <div class="linha-topo">
+                            <span class="nome-contato">${dadosContato.nome}</span>
+                            <span class="horario-msg" id="lista-hora">${hora}</span>
+                        </div>
+                        <div class="ultima-msg" id="lista-ultima-msg">${ultimaMsg}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        carregarListaConversas();
+
+        // Alternar visualização de telas
+        window.abrirChat = () => {
+            document.getElementById('chat-nome').innerText = dadosContato.nome;
+            document.getElementById('chat-avatar').src = dadosContato.avatar;
+            document.getElementById('tela-lista').style.display = 'none';
+            document.getElementById('tela-chat').style.display = 'flex';
+            scrollParaBaixo();
+        };
+
+        window.fecharChat = () => {
+            document.getElementById('tela-chat').style.display = 'none';
+            document.getElementById('tela-lista').style.display = 'flex';
+        };
+
+        // Escuta o input para trocar o ícone de Microfone para o de Enviar igual no Zap
+        const inputMsg = document.getElementById('input-mensagem');
+        const iconEnvio = document.getElementById('icon-envio');
+        
+        inputMsg.addEventListener('input', () => {
+            if(inputMsg.value.trim() !== "") {
+                iconEnvio.innerText = "send";
+            } else {
+                iconEnvio.innerText = "mic";
+            }
+        });
+
+        window.verificarTecla = (e) => {
+            if(e.key === 'Enter') enviarMensagem();
+        };
+
+        // Enviar mensagem para o Firestore
+        window.enviarMensagem = async () => {
+            const texto = inputMsg.value.trim();
+            if(!texto) return;
+
+            inputMsg.value = "";
+            iconEnvio.innerText = "mic";
+
+            await addDoc(collection(db, "mensagens_chat"), {
+                texto: texto,
+                remetente: usuarioLogado,
+                criadoEm: Date.now()
+            });
+        };
+
+        // Carregar mensagens em tempo real do Firebase
+        onSnapshot(query(collection(db, "mensagens_chat"), orderBy("criadoEm", "asc")), (snap) => {
+            const boxMensagens = document.getElementById('box-mensagens');
+            boxMensagens.innerHTML = '';
+            
+            let ultimaMensagemTexto = "Clique para abrir a conversa";
+            let ultimaMensagemHora = "Agora";
+
             snap.forEach(doc => {
-                const item = doc.data();
-                feed.innerHTML += `
-                    <div class="post-card">
-                        <strong>${item.autor}</strong>
-                        ${item.titulo ? `<p>${item.titulo}</p>` : ''}
-                        <img src="${item.url}" class="media" onclick="window.open('${item.url}')">
+                const msg = doc.data();
+                const souEu = msg.remetente === usuarioLogado;
+                
+                // Formata hora simplificada
+                const horaFormatada = new Date(msg.criadoEm).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                
+                ultimaMensagemTexto = msg.texto;
+                ultimaMensagemHora = horaFormatada;
+
+                boxMensagens.innerHTML += `
+                    <div class="balao ${souEu ? 'enviado' : 'recebido'}">
+                        ${msg.texto}
+                        <span class="hora-msg">${horaFormatada}</span>
                     </div>
                 `;
             });
+
+            // Atualiza a pré-visualização na lista de conversas de fora
+            if(snap.size > 0) {
+                carregarListaConversas(ultimaMensagemTexto, ultimaMensagemHora);
+            }
+
+            scrollParaBaixo();
         });
+
+        function scrollParaBaixo() {
+            const boxMensagens = document.getElementById('box-mensagens');
+            boxMensagens.scrollTop = boxMensagens.scrollHeight;
+        }
     </script>
 </body>
 </html>
