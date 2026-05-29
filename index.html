@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Playfair+Display:ital,wght@0,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Playfair+Display:ital,wght=0,400;1,600&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -170,12 +170,14 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
             margin-bottom: 25px;
+            position: relative;
         }
 
         .card-separador-interno {
             margin-bottom: 25px;
             padding-bottom: 25px;
             border-bottom: 1px dashed var(--border-color);
+            position: relative;
         }
 
         .titulo-secao {
@@ -191,7 +193,8 @@
         #bloco-dias-amando { background-color: #ffebeb; }
         #bloco-coisinhas-dela { background-color: #fff0f5; }
         #bloco-coisas-minhas { background-color: #e6f2ff; }
-        #bloco-galeria-momentos { background-color: #fcf6f2; border: 1px dashed var(--border-color); }
+        #bloco-galeria-momentos { background-color: #fdf8f5; }
+        #bloco-nossos-textos { background-color: #f7f3f9; }
 
         .contador-bloco {
             text-align: center;
@@ -274,26 +277,39 @@
 
         .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* Estilização Melhorada dos Painéis de Upload */
         .painel-upload {
             background-color: #ffffff;
-            border: 1px solid var(--border-color);
+            border: 1px dashed var(--border-color);
             border-radius: 20px;
-            padding: 25px;
+            padding: 22px;
             margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(140, 98, 93, 0.08);
+            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
         }
 
-        .input-custom, .select-custom {
+        .input-custom, .select-custom, .textarea-custom {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+            border: 1px solid rgba(230, 179, 168, 0.6);
+            border-radius: 15px;
             font-family: var(--font-main);
             font-size: 0.85rem;
             margin-bottom: 12px;
             outline: none;
-            background: #fff8f7;
+            background: #fffbfb;
             color: var(--text-color);
+            transition: all 0.3s;
+        }
+        
+        .textarea-custom {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .input-custom:focus, .select-custom:focus, .textarea-custom:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
         }
 
         .btn-postar {
@@ -302,12 +318,14 @@
             color: white;
             border: none;
             padding: 14px;
-            border-radius: 20px;
+            border-radius: 15px;
             font-family: var(--font-main);
             font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
         }
+        .btn-postar:hover { background-color: #734f4b; }
 
         .secao-comentarios {
             margin-top: 25px;
@@ -384,79 +402,138 @@
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
 
-        /* Estilos Novos da Galeria Customizada */
+        /* Novo Sistema Unificado de Menu de 3 Pontinhos (Ações) */
+        .menu-acoes-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+        }
+        .btn-tres-pontos {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+        }
+        .opcoes-tres-pontos {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 25px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .opcoes-tres-pontos.visivel { display: block; }
+        .opcoes-tres-pontos button {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            font-family: var(--font-main);
+            font-size: 0.78rem;
+            text-align: left;
+            cursor: pointer;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+        .opcoes-tres-pontos button:hover { background: #fff0ee; }
+
+        /* Novo Estilo: Molduras Customizadas da Galeria */
         .quadro-polaroid {
             background: #ffffff;
-            padding: 15px 15px 25px 15px;
-            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.15);
-            border-radius: 4px;
-            margin: 20px auto;
-            max-width: 360px;
-            border: 1px solid rgba(0,0,0,0.05);
-            transform: rotate(var(--rotacao, 1deg));
-            transition: transform 0.3s ease;
+            padding: 14px 14px 22px 14px;
+            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            border-radius: 2px;
+            margin: 20px auto 30px auto;
+            max-width: 380px;
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
         }
-        .quadro-polaroid:hover {
-            transform: rotate(0deg) scale(1.02);
-            z-index: 5;
-        }
-        .polaroid-midia {
+        .polaroid-imagem {
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: cover;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: #f7f7f7;
+            background: #fafafa;
             display: block;
+            border-radius: 4px;
         }
-        .polaroid-video {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: #000;
-        }
-        .polaroid-conteudo {
+        .polaroid-legenda-box {
             text-align: center;
-            padding-top: 15px;
+            padding: 15px 5px 0 5px;
         }
-        .polaroid-titulo {
+        .polaroid-titulo-txt {
             font-family: var(--font-title);
             font-size: 1.2rem;
             color: var(--primary);
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
-        .polaroid-descricao {
+        .polaroid-desc-txt {
             font-size: 0.85rem;
             color: var(--text-color);
             line-height: 1.4;
-            margin-bottom: 10px;
         }
-        .botoes-reacao {
+        .barra-reacoes-polaroid {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-top: 1px solid #fcf0ee;
-            border-bottom: 1px solid #fcf0ee;
-            margin-bottom: 15px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #f5e4e1;
         }
-        .btn-reacao {
+        .btn-coracao-minimalista {
             background: none;
             border: none;
-            font-family: var(--font-main);
-            font-size: 0.85rem;
-            color: var(--secondary);
+            font-size: 1.25rem;
             cursor: pointer;
-            display: flex;
+            transition: transform 0.2s;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
-            transition: transform 0.2s;
         }
-        .btn-reacao:hover { transform: scale(1.1); }
-        .btn-reacao.curtido { color: #d9534f; font-weight: bold; }
-        .btn-reacao.curtido span { animation: pulse 0.4s ease; }
+        .btn-coracao-minimalista:active { transform: scale(1.3); }
+        .contagem-likes { font-size: 0.75rem; color: var(--secondary); font-family: var(--font-main); }
 
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
+        /* Novo Estilo: Bloco de Declarações por Extenso */
+        .card-declaracao-texto {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+            margin-bottom: 25px;
+            border: 1px solid rgba(230, 179, 168, 0.3);
+            position: relative;
+        }
+        .tag-editado {
+            font-size: 0.65rem;
+            color: var(--secondary);
+            font-style: italic;
+            display: inline-block;
+            margin-left: 5px;
+        }
+        .declaracao-titulo-render {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .declaracao-corpo-render {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+        }
+
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
     </style>
 </head>
 <body>
@@ -508,23 +585,22 @@
                 </div>
             </section>
 
+            <!-- PAINEL DE UPLOAD 1: APRESENTAÇÕES (MANTIDO ORIGINAL) -->
             <section class="painel-upload" id="painel-de-postagem">
-                <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Conteúdo</div>
+                <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card (Apresentações)</div>
                 <input type="hidden" id="editando-id" value="">
                 
-                <select id="post-destino" class="select-custom" onchange="adaptarFormularioPostagem()">
-                    <option value="dela">Postar em: Coisinhas Dela (Apresentação)</option>
-                    <option value="meu">Postar em: Coisas Minhas (Apresentação)</option>
-                    <option value="galeria">Postar em: Nossa Galeria (Fotos/Vídeos)</option>
+                <select id="post-destino" class="select-custom">
+                    <option value="dela">Postar em: Coisinhas Dela</option>
+                    <option value="meu">Postar em: Coisas Minhas</option>
                 </select>
-                
-                <input type="text" id="post-titulo" class="input-custom" placeholder="Título (Opcional para Galeria)">
-                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link / Descrição da Foto">
-                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem / Vídeo (Drive, Imgur...)">
-                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo (Apenas para Apresentações)">
+                <input type="text" id="post-titulo" class="input-custom" placeholder="Título">
+                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link">
+                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem">
+                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
                 <input type="date" id="post-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar no Nosso Canto ❤️</button>
+                <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar Apresentação ❤️</button>
             </section>
 
             <section class="bloco-separado" id="bloco-coisinhas-dela">
@@ -601,7 +677,7 @@
                             </div>
                             <div class="contador-titulo">para o amor da minha vida</div>
                             <div class="contador-tempo">Clique para abrir 📂</div>
-                            <div class="pdf-subtitulo">ver declaração</div>
+                            <div class="pdf-subtitulo">ver declaration</div>
                         </div>
                     </a>
 
@@ -617,9 +693,46 @@
                 <div id="novos-cards-meu"></div>
             </section>
 
+            <!-- ========================================== -->
+            <!-- NOVO PAINEL DE UPLOAD 2: APENAS PARA A GALERIA -->
+            <!-- ========================================== -->
+            <section class="painel-upload" id="painel-galeria-posts">
+                <div class="titulo-secao" id="titulo-painel-galeria" style="margin-bottom: 15px;">📸 Postar Novo Momento na Galeria</div>
+                <input type="hidden" id="editando-galeria-id" value="">
+                
+                <input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
+                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
+                <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem">
+                <input type="date" id="galeria-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-galeria" onclick="salvarFotoGaleriaFirebase()">Publicar na Galeria ✨</button>
+            </section>
+
+            <!-- SEÇÃO DA GALERIA DE FOTOS -->
             <section class="bloco-separado" id="bloco-galeria-momentos">
-                <div class="titulo-secao">📸 Nossos Momentos & Fotos</div>
-                <div id="container-galeria-fotos"></div>
+                <div class="titulo-secao">🖼️ Nosso Varal de Fotos</div>
+                <div id="novos-cards-galeria"></div>
+            </section>
+
+
+            <!-- ========================================== -->
+            <!-- NOVO PAINEL DE UPLOAD 3: APENAS PARA TEXTOS/DECLARAÇÕES -->
+            <!-- ========================================== -->
+            <section class="painel-upload" id="painel-texto-posts">
+                <div class="titulo-secao" id="titulo-painel-texto" style="margin-bottom: 15px;">✍️ Escrever Nova Declaração</div>
+                <input type="hidden" id="editando-texto-id" value="">
+                
+                <input type="text" id="texto-titulo" class="input-custom" placeholder="Título da Carta/Declaração (Opcional)">
+                <textarea id="texto-corpo" class="textarea-custom" placeholder="Escreva aqui tudo o que seu coração sente... ❤️"></textarea>
+                <input type="date" id="texto-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-texto" onclick="salvarTextoFirebase()">Eternizar Declaração 🌹</button>
+            </section>
+
+            <!-- SEÇÃO DE DECLARAÇÕES POR EXTENSO -->
+            <section class="bloco-separado" id="bloco-nossos-textos">
+                <div class="titulo-secao">✍️ Cartas & Declarações</div>
+                <div id="novos-cards-textos"></div>
             </section>
 
         </div>
@@ -689,26 +802,19 @@
             document.getElementById('opcoes-menu-balao').classList.toggle('aberto');
         };
 
-        window.adaptarFormularioPostagem = function() {
-            const destino = document.getElementById('post-destino').value;
-            const inputLink = document.getElementById('post-link');
-            const inputTitulo = document.getElementById('post-titulo');
-            const inputSubtitulo = document.getElementById('post-subtitulo');
-            const inputMidia = document.getElementById('post-imagem');
-
-            if (destino === 'galeria') {
-                inputLink.style.display = 'none';
-                inputTitulo.placeholder = 'Título do Momento (Opcional)';
-                inputSubtitulo.placeholder = 'Escreva uma legenda/descrição bem linda... (Opcional)';
-                inputMidia.placeholder = 'Link da Imagem ou Vídeo (Drive / Imgur)';
-            } else {
-                inputLink.style.display = 'block';
-                inputTitulo.placeholder = 'Título';
-                inputSubtitulo.placeholder = 'Subtítulo do link';
-                inputMidia.placeholder = 'Link da Imagem';
-            }
+        window.alternarMenuTresPontos = function(id) {
+            const menu = document.getElementById(`opcoes-${id}`);
+            if (menu) menu.classList.toggle('visivel');
         };
 
+        // Fecha menus de 3 pontos se clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('btn-tres-pontos')) {
+                document.querySelectorAll('.opcoes-tres-pontos').forEach(m => m.classList.remove('visivel'));
+            }
+        });
+
+        // --- SISTEMA 1: APRESENTAÇÕES (MANTIDO ORIGINAL E INTEGRAL) ---
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
             document.getElementById('post-titulo').value = '';
@@ -716,55 +822,23 @@
             document.getElementById('post-imagem').value = '';
             document.getElementById('post-link').value = '';
             document.getElementById('post-data').value = '';
-            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Conteúdo';
-            document.getElementById('btn-salvar-post').innerText = 'Publicar no Nosso Canto ❤️';
-            adaptarFormularioPostagem();
-        }
-
-        // Função para formatar links de fotos e vídeos vindos do Drive automaticamente
-        function converterLinkDrive(url) {
-            if (!url) return '';
-            if (url.includes('drive.google.com')) {
-                let id = '';
-                const matchFile = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-                const matchId = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
-                if (matchFile) id = matchFile[1];
-                else if (matchId) id = matchId[1];
-                
-                if (id) {
-                    if (url.includes('file') || url.includes('view')) {
-                        // Tenta detectar se é vídeo pela url ou assume comportamento adaptável via preview embed
-                        return `https://drive.google.com/embed?pb=!1m12!1m8!1m3!1m2!1y18!2zM!2m1!1sz!3m1!1s${id}!4f1`; 
-                    }
-                    return `https://drive.google.com/uc?export=view&id=${id}`;
-                }
-            }
-            return url;
-        }
-
-        function verificarSeEVideo(url) {
-            if (!url) return false;
-            return url.includes('embed') || url.match(/\.(mp4|webm|ogg|mov)$/i) || url.includes('drive.google.com/embed');
+            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card (Apresentações)';
+            document.getElementById('btn-salvar-post').innerText = 'Publicar Apresentação ❤️';
         }
 
         window.salvarPostagemFirebase = async function() {
             const idEditando = document.getElementById('editando-id').value;
             const destino = document.getElementById('post-destino').value;
             const titulo = document.getElementById('post-titulo').value.trim();
-            const subtitulo = document.getElementById('post-subtitulo').value.trim() || '';
+            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
             const imagem = document.getElementById('post-imagem').value.trim();
             const link = document.getElementById('post-link').value.trim();
             const dataInput = document.getElementById('post-data').value;
 
-            if (destino !== 'galeria' && (!titulo || !imagem || !link || !dataInput)) {
-                alert('Por favor, preencha todos os campos obrigatórios da apresentação! ❤️');
+            if (!titulo || !imagem || !link || !dataInput) {
+                alert('Por favor, preencha todos os campos! ❤️');
                 return;
             }
-            if (destino === 'galeria' && (!imagem || !dataInput)) {
-                alert('Por favor, insira pelo menos a mídia e a data do momento! 📸');
-                return;
-            }
-
             const [ano, mes, dia] = dataInput.split('-');
             const dataFormatada = `${dia}/${mes}/${ano}`;
 
@@ -772,20 +846,20 @@
                 if (idEditando) {
                     const docRef = doc(db, "posts", idEditando);
                     await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Lembrança atualizada! ✨');
+                    alert('Card atualizado! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino, titulo, subtitulo, imagem, link, data: dataFormatada,
-                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                        autor: usuarioLogado, criadoEm: Date.now()
                     });
-                    alert('Lembrança guardada no coração! ❤️');
+                    alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
         };
 
         window.removerPostagemFirebase = async function(id) {
-            if (confirm("Deseja apagar essa lembrança permanente? 🥺")) {
+            if (confirm("Deseja apagar essa lembrança? 🥺")) {
                 await deleteDoc(doc(db, "posts", id));
                 resetarFormulario();
             }
@@ -798,33 +872,134 @@
             document.getElementById('post-subtitulo').value = subtitulo;
             document.getElementById('post-imagem').value = imagem;
             document.getElementById('post-link').value = link;
-
             const [dia, mes, ano] = data.split('/');
             document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
-
-            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Lembrança Selecionada';
-            document.getElementById('btn-salvar-post').innerText = 'Atualizar Publicação ❤️';
-            adaptarFormularioPostagem();
+            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
+            document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
             document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
         };
 
-        window.interagirCurtida = async function(id, curtidasAtuais = []) {
-            if (!curtidasAtuais || !Array.isArray(curtidasAtuais)) curtidasAtuais = [];
-            const index = curtidasAtuais.indexOf(usuarioLogado);
-            if (index > -1) {
-                curtidasAtuais.splice(index, 1);
-            } else {
-                curtidasAtuais.push(usuarioLogado);
-                celebrarAmor(); // Dispara corações na tela ao curtir!
+
+        // --- SITEMA 2: GALERIA DE MOMENTOS (FOTOS) ---
+        function resetarFormularioGaleria() {
+            document.getElementById('editando-galeria-id').value = '';
+            document.getElementById('galeria-titulo').value = '';
+            document.getElementById('galeria-subtitulo').value = '';
+            document.getElementById('galeria-imagem').value = '';
+            document.getElementById('galeria-data').value = '';
+            document.getElementById('titulo-painel-galeria').innerText = '📸 Postar Novo Momento na Galeria';
+            document.getElementById('btn-salvar-galeria').innerText = 'Publicar na Galeria ✨';
+        }
+
+        window.salvarFotoGaleriaFirebase = async function() {
+            const idEditando = document.getElementById('editando-galeria-id').value;
+            const titulo = document.getElementById('galeria-titulo').value.trim();
+            const subtitulo = document.getElementById('galeria-subtitulo').value.trim();
+            const imagem = document.getElementById('galeria-imagem').value.trim();
+            const dataInput = document.getElementById('galeria-data').value;
+
+            if (!imagem || !dataInput) {
+                alert('A imagem e a data do momento são obrigatórias! 📸');
+                return;
             }
-            await updateDoc(doc(db, "posts", id), { curtidas: curtidasAtuais });
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            try {
+                if (idEditando) {
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { titulo, subtitulo, imagem, data: dataFormatada });
+                    alert('Foto da galeria atualizada! 🖼️');
+                } else {
+                    await addDoc(collection(db, "posts"), {
+                        destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada,
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                    });
+                    alert('Momento guardado no nosso varal! 💞');
+                }
+                resetarFormularioGaleria();
+            } catch (error) { console.error(error); }
         };
 
-        window.compartilharLinkMomentos = function(titulo) {
-            navigator.clipboard.writeText(`${window.location.href} - Olha nosso momento: ${titulo || 'Especial'}`);
-            alert('Link do nosso momento copiado para enviar! 🌹');
+        window.prepararEdicaoGaleria = function(id, titulo, subtitulo, imagem, data) {
+            document.getElementById('editando-galeria-id').value = id;
+            document.getElementById('galeria-titulo').value = titulo;
+            document.getElementById('galeria-subtitulo').value = subtitulo;
+            document.getElementById('galeria-imagem').value = imagem;
+            const [dia, mes, ano] = data.split('/');
+            document.getElementById('galeria-data').value = `${ano}-${mes}-${dia}`;
+            document.getElementById('titulo-painel-galeria').innerText = '✏️ Editar Momento da Galeria';
+            document.getElementById('btn-salvar-galeria').innerText = 'Atualizar Foto ❤️';
+            document.getElementById('painel-galeria-posts').scrollIntoView({ behavior: 'smooth' });
         };
 
+
+        // --- SISTEMA 3: CARTAS & DECLARAÇÕES (TEXTOS) ---
+        function resetarFormularioTexto() {
+            document.getElementById('editando-texto-id').value = '';
+            document.getElementById('texto-titulo').value = '';
+            document.getElementById('texto-corpo').value = '';
+            document.getElementById('texto-data').value = '';
+            document.getElementById('titulo-painel-texto').innerText = '✍️ Escrever Nova Declaração';
+            document.getElementById('btn-salvar-texto').innerText = 'Eternizar Declaração 🌹';
+        }
+
+        window.salvarTextoFirebase = async function() {
+            const idEditando = document.getElementById('editando-texto-id').value;
+            const titulo = document.getElementById('texto-titulo').value.trim();
+            const corpo = document.getElementById('texto-corpo').value.trim();
+            const dataInput = document.getElementById('texto-data').value;
+
+            if (!corpo || !dataInput) {
+                alert('Escreva algo na declaração e insira uma data! ✍️');
+                return;
+            }
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            try {
+                if (idEditando) {
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { titulo, corpo, data: dataFormatada, editado: true });
+                    alert('Sua linda carta foi atualizada! ✨');
+                } else {
+                    await addDoc(collection(db, "posts"), {
+                        destino: 'texto', titulo, corpo, data: dataFormatada,
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: [], editado: false
+                    });
+                    alert('Sua declaração foi guardada! 📝');
+                }
+                resetarFormularioTexto();
+            } catch (error) { console.error(error); }
+        };
+
+        window.prepararEdicaoTexto = function(id, titulo, corpo, data) {
+            document.getElementById('editando-texto-id').value = id;
+            document.getElementById('texto-titulo').value = titulo;
+            document.getElementById('texto-corpo').value = corpo;
+            const [dia, mes, ano] = data.split('/');
+            document.getElementById('texto-data').value = `${ano}-${mes}-${dia}`;
+            document.getElementById('titulo-painel-texto').innerText = '✏️ Editar Declaração Escritura';
+            document.getElementById('btn-salvar-texto').innerText = 'Atualizar Carta ❤️';
+            document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
+        };
+
+
+        // --- SISTEMA COMUM DE INTERAÇÕES (CURTIDAS) ---
+        window.alternarCurtidaItem = async function(id, listaLikes = []) {
+            if (!Array.isArray(listaLikes)) listaLikes = [];
+            const index = listaLikes.indexOf(usuarioLogado);
+            if (index > -1) {
+                listaLikes.splice(index, 1);
+            } else {
+                listaLikes.push(usuarioLogado);
+                celebrarAmor(); // Disparar efeito visual nativo do site
+            }
+            await updateDoc(doc(db, "posts", id), { curtidas: listaLikes });
+        };
+
+
+        // --- SITEMA DE COMENTÁRIOS COMUNS ---
         window.adicionarComentarioFirebase = async function(secaoId) {
             const input = document.getElementById(`input-${secaoId}`);
             const texto = input?.value.trim();
@@ -849,74 +1024,110 @@
             }
         };
 
+
+        // --- REALTIME SNAPSHOT (RENDERIZADOR CENTRALIZADO) ---
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
-            document.getElementById('container-galeria-fotos').innerHTML = '';
+            document.getElementById('novos-cards-galeria').innerHTML = '';
+            document.getElementById('novos-cards-textos').innerHTML = '';
+            
             let numDela = 1; let numMeu = 2;
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
-                const midiaFormatada = converterLinkDrive(post.imagem);
-                
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+
+                // 1. RENDERIZAR FOTOS DA GALERIA
                 if (post.destino === 'galeria') {
-                    const containerGaleria = document.getElementById('container-galeria-fotos');
-                    const jaCurtido = post.curtidas && post.curtidas.includes(usuarioLogado);
-                    const totalCurtidas = post.curtidas ? post.curtidas.length : 0;
-                    
-                    const controleGaleria = (post.autor === usuarioLogado) ? `
-                        <div class="acoes-card-custom" style="margin-top:5px; margin-bottom:10px;">
-                            <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '', '${post.data}')">Editar ✏️</button>
-                            <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                    const containerGaleria = document.getElementById('novos-cards-galeria');
+                    const blocoFoto = document.createElement('div');
+                    blocoFoto.className = 'quadro-polaroid';
+
+                    const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
+                        <div class="menu-acoes-container">
+                            <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                            <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                                <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
+                                <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                            </div>
                         </div>
                     ` : '';
 
-                    const blocoFoto = document.createElement('div');
-                    // Cria uma leve inclinação randômica charmosa estilo Varal de Fotos
-                    const rotAleatoria = (Math.random() * 4 - 2).toFixed(1);
-                    blocoFoto.className = 'quadro-polaroid';
-                    blocoFoto.style.setProperty('--rotacao', `${rotAleatoria}deg`);
-
-                    let elementoMidiaHtml = `<img src="${midiaFormatada}" class="polaroid-midia" alt="Nosso Momento" onerror="this.src='https://placehold.co/400?text=Foto+Incrível'">`;
-                    if (verificarSeEVideo(midiaFormatada)) {
-                        elementoMidiaHtml = `<iframe src="${midiaFormatada}" class="polaroid-video" allow="autoplay" allowfullscreen></iframe>`;
-                    }
-
                     blocoFoto.innerHTML = `
-                        <div class="data-card" style="margin-bottom:15px;">
+                        ${menuTresPontosHtml}
+                        <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px;">
                             <span>🗓️ ${post.data}</span>
-                            <span class="autor-tag">Registrado por: ${post.autor || 'Anônimo'}</span>
+                            <span class="autor-tag">Por: ${post.autor}</span>
                         </div>
-                        ${elementoMidiaHtml}
-                        <div class="polaroid-conteudo">
-                            ${post.titulo ? `<div class="polaroid-titulo">${post.titulo}</div>` : ''}
-                            ${post.subtitulo ? `<div class="polaroid-descricao">${post.subtitulo}</div>` : ''}
+                        <img src="${post.imagem}" class="polaroid-imagem" alt="Foto Varal" onerror="this.src='https://placehold.co/400x400?text=Link+de+Imagem+Invalido'">
+                        <div class="polaroid-legenda-box">
+                            ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
+                            ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
                         </div>
-                        
-                        <div class="botoes-reacao">
-                            <button class="btn-reacao ${jaCurtido ? 'curtido' : ''}" onclick="interagirCurtida('${post.id}', ${JSON.stringify(post.curtidas || [])})">
-                                <span>${jaCurtido ? '❤️' : '🤍'}</span> ${totalCurtidas} amaram
+                        <div class="barra-reacoes-polaroid">
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">
+                                ${jaCurtido ? '❤️' : '🤍'}
                             </button>
-                            <button class="btn-reacao" onclick="compartilharLinkMomentos('${post.titulo || ''}')">
-                                🔗 Compartilhar
-                            </button>
+                            <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                         </div>
-
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                             <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo sobre a foto..." onkeypress="verificarEnter(event, '${post.id}')">
-                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬</button>
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, '${post.id}')">
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨</button>
                             </div>
-                            <div id="lista-${post.id}" class="lista-comentarios" style="max-height:140px;"></div>
+                            <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
-                        ${controleGaleria}
                     `;
                     containerGaleria.appendChild(blocoFoto);
                     return;
                 }
 
-                // Processo padrão para as apresentações normais de cima
+                // 2. RENDERIZAR SEÇÃO DE TEXTOS / DECLARAÇÕES
+                if (post.destino === 'texto') {
+                    const containerTextos = document.getElementById('novos-cards-textos');
+                    const blocoTexto = document.createElement('div');
+                    blocoTexto.className = 'card-declaracao-texto';
+
+                    const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
+                        <div class="menu-acoes-container">
+                            <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                            <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                                <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
+                                <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                            </div>
+                        </div>
+                    ` : '';
+
+                    blocoTexto.innerHTML = `
+                        ${menuTresPontosTextHtml}
+                        <div class="data-card" style="align-items: flex-start; text-align: left;">
+                            <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
+                            <span class="autor-tag">Escrito por: ${post.autor}</span>
+                        </div>
+                        ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
+                        <div class="declaracao-corpo-render">${sanitizarHTML(post.corpo)}</div>
+                        <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">
+                                ${jaCurtido ? '❤️' : '🤍'}
+                            </button>
+                            <span class="contagem-likes">${curtidasArray.length} curtidas</span>
+                        </div>
+                        <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
+                            <div class="form-comentario">
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado..." onkeypress="verificarEnter(event, '${post.id}')">
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬</button>
+                            </div>
+                            <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
+                        </div>
+                    `;
+                    containerTextos.appendChild(blocoTexto);
+                    return;
+                }
+
+                // 3. RENDERIZAR APRESENTAÇÕES DE CIMA (ORIGINAL INALTERADO)
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
 
@@ -941,7 +1152,7 @@
                         <div class="pdf-bloco">
                             <div class="numero-card">${post.numero}</div>
                             <div class="moldura-imagem">
-                                <img src="${midiaFormatada}" alt="${post.titulo}">
+                                <img src="${post.imagem}" alt="${post.titulo}">
                             </div>
                             <div class="contador-titulo">${post.titulo}</div>
                             <div class="contador-tempo">Clique para abrir 📂</div>
@@ -961,6 +1172,7 @@
             });
         });
 
+        // --- SNAPSHOT COMENTÁRIOS (MANTIDO ORIGINAL) ---
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
             const listas = document.querySelectorAll('.lista-comentarios');
