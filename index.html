@@ -16,7 +16,6 @@
             --border-color: #e6b3a8;
             --bg-card: #ffffff;
             --text-color: #4a3e3d;
-            /* Fontes corrigidas para máxima leitura */
             --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --font-title: 'Playfair Display', serif;
         }
@@ -27,7 +26,6 @@
             box-sizing: border-box;
         }
 
-        /* Rolagem suave adicionada para o menu flutuante */
         html { scroll-behavior: smooth; }
 
         body {
@@ -39,11 +37,18 @@
             line-height: 1.5;
         }
 
+        /* Otimização global de cliques */
+        button, input, select, textarea, a, .contador-bloco, .pdf-bloco {
+            touch-action: manipulation;
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
         #tela-login {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background-color: #fff3f2;
-            z-index: 10000;
+            z-index: 100000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -68,12 +73,12 @@
 
         #conteudo-site { display: none; }
 
-        /* Menu Flutuante Atualizado */
+        /* Menu Flutuante - Elevado para prioridade máxima de clique */
         .menu-flutuante-container {
             position: fixed;
             bottom: 25px;
             right: 25px;
-            z-index: 9999;
+            z-index: 99999;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -145,6 +150,7 @@
             padding: 6px 12px; border-radius: 12px;
             font-size: 0.85rem; font-family: var(--font-main);
             color: var(--secondary); cursor: pointer;
+            z-index: 10;
         }
 
         header h1 {
@@ -160,6 +166,8 @@
             max-width: 450px;
             margin: 0 auto;
             padding: 0 15px;
+            position: relative;
+            z-index: 5;
         }
 
         .bloco-separado {
@@ -189,7 +197,7 @@
         }
 
         #bloco-dias-amando { background-color: #ffebeb; }
-        #bloco-playlist { background-color: #fff5f0; } /* Cor da seção playlist */
+        #bloco-playlist { background-color: #fff5f0; } 
         #bloco-coisinhas-dela { background-color: #fff0f5; }
         #bloco-coisas-minhas { background-color: #e6f2ff; }
         #bloco-galeria-momentos { background-color: #fdf8f5; }
@@ -214,7 +222,7 @@
 
         .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
 
-        .pdf-link { text-decoration: none; display: block; }
+        .pdf-link { text-decoration: none; display: block; position: relative; z-index: 2; }
         .pdf-bloco { text-align: center; cursor: pointer; }
         .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; }
 
@@ -240,6 +248,8 @@
             padding: 22px;
             margin-bottom: 25px;
             box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
+            position: relative;
+            z-index: 6;
         }
 
         .input-custom, .select-custom, .textarea-custom {
@@ -260,7 +270,7 @@
         }
         .btn-postar:hover { background-color: #734f4b; }
 
-        .secao-comentarios { margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); }
+        .secao-comentarios { margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); position: relative; z-index: 5; }
         .form-comentario { display: flex; gap: 8px; margin-bottom: 15px; }
         .input-comentario {
             flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
@@ -276,21 +286,21 @@
         .corpo-comentario { display: flex; justify-content: space-between; align-items: center; }
         .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; }
 
-        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
         .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
 
-        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+        /* Proteção para o Canvas não interceptar cliques de jeito nenhum */
+        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; }
 
-        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 10; }
+        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
         .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
-        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 25; }
         .opcoes-tres-pontos.visivel { display: block; }
         .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
         .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        /* Estilos da Galeria */
         .quadro-polaroid { background: #ffffff; padding: 14px 14px 22px 14px; box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12); border-radius: 4px; margin: 20px auto 30px auto; max-width: 380px; border: 1px solid rgba(0,0,0,0.03); position: relative; }
         .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; }
         .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
@@ -301,13 +311,11 @@
         .btn-coracao-minimalista:active { transform: scale(1.3); }
         .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
 
-        /* Estilos de Textos */
         .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; }
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; }
         .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; }
 
-        /* NOVOS ESTILOS: PLAYLIST DE MÚSICAS */
         .card-musica {
             display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
             border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
@@ -409,7 +417,6 @@
                 <div class="titulo-secao">🎶 Nossa Playlist</div>
                 <div id="novos-cards-playlist"></div>
             </section>
-
 
             <section class="painel-upload" id="painel-de-postagem">
                 <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card (Apresentações)</div>
@@ -535,7 +542,6 @@
                 <div id="novos-cards-galeria"></div>
             </section>
 
-
             <section class="painel-upload" id="painel-texto-posts">
                 <div class="titulo-secao" id="titulo-painel-texto" style="margin-bottom: 15px;">✍️ Escrever Nova Declaração</div>
                 <input type="hidden" id="editando-texto-id" value="">
@@ -630,8 +636,6 @@
             }
         });
 
-
-        // --- NOVO SISTEMA: PLAYLIST DE MÚSICAS ---
         function extrairIDYouTube(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
@@ -660,13 +664,12 @@
                 return;
             }
 
-            // Mágica para puxar capa do YouTube automaticamente
             if (!imagem) {
                 const idYT = extrairIDYouTube(link);
                 if (idYT) {
                     imagem = `https://img.youtube.com/vi/${idYT}/hqdefault.jpg`;
                 } else {
-                    imagem = 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa'; // Fallback
+                    imagem = 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa'; 
                 }
             }
 
@@ -700,7 +703,6 @@
         window.removerPostagemFirebase = async function(id) {
             if (confirm("Deseja apagar essa lembrança? 🥺")) {
                 await deleteDoc(doc(db, "posts", id));
-                // Reseta todos os formulários só para garantir
                 resetarFormulario();
                 resetarFormularioGaleria();
                 resetarFormularioTexto();
@@ -708,7 +710,6 @@
             }
         };
 
-        // --- SISTEMAS ANTERIORES (APRESENTAÇÕES, GALERIA E TEXTOS) ---
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
             document.getElementById('post-titulo').value = '';
@@ -765,7 +766,6 @@
             document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
         };
 
-
         function resetarFormularioGaleria() {
             document.getElementById('editando-galeria-id').value = '';
             document.getElementById('galeria-titulo').value = '';
@@ -815,7 +815,6 @@
             document.getElementById('painel-galeria-posts').scrollIntoView({ behavior: 'smooth' });
         };
 
-
         function resetarFormularioTexto() {
             document.getElementById('editando-texto-id').value = '';
             document.getElementById('texto-titulo').value = '';
@@ -843,7 +842,7 @@
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino: 'texto', titulo, corpo, data: dataFormatada,
-                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: [], editado: false
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
                     alert('Sua declaração foi guardada! 📝');
                 }
@@ -861,7 +860,6 @@
             document.getElementById('btn-salvar-texto').innerText = 'Atualizar Carta ❤️';
             document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
         };
-
 
         window.alternarCurtidaItem = async function(id, listaLikes = []) {
             if (!Array.isArray(listaLikes)) listaLikes = [];
@@ -895,8 +893,6 @@
             }
         };
 
-
-        // --- REALTIME SNAPSHOT ---
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
@@ -912,7 +908,6 @@
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
 
-                // 1. RENDERIZAR PLAYLIST DE MÚSICAS
                 if (post.destino === 'playlist') {
                     const containerPlaylist = document.getElementById('novos-cards-playlist');
                     const blocoMusica = document.createElement('div');
@@ -954,7 +949,6 @@
                         </div>
                     `;
 
-                    // Se for destaque, joga para o topo!
                     if (post.destaque) {
                         containerPlaylist.prepend(blocoMusica);
                     } else {
@@ -963,7 +957,6 @@
                     return;
                 }
 
-                // 2. RENDERIZAR FOTOS DA GALERIA
                 if (post.destino === 'galeria') {
                     const containerGaleria = document.getElementById('novos-cards-galeria');
                     const blocoFoto = document.createElement('div');
@@ -1008,7 +1001,6 @@
                     return;
                 }
 
-                // 3. RENDERIZAR SEÇÃO DE TEXTOS / DECLARAÇÕES
                 if (post.destino === 'texto') {
                     const containerTextos = document.getElementById('novos-cards-textos');
                     const blocoTexto = document.createElement('div');
@@ -1050,7 +1042,6 @@
                     return;
                 }
 
-                // 4. RENDERIZAR APRESENTAÇÕES DE CIMA
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
 
@@ -1095,7 +1086,6 @@
             });
         });
 
-        // --- SNAPSHOT COMENTÁRIOS ---
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
             const listas = document.querySelectorAll('.lista-comentarios');
@@ -1160,6 +1150,7 @@
         const canvas = document.getElementById('canvas-hearts');
         const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
+        let animandoAtivo = true;
 
         function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', redimensionarCanvas);
@@ -1170,11 +1161,11 @@
                 this.x = Math.random() * canvas.width;
                 this.y = canvas.height + Math.random() * 20;
                 this.size = Math.random() * 10 + 6;
-                this.speed = Math.random() * 3 + 2;
+                this.speed = Math.random() * 2 + 1.5; // Suavizado para desempenho
                 this.opacity = 1;
                 this.colorValue = 140 + Math.floor(Math.random() * 40);
             }
-            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.5; this.opacity -= 0.005; }
+            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.3; this.opacity -= 0.004; }
             desenhar() {
                 ctx.save(); ctx.globalAlpha = this.opacity;
                 ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
@@ -1186,6 +1177,7 @@
         }
 
         function animarLoop() {
+            if (!animandoAtivo) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
             requestAnimationFrame(animarLoop);
