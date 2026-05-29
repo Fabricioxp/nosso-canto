@@ -72,7 +72,40 @@
             margin-bottom: 20px;
         }
 
-        #conteudo-site { display: none; }
+        #conteudo-site { 
+            display: none; 
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
+        }
+
+        /* Ajuste do topo com Barra de Presença */
+        .header-status-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            border-bottom: 1px solid rgba(230, 179, 168, 0.3);
+            font-weight: 500;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .status-dot.online {
+            background-color: #2ecc71;
+            box-shadow: 0 0 8px #2ecc71;
+        }
+        .status-dot.offline {
+            background-color: #95a5a6;
+        }
 
         .menu-flutuante-container {
             position: fixed;
@@ -140,13 +173,13 @@
 
         header {
             text-align: center;
-            padding: 60px 20px 40px 20px;
+            padding: 40px 20px 35px 20px;
             position: relative;
         }
 
         .btn-logout {
             position: absolute;
-            top: 20px; right: 20px;
+            top: 15px; right: 20px;
             background: none; border: 1px solid var(--border-color);
             padding: 6px 12px; border-radius: 12px;
             font-size: 0.85rem; font-family: var(--font-main);
@@ -294,6 +327,7 @@
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
 
+        /* CRUCIAL PARA CORREÇÃO DO BUG DE NÃO CLICAR: Desativar interceptação de cliques no canvas */
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
 
         .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
@@ -359,6 +393,12 @@
     </div>
 
     <div id="conteudo-site">
+        <div class="header-status-bar">
+            <span id="label-parceiro">Carregando status...</span>
+            <span id="dot-presenca" class="status-dot offline"></span>
+            <span id="txt-presenca">Verificando...</span>
+        </div>
+
         <canvas id="canvas-hearts"></canvas>
 
         <header>
@@ -486,7 +526,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         emailjs.init("QqfTPDKvKPnqTCPsf"); 
 
@@ -513,6 +553,58 @@
         const db = getFirestore(app);
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
+
+        // SISTEMA DE PRESENÇA REALTIME NO FIRESTORE
+        function gerenciarPresencaOnline() {
+            if (!usuarioLogado) return;
+
+            const parceiro = usuarioLogado === "Maria" ? "Fabricio" : "Maria";
+            document.getElementById('label-parceiro').innerText = `${parceiro}:`;
+
+            // Função interna para atualizar meu estado no Firestore
+            const definirMeuStatus = async (estado) => {
+                const agora = new Date();
+                const horarioString = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const dataString = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                
+                try {
+                    await setDoc(doc(db, "presenca", usuarioLogado), {
+                        status: estado,
+                        hora: horarioString,
+                        data: dataString,
+                        timestamp: Date.now()
+                    });
+                } catch(e) { console.error("Erro status presenca:", e); }
+            };
+
+            // Fica online ao entrar
+            definirMeuStatus("online");
+
+            // Monitora quando fechar a página ou atualizar para marcar offline
+            window.addEventListener('beforeunload', () => {
+                definirMeuStatus("offline");
+            });
+
+            // Ouvinte em tempo real do status do parceiro
+            onSnapshot(doc(db, "presenca", parceiro), (snapshot) => {
+                const dot = document.getElementById('dot-presenca');
+                const txt = document.getElementById('txt-presenca');
+
+                if (snapshot.exists()) {
+                    const dados = snapshot.data();
+                    if (dados.status === "online") {
+                        dot.className = "status-dot online";
+                        txt.innerText = "Online";
+                    } else {
+                        dot.className = "status-dot offline";
+                        txt.innerText = `visto por último às ${dados.hora} de ${dados.data}`;
+                    }
+                } else {
+                    dot.className = "status-dot offline";
+                    txt.innerText = "Nenhum registro";
+                }
+            });
+        }
 
         async function inicializarCardsOriginais() {
             const postsRef = collection(db, "posts");
@@ -543,6 +635,7 @@
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('conteudo-site').style.display = 'block';
                 inicializarCardsOriginais();
+                gerenciarPresencaOnline();
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('conteudo-site').style.display = 'none';
@@ -564,7 +657,17 @@
             }
         };
 
-        window.fazerLogout = function() {
+        window.fazerLogout = async function() {
+            if (usuarioLogado) {
+                try {
+                    await setDoc(doc(db, "presenca", usuarioLogado), {
+                        status: "offline",
+                        hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                        data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+                        timestamp: Date.now()
+                    });
+                } catch(e) { console.error(e); }
+            }
             sessionStorage.removeItem('user_canto');
             usuarioLogado = null;
             verificarSessao();
@@ -680,7 +783,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado! ✨');
+                    alert('Card updated! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
                     if (typeof window.dispararNotificacaoEmail === 'function') { window.dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado); }
@@ -839,6 +942,7 @@
                     let seloHtml = '';
                     if (post.destaque) { classesCartao += ' destaque'; seloHtml = '<div class="selo-destaque">🌟 Música do Momento</div>'; }
 
+                    // CORREÇÃO DOS BOTÕES QUE TINHAM SUMIDO NA PLAYLIST:
                     const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
