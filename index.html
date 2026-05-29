@@ -565,7 +565,8 @@
             const definirMeuStatus = async (estado) => {
                 const agora = new Date();
                 const horarioString = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                const dataString = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                // Formatação melhorada incluindo dia da semana e mês por extenso para o Visto por Último
+                const dataString = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
                 
                 try {
                     await setDoc(doc(db, "presenca", usuarioLogado), {
@@ -597,7 +598,7 @@
                         txt.innerText = "Online";
                     } else {
                         dot.className = "status-dot offline";
-                        txt.innerText = `visto por último às ${dados.hora} de ${dados.data}`;
+                        txt.innerText = `visto por último: ${dados.data} às ${dados.hora}`;
                     }
                 } else {
                     dot.className = "status-dot offline";
@@ -663,7 +664,7 @@
                     await setDoc(doc(db, "presenca", usuarioLogado), {
                         status: "offline",
                         hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-                        data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+                        data: new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }),
                         timestamp: Date.now()
                     });
                 } catch(e) { console.error(e); }
@@ -831,7 +832,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, data: dataFormatada });
-                    alert('Foto da galeria atualizada! 🖼️');
+                    alert('Foto da galeria updated! 🖼️');
                 } else {
                     await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
                     if (typeof window.dispararNotificacaoEmail === 'function') { window.dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado); }
@@ -942,7 +943,6 @@
                     let seloHtml = '';
                     if (post.destaque) { classesCartao += ' destaque'; seloHtml = '<div class="selo-destaque">🌟 Música do Momento</div>'; }
 
-                    // CORREÇÃO DOS BOTÕES QUE TINHAM SUMIDO NA PLAYLIST:
                     const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
