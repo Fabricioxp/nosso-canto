@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Playfair+Display:ital,wght=0,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -16,7 +16,8 @@
             --border-color: #e6b3a8;
             --bg-card: #ffffff;
             --text-color: #4a3e3d;
-            --font-main: 'Comfortaa', cursive;
+            /* Fontes corrigidas para máxima leitura */
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --font-title: 'Playfair Display', serif;
         }
 
@@ -26,12 +27,16 @@
             box-sizing: border-box;
         }
 
+        /* Rolagem suave adicionada para o menu flutuante */
+        html { scroll-behavior: smooth; }
+
         body {
             background-color: #fff3f2; 
             color: var(--text-color);
             font-family: var(--font-main);
             padding-bottom: 90px;
             overflow-x: hidden;
+            line-height: 1.5;
         }
 
         #tela-login {
@@ -58,14 +63,12 @@
         .box-login h2 {
             font-family: var(--font-title);
             color: var(--primary);
-            font-style: italic;
             margin-bottom: 20px;
         }
 
-        #conteudo-site {
-            display: none;
-        }
+        #conteudo-site { display: none; }
 
+        /* Menu Flutuante Atualizado */
         .menu-flutuante-container {
             position: fixed;
             bottom: 25px;
@@ -90,12 +93,10 @@
             align-items: center;
             justify-content: center;
             font-size: 1.6rem;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s;
         }
 
-        .botao-flutuante-principal:active {
-            transform: scale(0.9);
-        }
+        .botao-flutuante-principal:active { transform: scale(0.9); }
 
         .menu-opcoes-flutuantes {
             display: flex;
@@ -119,16 +120,17 @@
             color: var(--text-color);
             padding: 12px 18px;
             border-radius: 25px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             gap: 8px;
             border: 1px solid rgba(230, 179, 168, 0.5);
-            transition: transform 0.2s;
+            transition: transform 0.2s, background 0.2s;
             white-space: nowrap;
         }
+        .item-opcao-flutuante:hover { background-color: #fff0ee; }
 
         header {
             text-align: center;
@@ -141,22 +143,18 @@
             top: 20px; right: 20px;
             background: none; border: 1px solid var(--border-color);
             padding: 6px 12px; border-radius: 12px;
-            font-size: 0.75rem; font-family: var(--font-main);
+            font-size: 0.85rem; font-family: var(--font-main);
             color: var(--secondary); cursor: pointer;
         }
 
         header h1 {
             font-family: var(--font-title);
-            font-size: 2.5rem;
-            font-style: italic;
+            font-size: 2.3rem;
             color: var(--primary);
             margin-bottom: 10px;
         }
 
-        header p {
-            font-size: 1rem;
-            color: var(--secondary);
-        }
+        header p { font-size: 1rem; color: var(--secondary); }
 
         .container-blocos {
             max-width: 450px;
@@ -181,55 +179,30 @@
         }
 
         .titulo-secao {
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             font-weight: bold;
             text-align: center;
             color: var(--primary);
             margin-bottom: 20px;
-            text-transform: lowercase;
+            text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         #bloco-dias-amando { background-color: #ffebeb; }
+        #bloco-playlist { background-color: #fff5f0; } /* Cor da seção playlist */
         #bloco-coisinhas-dela { background-color: #fff0f5; }
         #bloco-coisas-minhas { background-color: #e6f2ff; }
         #bloco-galeria-momentos { background-color: #fdf8f5; }
         #bloco-nossos-textos { background-color: #f7f3f9; }
 
-        .contador-bloco {
-            text-align: center;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.2s;
-        }
-
-        .contador-bloco:first-child {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        .contador-titulo {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--secondary);
-            margin-bottom: 8px;
-        }
-
-        .contador-tempo {
-            font-size: 1.35rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .contador-tempo.ativo span {
-            display: inline-block;
-            animation: pulse 1s infinite alternate;
-        }
+        .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
+        .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
+        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; }
+        .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+        .contador-tempo.ativo span { display: inline-block; animation: pulse 1s infinite alternate; }
 
         .data-card {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: bold;
             color: var(--secondary);
             text-align: center;
@@ -239,45 +212,27 @@
             gap: 2px;
         }
 
-        .autor-tag {
-            font-size: 0.7rem;
-            color: var(--primary);
-            font-style: italic;
-        }
+        .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
 
         .pdf-link { text-decoration: none; display: block; }
         .pdf-bloco { text-align: center; cursor: pointer; }
-        .pdf-subtitulo { font-size: 0.85rem; color: var(--secondary); margin-top: 4px; }
+        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; }
 
         .numero-card {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border: 1.5px solid var(--secondary);
-            border-radius: 50%;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: var(--secondary);
-            margin-bottom: 15px; 
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border: 1.5px solid var(--secondary);
+            border-radius: 50%; font-size: 0.85rem; font-weight: bold;
+            color: var(--secondary); margin-bottom: 15px; 
         }
 
         .moldura-imagem {
-            width: 100%;
-            max-width: 250px; 
-            aspect-ratio: 16 / 9; 
-            margin: 0 auto 15px auto; 
-            border-radius: 12px;
-            overflow: hidden; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            border: 2px solid rgba(255,255,255,0.5);
+            width: 100%; max-width: 250px; aspect-ratio: 16 / 9; 
+            margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.5);
             display: block;
         }
-
         .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Estilização Melhorada dos Painéis de Upload */
         .painel-upload {
             background-color: #ffffff;
             border: 1px dashed var(--border-color);
@@ -288,250 +243,95 @@
         }
 
         .input-custom, .select-custom, .textarea-custom {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid rgba(230, 179, 168, 0.6);
-            border-radius: 15px;
-            font-family: var(--font-main);
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-            outline: none;
-            background: #fffbfb;
-            color: var(--text-color);
-            transition: all 0.3s;
+            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
+            border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
+            margin-bottom: 12px; outline: none; background: #fffbfb;
+            color: var(--text-color); transition: all 0.3s;
         }
-        
-        .textarea-custom {
-            resize: vertical;
-            min-height: 90px;
-        }
-
+        .textarea-custom { resize: vertical; min-height: 90px; }
         .input-custom:focus, .select-custom:focus, .textarea-custom:focus {
-            border-color: var(--primary);
-            background: #ffffff;
-            box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
         }
 
         .btn-postar {
-            width: 100%;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 15px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
+            width: 100%; background-color: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: 15px; font-family: var(--font-main);
+            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
         }
         .btn-postar:hover { background-color: #734f4b; }
 
-        .secao-comentarios {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px dashed var(--border-color);
-        }
-
+        .secao-comentarios { margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); }
         .form-comentario { display: flex; gap: 8px; margin-bottom: 15px; }
-
         .input-comentario {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-family: var(--font-main);
-            font-size: 0.85rem;
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.6);
+            flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
+            border-radius: 20px; font-family: var(--font-main); font-size: 0.9rem;
+            outline: none; background-color: rgba(255, 255, 255, 0.6);
         }
+        .btn-comentar { background-color: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 20px; cursor: pointer; }
 
-        .btn-comentar {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        .lista-comentarios {
-            max-height: 200px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .item-comentario {
-            background-color: rgba(255, 255, 255, 0.5);
-            padding: 10px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-        }
-
-        .meta-comentario {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.68rem;
-            color: var(--secondary);
-            margin-bottom: 4px;
-        }
-
+        .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; }
+        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; }
         .autor-comentario { font-weight: bold; color: var(--primary); }
-
-        .corpo-comentario {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn-excluir-comentario {
-            background: none; border: none; color: #d9534f;
-            cursor: pointer; font-size: 0.7rem;
-        }
+        .corpo-comentario { display: flex; justify-content: space-between; align-items: center; }
+        .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; }
 
         .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
-        .btn-acao-card {
-            background: none; border: none; cursor: pointer;
-            font-size: 0.8rem; font-family: var(--font-main);
-            padding: 5px 10px; border-radius: 10px;
-        }
+        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
 
-        /* Novo Sistema Unificado de Menu de 3 Pontinhos (Ações) */
-        .menu-acoes-container {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 10;
-        }
-        .btn-tres-pontos {
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            color: var(--secondary);
-            cursor: pointer;
-            padding: 0 5px;
-            line-height: 1;
-        }
-        .opcoes-tres-pontos {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 25px;
-            background: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
+        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 10; }
+        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; }
         .opcoes-tres-pontos.visivel { display: block; }
-        .opcoes-tres-pontos button {
-            display: block;
-            width: 100%;
-            padding: 10px 16px;
-            background: none;
-            border: none;
-            font-family: var(--font-main);
-            font-size: 0.78rem;
-            text-align: left;
-            cursor: pointer;
-            color: var(--text-color);
-            white-space: nowrap;
-        }
+        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
         .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        /* Novo Estilo: Molduras Customizadas da Galeria */
-        .quadro-polaroid {
-            background: #ffffff;
-            padding: 14px 14px 22px 14px;
-            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
-            border-radius: 2px;
-            margin: 20px auto 30px auto;
-            max-width: 380px;
-            border: 1px solid rgba(0,0,0,0.03);
-            position: relative;
-        }
-        .polaroid-imagem {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            background: #fafafa;
-            display: block;
-            border-radius: 4px;
-        }
-        .polaroid-legenda-box {
-            text-align: center;
-            padding: 15px 5px 0 5px;
-        }
-        .polaroid-titulo-txt {
-            font-family: var(--font-title);
-            font-size: 1.2rem;
-            color: var(--primary);
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        .polaroid-desc-txt {
-            font-size: 0.85rem;
-            color: var(--text-color);
-            line-height: 1.4;
-        }
-        .barra-reacoes-polaroid {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px dashed #f5e4e1;
-        }
-        .btn-coracao-minimalista {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
+        /* Estilos da Galeria */
+        .quadro-polaroid { background: #ffffff; padding: 14px 14px 22px 14px; box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12); border-radius: 4px; margin: 20px auto 30px auto; max-width: 380px; border: 1px solid rgba(0,0,0,0.03); position: relative; }
+        .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; }
+        .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
+        .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; }
+        .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; }
+        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
+        .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
         .btn-coracao-minimalista:active { transform: scale(1.3); }
-        .contagem-likes { font-size: 0.75rem; color: var(--secondary); font-family: var(--font-main); }
+        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
 
-        /* Novo Estilo: Bloco de Declarações por Extenso */
-        .card-declaracao-texto {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
-            margin-bottom: 25px;
-            border: 1px solid rgba(230, 179, 168, 0.3);
-            position: relative;
+        /* Estilos de Textos */
+        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; }
+        .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
+        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; }
+        .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; }
+
+        /* NOVOS ESTILOS: PLAYLIST DE MÚSICAS */
+        .card-musica {
+            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
+            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
+            transition: transform 0.2s;
         }
-        .tag-editado {
-            font-size: 0.65rem;
-            color: var(--secondary);
-            font-style: italic;
-            display: inline-block;
-            margin-left: 5px;
+        .card-musica.destaque {
+            border: 2px solid #ff4d4d;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
+            background: #fffafa;
         }
-        .declaracao-titulo-render {
-            font-family: var(--font-title);
-            font-size: 1.3rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-weight: bold;
+        .selo-destaque {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: #ff4d4d; color: white; padding: 4px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4); z-index: 2;
         }
-        .declaracao-corpo-render {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: var(--text-color);
-            white-space: pre-wrap;
-            margin-bottom: 15px;
-        }
+        .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
+        .musica-capa { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; }
+        .musica-info { flex: 1; overflow: hidden; }
+        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; }
+        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; }
+        .musica-link-btn:hover { background: var(--primary); }
 
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
     </style>
@@ -558,9 +358,13 @@
 
         <div class="menu-flutuante-container">
             <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
-                <a href="galeria.html" class="item-opcao-flutuante">🖼️ Nossa Galeria</a>
+                <a href="#bloco-dias-amando" class="item-opcao-flutuante" onclick="alternarMenuBalao()">⏳ Nosso Tempo</a>
+                <a href="#bloco-playlist" class="item-opcao-flutuante" onclick="alternarMenuBalao()">🎧 Nossa Playlist</a>
+                <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" onclick="alternarMenuBalao()">🖼️ Galeria</a>
+                <a href="#bloco-nossos-textos" class="item-opcao-flutuante" onclick="alternarMenuBalao()">✍️ Cartas</a>
+                <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" onclick="alternarMenuBalao()">✨ Apresentações</a>
             </div>
-            <button class="botao-flutuante-principal" onclick="alternarMenuBalao()">❤️</button>
+            <button class="botao-flutuante-principal" onclick="alternarMenuBalao()">📌</button>
         </div>
 
         <div class="container-blocos">
@@ -585,7 +389,28 @@
                 </div>
             </section>
 
-            <!-- PAINEL DE UPLOAD 1: APRESENTAÇÕES (MANTIDO ORIGINAL) -->
+            <section class="painel-upload" id="painel-playlist-posts">
+                <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
+                <input type="hidden" id="editando-playlist-id" value="">
+                
+                <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
+                <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
+                <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
+                
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
+                    <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
+                    <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
+                </div>
+                
+                <button class="btn-postar" id="btn-salvar-playlist" onclick="salvarMusicaFirebase()">Adicionar à Playlist 🎶</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-playlist">
+                <div class="titulo-secao">🎶 Nossa Playlist</div>
+                <div id="novos-cards-playlist"></div>
+            </section>
+
+
             <section class="painel-upload" id="painel-de-postagem">
                 <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card (Apresentações)</div>
                 <input type="hidden" id="editando-id" value="">
@@ -693,9 +518,6 @@
                 <div id="novos-cards-meu"></div>
             </section>
 
-            <!-- ========================================== -->
-            <!-- NOVO PAINEL DE UPLOAD 2: APENAS PARA A GALERIA -->
-            <!-- ========================================== -->
             <section class="painel-upload" id="painel-galeria-posts">
                 <div class="titulo-secao" id="titulo-painel-galeria" style="margin-bottom: 15px;">📸 Postar Novo Momento na Galeria</div>
                 <input type="hidden" id="editando-galeria-id" value="">
@@ -708,16 +530,12 @@
                 <button class="btn-postar" id="btn-salvar-galeria" onclick="salvarFotoGaleriaFirebase()">Publicar na Galeria ✨</button>
             </section>
 
-            <!-- SEÇÃO DA GALERIA DE FOTOS -->
             <section class="bloco-separado" id="bloco-galeria-momentos">
                 <div class="titulo-secao">🖼️ Nosso Varal de Fotos</div>
                 <div id="novos-cards-galeria"></div>
             </section>
 
 
-            <!-- ========================================== -->
-            <!-- NOVO PAINEL DE UPLOAD 3: APENAS PARA TEXTOS/DECLARAÇÕES -->
-            <!-- ========================================== -->
             <section class="painel-upload" id="painel-texto-posts">
                 <div class="titulo-secao" id="titulo-painel-texto" style="margin-bottom: 15px;">✍️ Escrever Nova Declaração</div>
                 <input type="hidden" id="editando-texto-id" value="">
@@ -729,7 +547,6 @@
                 <button class="btn-postar" id="btn-salvar-texto" onclick="salvarTextoFirebase()">Eternizar Declaração 🌹</button>
             </section>
 
-            <!-- SEÇÃO DE DECLARAÇÕES POR EXTENSO -->
             <section class="bloco-separado" id="bloco-nossos-textos">
                 <div class="titulo-secao">✍️ Cartas & Declarações</div>
                 <div id="novos-cards-textos"></div>
@@ -807,14 +624,91 @@
             if (menu) menu.classList.toggle('visivel');
         };
 
-        // Fecha menus de 3 pontos se clicar fora
         document.addEventListener('click', function(e) {
             if (!e.target.classList.contains('btn-tres-pontos')) {
                 document.querySelectorAll('.opcoes-tres-pontos').forEach(m => m.classList.remove('visivel'));
             }
         });
 
-        // --- SISTEMA 1: APRESENTAÇÕES (MANTIDO ORIGINAL E INTEGRAL) ---
+
+        // --- NOVO SISTEMA: PLAYLIST DE MÚSICAS ---
+        function extrairIDYouTube(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function resetarFormularioPlaylist() {
+            document.getElementById('editando-playlist-id').value = '';
+            document.getElementById('playlist-nome').value = '';
+            document.getElementById('playlist-link').value = '';
+            document.getElementById('playlist-capa').value = '';
+            document.getElementById('playlist-destaque').checked = false;
+            document.getElementById('titulo-painel-playlist').innerText = '🎧 Dedicar uma Música';
+            document.getElementById('btn-salvar-playlist').innerText = 'Adicionar à Playlist 🎶';
+        }
+
+        window.salvarMusicaFirebase = async function() {
+            const idEditando = document.getElementById('editando-playlist-id').value;
+            const titulo = document.getElementById('playlist-nome').value.trim();
+            const link = document.getElementById('playlist-link').value.trim();
+            let imagem = document.getElementById('playlist-capa').value.trim();
+            const destaque = document.getElementById('playlist-destaque').checked;
+
+            if (!titulo || !link) {
+                alert('Por favor, digite o nome e cole o link da música! 🎧');
+                return;
+            }
+
+            // Mágica para puxar capa do YouTube automaticamente
+            if (!imagem) {
+                const idYT = extrairIDYouTube(link);
+                if (idYT) {
+                    imagem = `https://img.youtube.com/vi/${idYT}/hqdefault.jpg`;
+                } else {
+                    imagem = 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa'; // Fallback
+                }
+            }
+
+            try {
+                if (idEditando) {
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { titulo, link, imagem, destaque });
+                    alert('Música atualizada! 🎶');
+                } else {
+                    await addDoc(collection(db, "posts"), {
+                        destino: 'playlist', titulo, link, imagem, destaque,
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                    });
+                    alert('Música dedicada com sucesso! ❤️');
+                }
+                resetarFormularioPlaylist();
+            } catch (error) { console.error(error); }
+        };
+
+        window.prepararEdicaoPlaylist = function(id, titulo, link, imagem, destaque) {
+            document.getElementById('editando-playlist-id').value = id;
+            document.getElementById('playlist-nome').value = titulo;
+            document.getElementById('playlist-link').value = link;
+            document.getElementById('playlist-capa').value = imagem;
+            document.getElementById('playlist-destaque').checked = (destaque === 'true' || destaque === true);
+            document.getElementById('titulo-painel-playlist').innerText = '✏️ Editar Música Dedicada';
+            document.getElementById('btn-salvar-playlist').innerText = 'Atualizar Música 🎧';
+            document.getElementById('painel-playlist-posts').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.removerPostagemFirebase = async function(id) {
+            if (confirm("Deseja apagar essa lembrança? 🥺")) {
+                await deleteDoc(doc(db, "posts", id));
+                // Reseta todos os formulários só para garantir
+                resetarFormulario();
+                resetarFormularioGaleria();
+                resetarFormularioTexto();
+                resetarFormularioPlaylist();
+            }
+        };
+
+        // --- SISTEMAS ANTERIORES (APRESENTAÇÕES, GALERIA E TEXTOS) ---
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
             document.getElementById('post-titulo').value = '';
@@ -836,8 +730,7 @@
             const dataInput = document.getElementById('post-data').value;
 
             if (!titulo || !imagem || !link || !dataInput) {
-                alert('Por favor, preencha todos os campos! ❤️');
-                return;
+                alert('Por favor, preencha todos os campos! ❤️'); return;
             }
             const [ano, mes, dia] = dataInput.split('-');
             const dataFormatada = `${dia}/${mes}/${ano}`;
@@ -858,13 +751,6 @@
             } catch (error) { console.error(error); }
         };
 
-        window.removerPostagemFirebase = async function(id) {
-            if (confirm("Deseja apagar essa lembrança? 🥺")) {
-                await deleteDoc(doc(db, "posts", id));
-                resetarFormulario();
-            }
-        };
-
         window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
             document.getElementById('editando-id').value = id;
             document.getElementById('post-destino').value = destino;
@@ -880,7 +766,6 @@
         };
 
 
-        // --- SITEMA 2: GALERIA DE MOMENTOS (FOTOS) ---
         function resetarFormularioGaleria() {
             document.getElementById('editando-galeria-id').value = '';
             document.getElementById('galeria-titulo').value = '';
@@ -898,10 +783,7 @@
             const imagem = document.getElementById('galeria-imagem').value.trim();
             const dataInput = document.getElementById('galeria-data').value;
 
-            if (!imagem || !dataInput) {
-                alert('A imagem e a data do momento são obrigatórias! 📸');
-                return;
-            }
+            if (!imagem || !dataInput) { alert('A imagem e a data do momento são obrigatórias! 📸'); return; }
             const [ano, mes, dia] = dataInput.split('-');
             const dataFormatada = `${dia}/${mes}/${ano}`;
 
@@ -934,7 +816,6 @@
         };
 
 
-        // --- SISTEMA 3: CARTAS & DECLARAÇÕES (TEXTOS) ---
         function resetarFormularioTexto() {
             document.getElementById('editando-texto-id').value = '';
             document.getElementById('texto-titulo').value = '';
@@ -950,10 +831,7 @@
             const corpo = document.getElementById('texto-corpo').value.trim();
             const dataInput = document.getElementById('texto-data').value;
 
-            if (!corpo || !dataInput) {
-                alert('Escreva algo na declaração e insira uma data! ✍️');
-                return;
-            }
+            if (!corpo || !dataInput) { alert('Escreva algo na declaração e insira uma data! ✍️'); return; }
             const [ano, mes, dia] = dataInput.split('-');
             const dataFormatada = `${dia}/${mes}/${ano}`;
 
@@ -985,21 +863,14 @@
         };
 
 
-        // --- SISTEMA COMUM DE INTERAÇÕES (CURTIDAS) ---
         window.alternarCurtidaItem = async function(id, listaLikes = []) {
             if (!Array.isArray(listaLikes)) listaLikes = [];
             const index = listaLikes.indexOf(usuarioLogado);
-            if (index > -1) {
-                listaLikes.splice(index, 1);
-            } else {
-                listaLikes.push(usuarioLogado);
-                celebrarAmor(); // Disparar efeito visual nativo do site
-            }
+            if (index > -1) { listaLikes.splice(index, 1); } 
+            else { listaLikes.push(usuarioLogado); celebrarAmor(); }
             await updateDoc(doc(db, "posts", id), { curtidas: listaLikes });
         };
 
-
-        // --- SITEMA DE COMENTÁRIOS COMUNS ---
         window.adicionarComentarioFirebase = async function(secaoId) {
             const input = document.getElementById(`input-${secaoId}`);
             const texto = input?.value.trim();
@@ -1025,13 +896,14 @@
         };
 
 
-        // --- REALTIME SNAPSHOT (RENDERIZADOR CENTRALIZADO) ---
+        // --- REALTIME SNAPSHOT ---
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
             document.getElementById('novos-cards-galeria').innerHTML = '';
             document.getElementById('novos-cards-textos').innerHTML = '';
+            document.getElementById('novos-cards-playlist').innerHTML = '';
             
             let numDela = 1; let numMeu = 2;
 
@@ -1040,7 +912,58 @@
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
 
-                // 1. RENDERIZAR FOTOS DA GALERIA
+                // 1. RENDERIZAR PLAYLIST DE MÚSICAS
+                if (post.destino === 'playlist') {
+                    const containerPlaylist = document.getElementById('novos-cards-playlist');
+                    const blocoMusica = document.createElement('div');
+                    
+                    let classesCartao = 'card-musica';
+                    let seloHtml = '';
+                    if (post.destaque) {
+                        classesCartao += ' destaque';
+                        seloHtml = '<div class="selo-destaque">🌟 Música do Momento</div>';
+                    }
+
+                    const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
+                        <div class="menu-acoes-container">
+                            <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                            <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                                <button onclick="prepararEdicaoPlaylist('${post.id}', '${post.titulo}', '${post.link}', '${post.imagem}', ${post.destaque})">Editar ✏️</button>
+                                <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                            </div>
+                        </div>
+                    ` : '';
+
+                    blocoMusica.className = classesCartao;
+                    blocoMusica.innerHTML = `
+                        ${seloHtml}
+                        ${menuTresPontosPlaylist}
+                        <div class="musica-layout">
+                            <img src="${post.imagem}" class="musica-capa" alt="Capa da Música">
+                            <div class="musica-info">
+                                <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
+                                <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
+                                <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
+                            </div>
+                        </div>
+                        <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">
+                                ${jaCurtido ? '❤️' : '🤍'}
+                            </button>
+                            <span class="contagem-likes">${curtidasArray.length} pessoas amaram</span>
+                        </div>
+                    `;
+
+                    // Se for destaque, joga para o topo!
+                    if (post.destaque) {
+                        containerPlaylist.prepend(blocoMusica);
+                    } else {
+                        containerPlaylist.appendChild(blocoMusica);
+                    }
+                    return;
+                }
+
+                // 2. RENDERIZAR FOTOS DA GALERIA
                 if (post.destino === 'galeria') {
                     const containerGaleria = document.getElementById('novos-cards-galeria');
                     const blocoFoto = document.createElement('div');
@@ -1085,7 +1008,7 @@
                     return;
                 }
 
-                // 2. RENDERIZAR SEÇÃO DE TEXTOS / DECLARAÇÕES
+                // 3. RENDERIZAR SEÇÃO DE TEXTOS / DECLARAÇÕES
                 if (post.destino === 'texto') {
                     const containerTextos = document.getElementById('novos-cards-textos');
                     const blocoTexto = document.createElement('div');
@@ -1127,7 +1050,7 @@
                     return;
                 }
 
-                // 3. RENDERIZAR APRESENTAÇÕES DE CIMA (ORIGINAL INALTERADO)
+                // 4. RENDERIZAR APRESENTAÇÕES DE CIMA
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
 
@@ -1172,7 +1095,7 @@
             });
         });
 
-        // --- SNAPSHOT COMENTÁRIOS (MANTIDO ORIGINAL) ---
+        // --- SNAPSHOT COMENTÁRIOS ---
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
             const listas = document.querySelectorAll('.lista-comentarios');
