@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
     <style>
         :root {
             --primary: #8c625d;
@@ -566,6 +568,21 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // === CONFIGURAÇÃO DO EMAILJS ===
+        emailjs.init("QqfTPDKvKPnqTCPsf"); 
+
+        function dispararNotificacaoEmail(tipo, titulo, autor) {
+            emailjs.send("service_bjyc673", "template_n994c8j", {
+                tipo: tipo,
+                titulo: titulo,
+                autor: autor
+            }).then(
+                function(response) { console.log("E-mail enviado!", response.status); },
+                function(error) { console.log("Erro no envio:", error); }
+            );
+        }
+        // =================================
+
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
             authDomain: "nosso-canto-5d714.firebaseapp.com",
@@ -684,6 +701,10 @@
                         destino: 'playlist', titulo, link, imagem, destaque,
                         autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
+                    
+                    // Dispara a notificação de email
+                    dispararNotificacaoEmail("Música na Playlist", titulo, usuarioLogado);
+
                     alert('Música dedicada com sucesso! ❤️');
                 }
                 resetarFormularioPlaylist();
@@ -747,6 +768,10 @@
                         destino, titulo, subtitulo, imagem, link, data: dataFormatada,
                         autor: usuarioLogado, criadoEm: Date.now()
                     });
+                    
+                    // Dispara a notificação de email
+                    dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado);
+
                     alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
@@ -798,6 +823,10 @@
                         destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada,
                         autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
+                    
+                    // Dispara a notificação de email
+                    dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado);
+
                     alert('Momento guardado no nosso varal! 💞');
                 }
                 resetarFormularioGaleria();
@@ -845,6 +874,10 @@
                         destino: 'texto', titulo, corpo, data: dataFormatada,
                         autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
+                    
+                    // Dispara a notificação de email
+                    dispararNotificacaoEmail("Carta / Declaração", titulo || "Alguém abriu o coração...", usuarioLogado);
+
                     alert('Sua declaração foi guardada! 📝');
                 }
                 resetarFormularioTexto();
