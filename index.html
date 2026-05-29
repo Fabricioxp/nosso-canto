@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <style>
         :root {
@@ -26,9 +28,7 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             background-color: #fff3f2; 
@@ -72,9 +72,7 @@
             margin-bottom: 20px;
         }
 
-        #conteudo-site {
-            display: none;
-        }
+        #conteudo-site { display: none; }
 
         .menu-flutuante-container {
             position: fixed;
@@ -103,9 +101,7 @@
             transition: transform 0.3s;
         }
 
-        .botao-flutuante-principal:active {
-            transform: scale(0.9);
-        }
+        .botao-flutuante-principal:active { transform: scale(0.9); }
 
         .menu-opcoes-flutuantes {
             display: flex;
@@ -139,10 +135,7 @@
             transition: transform 0.2s, background 0.2s;
             white-space: nowrap;
         }
-
-        .item-opcao-flutuante:hover {
-            background-color: #fff0ee;
-        }
+        .item-opcao-flutuante:hover { background-color: #fff0ee; }
 
         header {
             text-align: center;
@@ -152,16 +145,11 @@
 
         .btn-logout {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-family: var(--font-main);
-            color: var(--secondary);
-            cursor: pointer;
+            top: 20px; right: 20px;
+            background: none; border: 1px solid var(--border-color);
+            padding: 6px 12px; border-radius: 12px;
+            font-size: 0.85rem; font-family: var(--font-main);
+            color: var(--secondary); cursor: pointer;
             z-index: 10;
         }
 
@@ -170,16 +158,9 @@
             font-size: 2.3rem;
             color: var(--primary);
             margin-bottom: 10px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
-        header p {
-            font-size: 1rem;
-            color: var(--secondary);
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
+        header p { font-size: 1rem; color: var(--secondary); }
 
         .container-blocos {
             max-width: 450px;
@@ -196,8 +177,6 @@
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
             margin-bottom: 25px;
             position: relative;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
         .card-separador-interno {
@@ -205,8 +184,6 @@
             padding-bottom: 25px;
             border-bottom: 1px dashed var(--border-color);
             position: relative;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
         .titulo-secao {
@@ -226,41 +203,11 @@
         #bloco-galeria-momentos { background-color: #fdf8f5; }
         #bloco-nossos-textos { background-color: #f7f3f9; }
 
-        .contador-bloco {
-            text-align: center;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .contador-bloco:first-child {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        .contador-titulo {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--secondary);
-            margin-bottom: 8px;
-            font-weight: bold;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .contador-tempo {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--primary);
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .contador-tempo.ativo span {
-            display: inline-block;
-            animation: pulse 1s infinite alternate;
-        }
+        .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
+        .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
+        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+        .contador-tempo.ativo span { display: inline-block; animation: pulse 1s infinite alternate; }
 
         .data-card {
             font-size: 0.8rem;
@@ -273,65 +220,26 @@
             gap: 2px;
         }
 
-        .autor-tag {
-            font-size: 0.75rem;
-            color: var(--primary);
-            font-weight: normal;
-        }
+        .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
 
-        .pdf-link {
-            text-decoration: none;
-            display: block;
-            position: relative;
-            z-index: 2;
-            max-width: 100%;
-        }
-
-        .pdf-bloco {
-            text-align: center;
-            cursor: pointer;
-            max-width: 100%;
-        }
-
-        .pdf-subtitulo {
-            font-size: 0.9rem;
-            color: var(--secondary);
-            margin-top: 4px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
+        .pdf-link { text-decoration: none; display: block; position: relative; z-index: 2; }
+        .pdf-bloco { text-align: center; cursor: pointer; }
+        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
 
         .numero-card {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 26px;
-            height: 26px;
-            border: 1.5px solid var(--secondary);
-            border-radius: 50%;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--secondary);
-            margin-bottom: 15px; 
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border: 1.5px solid var(--secondary);
+            border-radius: 50%; font-size: 0.85rem; font-weight: bold;
+            color: var(--secondary); margin-bottom: 15px; 
         }
 
         .moldura-imagem {
-            width: 100%;
-            max-width: 250px;
-            aspect-ratio: 16 / 9; 
-            margin: 0 auto 15px auto;
-            border-radius: 12px;
-            overflow: hidden; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            border: 2px solid rgba(255,255,255,0.5);
+            width: 100%; max-width: 250px; aspect-ratio: 16 / 9; 
+            margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.5);
             display: block;
         }
-
-        .moldura-imagem img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
         .painel-upload {
             background-color: #ffffff;
@@ -342,449 +250,98 @@
             box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
             position: relative;
             z-index: 6;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
         .input-custom, .select-custom, .textarea-custom {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid rgba(230, 179, 168, 0.6);
-            border-radius: 15px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-            outline: none;
-            background: #fffbfb;
-            color: var(--text-color);
-            transition: all 0.3s;
+            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
+            border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
+            margin-bottom: 12px; outline: none; background: #fffbfb;
+            color: var(--text-color); transition: all 0.3s;
         }
-
-        .textarea-custom {
-            resize: vertical;
-            min-height: 90px;
-        }
-
+        .textarea-custom { resize: vertical; min-height: 90px; }
         .input-custom:focus, .select-custom:focus, .textarea-custom:focus {
-            border-color: var(--primary);
-            background: #ffffff;
-            box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
         }
 
         .btn-postar {
-            width: 100%;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 15px;
-            font-family: var(--font-main);
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
+            width: 100%; background-color: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: 15px; font-family: var(--font-main);
+            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
         }
+        .btn-postar:hover { background-color: #734f4b; }
 
-        .btn-postar:hover {
-            background-color: #734f4b;
-        }
-
-        .secao-comentarios {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px dashed var(--border-color);
-            position: relative;
-            z-index: 5;
-        }
-
-        .form-comentario {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
+        .secao-comentarios { margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); position: relative; z-index: 5; }
+        .form-comentario { display: flex; gap: 8px; margin-bottom: 15px; }
         .input-comentario {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-family: var(--font-main);
-            font-size: 0.9rem;
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.6);
-            min-width: 0;
+            flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
+            border-radius: 20px; font-family: var(--font-main); font-size: 0.9rem;
+            outline: none; background-color: rgba(255, 255, 255, 0.6);
         }
+        .btn-comentar { background-color: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 20px; cursor: pointer; }
 
-        .btn-comentar {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
+        .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; }
+        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; }
+        .autor-comentario { font-weight: bold; color: var(--primary); }
+        .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; }
 
-        .lista-comentarios {
-            max-height: 200px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .item-comentario {
-            background-color: rgba(255, 255, 255, 0.5);
-            padding: 10px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .meta-comentario {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--secondary);
-            margin-bottom: 4px;
-            gap: 5px;
-        }
-
-        .autor-comentario {
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .corpo-comentario {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .texto-comentario {
-            flex: 1;
-            min-width: 0;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .btn-excluir-comentario {
-            background: none;
-            border: none;
-            color: #d9534f;
-            cursor: pointer;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .acoes-card-custom {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-            position: relative;
-            z-index: 4;
-        }
-
-        .btn-acao-card {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-family: var(--font-main);
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-
+        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
+        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
 
-        #canvas-hearts {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none !important;
-            z-index: 1;
-        }
+        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; }
 
-        .menu-acoes-container {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 20;
-        }
+        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
+        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 25; }
+        .opcoes-tres-pontos.visivel { display: block; }
+        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
+        .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        .btn-tres-pontos {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            color: var(--secondary);
-            cursor: pointer;
-            padding: 0 5px;
-            line-height: 1;
-        }
+        .quadro-polaroid { background: #ffffff; padding: 14px 14px 22px 14px; box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12); border-radius: 4px; margin: 20px auto 30px auto; max-width: 380px; border: 1px solid rgba(0,0,0,0.03); position: relative; }
+        .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; }
+        .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
+        .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
+        .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-coracao-minimalista:active { transform: scale(1.3); }
+        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
 
-        .opcoes-tres-pontos {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 25px;
-            background: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            z-index: 25;
-        }
-
-        .opcoes-tres-pontos.visivel {
-            display: block;
-        }
-
-        .opcoes-tres-pontos button {
-            display: block;
-            width: 100%;
-            padding: 10px 16px;
-            background: none;
-            border: none;
-            font-family: var(--font-main);
-            font-size: 0.85rem;
-            text-align: left;
-            cursor: pointer;
-            color: var(--text-color);
-            white-space: nowrap;
-        }
-
-        .opcoes-tres-pontos button:hover {
-            background: #fff0ee;
-        }
-
-        .quadro-polaroid {
-            background: #ffffff;
-            padding: 14px 14px 22px 14px;
-            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
-            border-radius: 4px;
-            margin: 20px auto 30px auto;
-            max-width: 100%;
-            border: 1px solid rgba(0,0,0,0.03);
-            position: relative;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .polaroid-imagem {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            background: #fafafa;
-            display: block;
-            border-radius: 4px;
-        }
-
-        .polaroid-legenda-box {
-            text-align: center;
-            padding: 15px 5px 0 5px;
-        }
-
-        .polaroid-titulo-txt {
-            font-family: var(--font-title);
-            font-size: 1.3rem;
-            color: var(--primary);
-            font-weight: bold;
-            margin-bottom: 4px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .polaroid-desc-txt {
-            font-size: 0.9rem;
-            color: var(--text-color);
-            line-height: 1.4;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .barra-reacoes-polaroid {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px dashed #f5e4e1;
-            gap: 10px;
-        }
-
-        .btn-coracao-minimalista {
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            flex-shrink: 0;
-        }
-
-        .btn-coracao-minimalista:active {
-            transform: scale(1.3);
-        }
-
-        .contagem-likes {
-            font-size: 0.85rem;
-            color: var(--secondary);
-            font-weight: bold;
-            text-align: right;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .card-declaracao-texto {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
-            margin-bottom: 25px;
-            border: 1px solid rgba(230, 179, 168, 0.3);
-            position: relative;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .tag-editado {
-            font-size: 0.75rem;
-            color: var(--secondary);
-            font-style: italic;
-            display: inline-block;
-            margin-left: 5px;
-            font-weight: normal;
-        }
-
-        .declaracao-titulo-render {
-            font-family: var(--font-title);
-            font-size: 1.4rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-weight: bold;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .declaracao-corpo-render {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: var(--text-color);
-            white-space: pre-wrap;
-            margin-bottom: 15px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
+        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; }
+        .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
+        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
 
         .card-musica {
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-            padding: 16px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08);
-            margin-bottom: 20px;
-            position: relative;
-            border: 1px solid rgba(230, 179, 168, 0.3);
+            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
+            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
             transition: transform 0.2s;
-            max-width: 100%;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
-
         .card-musica.destaque {
             border: 2px solid #ff4d4d;
             box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
             background: #fffafa;
         }
-
         .selo-destaque {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ff4d4d;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4);
-            z-index: 2;
-            white-space: nowrap;
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: #ff4d4d; color: white; padding: 4px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4); z-index: 2;
         }
+        .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
+        .musica-capa { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; }
+        .musica-info { flex: 1; overflow: hidden; }
+        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; }
+        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; }
+        .musica-link-btn:hover { background: var(--primary); }
 
-        .musica-layout {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .musica-capa {
-            width: 75px;
-            height: 75px;
-            border-radius: 12px;
-            object-fit: cover;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-            background-color: #f0f0f0;
-            flex-shrink: 0;
-        }
-
-        .musica-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .musica-titulo {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .musica-dedicatoria {
-            font-size: 0.8rem;
-            color: var(--secondary);
-            margin-bottom: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .musica-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 12px;
-            background: var(--secondary);
-            color: white;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: bold;
-            transition: background 0.2s;
-            white-space: nowrap;
-        }
-
-        .musica-link-btn:hover {
-            background: var(--primary);
-        }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
     </style>
 </head>
 <body>
@@ -794,7 +351,7 @@
             <h2>Quem está entrando? 🤍</h2>
             <input type="text" id="login-nome" class="input-custom" placeholder="Seu nome (Fabricio ou Maria)">
             <input type="password" id="login-senha" class="input-custom" placeholder="Senha secreta">
-            <button class="btn-postar" id="btn-login-trigger">Entrar no Nosso Canto</button>
+            <button class="btn-postar" onclick="realizarLoginExterno()">Entrar no Nosso Canto</button>
         </div>
     </div>
 
@@ -802,26 +359,26 @@
         <canvas id="canvas-hearts"></canvas>
 
         <header>
-            <button class="btn-logout" id="btn-logout-trigger">Sair 🚪</button>
+            <button class="btn-logout" onclick="fazerLogout()">Sair 🚪</button>
             <h1>Nosso Lugar no Mundo</h1>
             <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
         </header>
 
         <div class="menu-flutuante-container">
             <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
-                <a href="#bloco-dias-amando" class="item-opcao-flutuante" id="menu-tempo-lnk">⏳ Nosso Tempo</a>
-                <a href="#bloco-playlist" class="item-opcao-flutuante" id="menu-playlist-lnk">🎧 Nossa Playlist</a>
-                <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="menu-galeria-lnk">🖼️ Galeria</a>
-                <a href="#bloco-nossos-textos" class="item-opcao-flutuante" id="menu-textos-lnk">✍️ Cartas</a>
-                <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="menu-dela-lnk">✨ Apresentações</a>
+                <a href="#bloco-dias-amando" class="item-opcao-flutuante" onclick="alternarMenuBalao()">⏳ Nosso Tempo</a>
+                <a href="#bloco-playlist" class="item-opcao-flutuante" onclick="alternarMenuBalao()">🎧 Nossa Playlist</a>
+                <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" onclick="alternarMenuBalao()">🖼️ Galeria</a>
+                <a href="#bloco-nossos-textos" class="item-opcao-flutuante" onclick="alternarMenuBalao()">✍️ Cartas</a>
+                <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" onclick="alternarMenuBalao()">✨ Apresentações</a>
             </div>
-            <button class="botao-flutuante-principal" id="btn-menu-flutuante">📌</button>
+            <button class="botao-flutuante-principal" onclick="alternarMenuBalao()">📌</button>
         </div>
 
         <div class="container-blocos">
             
             <section class="bloco-separado" id="bloco-dias-amando">
-                <div class="contador-bloco" id="trigger-celebrar">
+                <div class="contador-bloco" onclick="celebrarAmor()">
                     <div class="contador-titulo">❤️ Dias se amando</div>
                     <div id="contador-amor" class="contador-tempo">Carregando momentos...</div>
                 </div>
@@ -833,8 +390,8 @@
 
                 <div class="secao-comentarios">
                     <div class="form-comentario">
-                        <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo...">
-                        <button class="btn-comentar" id="btn-comentar-cronometro">❤️</button>
+                        <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo..." onkeypress="verificarEnter(event, 'cronometro')">
+                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('cronometro')">❤️</button>
                     </div>
                     <div id="lista-cronometro" class="lista-comentarios"></div>
                 </div>
@@ -853,7 +410,7 @@
                     <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
                 </div>
                 
-                <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
+                <button class="btn-postar" id="btn-salvar-playlist" onclick="salvarMusicaFirebase()">Adicionar à Playlist 🎶</button>
             </section>
 
             <section class="bloco-separado" id="bloco-playlist">
@@ -875,7 +432,7 @@
                 <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
                 <input type="date" id="post-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
+                <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar Apresentação ❤️</button>
             </section>
 
             <section class="bloco-separado" id="bloco-coisinhas-dela">
@@ -900,8 +457,8 @@
 
                     <div class="secao-comentarios">
                         <div class="form-comentario">
-                            <input type="text" id="input-dela-1" class="input-comentario" placeholder="Escreva algo...">
-                            <button class="btn-comentar" id="btn-comentar-dela-1">✨</button>
+                            <input type="text" id="input-dela-1" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, 'dela-1')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('dela-1')">✨</button>
                         </div>
                         <div id="lista-dela-1" class="lista-comentarios"></div>
                     </div>
@@ -932,8 +489,8 @@
                     
                     <div class="secao-comentarios">
                         <div class="form-comentario">
-                            <input type="text" id="input-meu-1" class="input-comentario" placeholder="Escreva algo...">
-                            <button class="btn-comentar" id="btn-comentar-meu-1">💞</button>
+                            <input type="text" id="input-meu-1" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, 'meu-1')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-1')">💞</button>
                         </div>
                         <div id="lista-meu-1" class="lista-comentarios"></div>
                     </div>
@@ -958,8 +515,8 @@
 
                     <div class="secao-comentarios">
                         <div class="form-comentario">
-                            <input type="text" id="input-meu-2" class="input-comentario" placeholder="Escreva algo...">
-                            <button class="btn-comentar" id="btn-comentar-meu-2">🌹</button>
+                            <input type="text" id="input-meu-2" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, 'meu-2')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('meu-2')">🌹</button>
                         </div>
                         <div id="lista-meu-2" class="lista-comentarios"></div>
                     </div>
@@ -977,7 +534,7 @@
                 <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem">
                 <input type="date" id="galeria-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-galeria">Publicar na Galeria ✨</button>
+                <button class="btn-postar" id="btn-salvar-galeria" onclick="salvarFotoGaleriaFirebase()">Publicar na Galeria ✨</button>
             </section>
 
             <section class="bloco-separado" id="bloco-galeria-momentos">
@@ -993,7 +550,7 @@
                 <textarea id="texto-corpo" class="textarea-custom" placeholder="Escreva aqui tudo o que seu coração sente... ❤️"></textarea>
                 <input type="date" id="texto-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-texto">Eternizar Declaração 🌹</button>
+                <button class="btn-postar" id="btn-salvar-texto" onclick="salvarTextoFirebase()">Eternizar Declaração 🌹</button>
             </section>
 
             <section class="bloco-separado" id="bloco-nossos-textos">
@@ -1007,19 +564,24 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
 
-        // === CONFIGURAÇÃO DO EMAILJS ===
+        // === CONFIGURAÇÃO DO EMAILJS CORRIGIDA COM TÍTULO ===
         emailjs.init("QqfTPDKvKPnqTCPsf"); 
 
         window.dispararNotificacaoEmail = function(tipo, titulo, autor) {
-            const templateParams = { tipo: tipo, autor: autor, titulo: titulo };
-            emailjs.send("service_bf4glbg", "template_n994c8j", templateParams)
+            const templateParams = {
+                tipo: tipo,
+                autor: autor,
+                titulo: titulo // Vinculado perfeitamente ao seu template {{titulo}}
+            };
+
+            emailjs.send("service_bjyc673", "template_n994c8j", templateParams)
             .then(
                 function(response) { console.log("E-mail enviado com sucesso!", response.status); },
                 function(error) { console.error("Erro no envio do EmailJS:", error); }
             );
-        };
+        }
+        // ==================================================
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -1041,7 +603,9 @@
 
         function obterDataHoraAtual() {
             const agora = new Date();
-            return `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return `${data} às ${hora}`;
         }
 
         function verificarSessao() {
@@ -1054,8 +618,7 @@
             }
         }
 
-        // --- ASSOCIAÇÃO DOS EVENTOS DO MÓDULO (CORREÇÃO DE CLIQUES E LOGIN) ---
-        document.getElementById('btn-login-trigger').addEventListener('click', function() {
+        window.realizarLoginExterno = function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
             const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
@@ -1065,34 +628,31 @@
                 usuarioLogado = nomeFormatado;
                 verificarSessao();
                 alert(`Bem-vindo, meu amor! — ${nomeFormatado} ❤️`);
-                window.location.reload(); 
             } else {
                 alert('Nome ou senha incorretos! 🥺');
             }
-        });
+        };
 
-        document.getElementById('btn-logout-trigger').addEventListener('click', function() {
+        window.fazerLogout = function() {
             sessionStorage.removeItem('user_canto');
             usuarioLogado = null;
             verificarSessao();
-        });
+        };
 
-        document.getElementById('btn-menu-flutuante').addEventListener('click', function() {
+        window.alternarMenuBalao = function() {
             document.getElementById('opcoes-menu-balao').classList.toggle('aberto');
-        });
-
-        ['menu-tempo-lnk', 'menu-playlist-lnk', 'menu-galeria-lnk', 'menu-textos-lnk', 'menu-dela-lnk'].forEach(id => {
-            document.getElementById(id)?.addEventListener('click', () => {
-                document.getElementById('opcoes-menu-balao').classList.remove('aberto');
-            });
-        });
+        };
 
         window.alternarMenuTresPontos = function(id) {
-            document.querySelectorAll('.opcoes-tres-pontos').forEach(m => {
-                if(m.id !== `opcoes-${id}`) m.classList.remove('visivel');
-            });
-            document.getElementById(`opcoes-${id}`)?.classList.toggle('visivel');
+            const menu = document.getElementById(`opcoes-${id}`);
+            if (menu) menu.classList.toggle('visivel');
         };
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('btn-tres-pontos')) {
+                document.querySelectorAll('.opcoes-tres-pontos').forEach(m => m.classList.remove('visivel'));
+            }
+        });
 
         function extrairIDYouTube(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -1110,40 +670,54 @@
             document.getElementById('btn-salvar-playlist').innerText = 'Adicionar à Playlist 🎶';
         }
 
-        document.getElementById('btn-salvar-playlist').addEventListener('click', async function() {
+        window.salvarMusicaFirebase = async function() {
             const idEditando = document.getElementById('editando-playlist-id').value;
             const titulo = document.getElementById('playlist-nome').value.trim();
             const link = document.getElementById('playlist-link').value.trim();
             let imagem = document.getElementById('playlist-capa').value.trim();
             const destaque = document.getElementById('playlist-destaque').checked;
 
-            if (!titulo || !link) { alert('Por favor, digite o nome e cole o link da música! 🎧'); return; }
+            if (!titulo || !link) {
+                alert('Por favor, digite o nome e cole o link da música! 🎧');
+                return;
+            }
+
             if (!imagem) {
                 const idYT = extrairIDYouTube(link);
-                imagem = idYT ? `https://img.youtube.com/vi/${idYT}/hqdefault.jpg` : 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa';
+                if (idYT) {
+                    imagem = `https://img.youtube.com/vi/${idYT}/hqdefault.jpg`;
+                } else {
+                    imagem = 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa'; 
+                }
             }
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo: titulo, link: link, imagem: imagem, destaque: destaque });
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { titulo, link, imagem, destaque });
                     alert('Música atualizada! 🎶');
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        destino: 'playlist', titulo: titulo, link: link, imagem: imagem, destaque: destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                        destino: 'playlist', titulo, link, imagem, destaque,
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
-                    window.dispararNotificacaoEmail("Música na Playlist", titulo, usuarioLogado);
+                    
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Música na Playlist", titulo, usuarioLogado);
+                    }
+
                     alert('Música dedicada com sucesso! ❤️');
                 }
                 resetarFormularioPlaylist();
             } catch (error) { console.error(error); }
-        });
+        };
 
         window.prepararEdicaoPlaylist = function(id, titulo, link, imagem, destaque) {
             document.getElementById('editando-playlist-id').value = id;
             document.getElementById('playlist-nome').value = titulo;
             document.getElementById('playlist-link').value = link;
             document.getElementById('playlist-capa').value = imagem;
-            document.getElementById('playlist-destaque').checked = destaque;
+            document.getElementById('playlist-destaque').checked = (destaque === 'true' || destaque === true);
             document.getElementById('titulo-painel-playlist').innerText = '✏️ Editar Música Dedicada';
             document.getElementById('btn-salvar-playlist').innerText = 'Atualizar Música 🎧';
             document.getElementById('painel-playlist-posts').scrollIntoView({ behavior: 'smooth' });
@@ -1152,7 +726,10 @@
         window.removerPostagemFirebase = async function(id) {
             if (confirm("Deseja apagar essa lembrança? 🥺")) {
                 await deleteDoc(doc(db, "posts", id));
-                resetarFormulario(); resetarFormularioGaleria(); resetarFormularioTexto(); resetarFormularioPlaylist();
+                resetarFormulario();
+                resetarFormularioGaleria();
+                resetarFormularioTexto();
+                resetarFormularioPlaylist();
             }
         };
 
@@ -1167,7 +744,7 @@
             document.getElementById('btn-salvar-post').innerText = 'Publicar Apresentação ❤️';
         }
 
-        document.getElementById('btn-salvar-post').addEventListener('click', async function() {
+        window.salvarPostagemFirebase = async function() {
             const idEditando = document.getElementById('editando-id').value;
             const destino = document.getElementById('post-destino').value;
             const titulo = document.getElementById('post-titulo').value.trim();
@@ -1176,22 +753,32 @@
             const link = document.getElementById('post-link').value.trim();
             const dataInput = document.getElementById('post-data').value;
 
-            if (!titulo || !imagem || !link || !dataInput) { alert('Por favor, preencha todos os campos! ❤️'); return; }
+            if (!titulo || !imagem || !link || !dataInput) {
+                alert('Por favor, preencha todos os campos! ❤️'); return;
+            }
             const [ano, mes, dia] = dataInput.split('-');
             const dataFormatada = `${dia}/${mes}/${ano}`;
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { destino: destino, titulo: titulo, subtitulo: subtitulo, imagem: imagem, link: link, data: dataFormatada });
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
                     alert('Card atualizado! ✨');
                 } else {
-                    await addDoc(collection(db, "posts"), { destino: destino, titulo: titulo, subtitulo: subtitulo, imagem: imagem, link: link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
-                    window.dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado);
+                    await addDoc(collection(db, "posts"), {
+                        destino, titulo, subtitulo, imagem, link, data: dataFormatada,
+                        autor: usuarioLogado, criadoEm: Date.now()
+                    });
+                    
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado);
+                    }
+
                     alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
-        });
+        };
 
         window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
             document.getElementById('editando-id').value = id;
@@ -1217,7 +804,7 @@
             document.getElementById('btn-salvar-galeria').innerText = 'Publicar na Galeria ✨';
         }
 
-        document.getElementById('btn-salvar-galeria').addEventListener('click', async function() {
+        window.salvarFotoGaleriaFirebase = async function() {
             const idEditando = document.getElementById('editando-galeria-id').value;
             const titulo = document.getElementById('galeria-titulo').value.trim();
             const subtitulo = document.getElementById('galeria-subtitulo').value.trim();
@@ -1230,16 +817,24 @@
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo: titulo, subtitulo: subtitulo, imagem: imagem, data: dataFormatada });
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { titulo, subtitulo, imagem, data: dataFormatada });
                     alert('Foto da galeria atualizada! 🖼️');
                 } else {
-                    await addDoc(collection(db, "posts"), { destino: 'galeria', titulo: titulo, subtitulo: subtitulo, imagem: imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
-                    window.dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado);
+                    await addDoc(collection(db, "posts"), {
+                        destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada,
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                    });
+                    
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado);
+                    }
+
                     alert('Momento guardado no nosso varal! 💞');
                 }
                 resetarFormularioGaleria();
             } catch (error) { console.error(error); }
-        });
+        };
 
         window.prepararEdicaoGaleria = function(id, titulo, subtitulo, imagem, data) {
             document.getElementById('editando-galeria-id').value = id;
@@ -1262,7 +857,7 @@
             document.getElementById('btn-salvar-texto').innerText = 'Eternizar Declaração 🌹';
         }
 
-        document.getElementById('btn-salvar-texto').addEventListener('click', async function() {
+        window.salvarTextoFirebase = async function() {
             const idEditando = document.getElementById('editando-texto-id').value;
             const titulo = document.getElementById('texto-titulo').value.trim();
             const corpo = document.getElementById('texto-corpo').value.trim();
@@ -1274,16 +869,24 @@
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo: titulo, corpo: corpo, data: dataFormatada, editado: true });
+                    const docRef = doc(db, "posts", idEditando);
+                    await updateDoc(docRef, { titulo, corpo, data: dataFormatada, editado: true });
                     alert('Sua linda carta foi atualizada! ✨');
                 } else {
-                    await addDoc(collection(db, "posts"), { destino: 'texto', titulo: titulo, corpo: corpo, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
-                    window.dispararNotificacaoEmail("Carta / Declaração", titulo || "Alguém abriu o coração...", usuarioLogado);
+                    await addDoc(collection(db, "posts"), {
+                        destino: 'texto', titulo, corpo, data: dataFormatada,
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                    });
+                    
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Carta / Declaração", titulo || "Alguém abriu o coração...", usuarioLogado);
+                    }
+
                     alert('Sua declaração foi guardada! 📝');
                 }
                 resetarFormularioTexto();
             } catch (error) { console.error(error); }
-        });
+        };
 
         window.prepararEdicaoTexto = function(id, titulo, corpo, data) {
             document.getElementById('editando-texto-id').value = id;
@@ -1300,7 +903,7 @@
             if (!Array.isArray(listaLikes)) listaLikes = [];
             const index = listaLikes.indexOf(usuarioLogado);
             if (index > -1) { listaLikes.splice(index, 1); } 
-            else { listaLikes.push(usuarioLogado); if(typeof window.celebrarAmor === 'function') window.celebrarAmor(); }
+            else { listaLikes.push(usuarioLogado); celebrarAmor(); }
             await updateDoc(doc(db, "posts", id), { curtidas: listaLikes });
         };
 
@@ -1308,8 +911,11 @@
             const input = document.getElementById(`input-${secaoId}`);
             const texto = input?.value.trim();
             if (!texto) return;
+
             try {
-                await addDoc(collection(db, "comentarios"), { secaoId: secaoId, texto: texto, autor: usuarioLogado, dataHora: obterDataHoraAtual(), criadoEm: Date.now() });
+                await addDoc(collection(db, "comentarios"), { 
+                    secaoId, texto, autor: usuarioLogado, dataHora: obterDataHoraAtual(), criadoEm: Date.now() 
+                });
                 if (input) input.value = '';
             } catch (error) { console.error(error); }
         };
@@ -1318,21 +924,12 @@
             await deleteDoc(doc(db, "comentarios", id));
         };
 
-        function vincularEnterComentario(inputId, secaoId) {
-            document.getElementById(inputId)?.addEventListener('keypress', function(e) {
-                if(e.key === 'Enter') { e.preventDefault(); window.adicionarComentarioFirebase(secaoId); }
-            });
-        }
-
-        vincularEnterComentario('input-cronometro', 'cronometro');
-        vincularEnterComentario('input-dela-1', 'dela-1');
-        vincularEnterComentario('input-meu-1', 'meu-1');
-        vincularEnterComentario('input-meu-2', 'meu-2');
-
-        document.getElementById('btn-comentar-cronometro').addEventListener('click', () => window.adicionarComentarioFirebase('cronometro'));
-        document.getElementById('btn-comentar-dela-1').addEventListener('click', () => window.adicionarComentarioFirebase('dela-1'));
-        document.getElementById('btn-comentar-meu-1').addEventListener('click', () => window.adicionarComentarioFirebase('meu-1'));
-        document.getElementById('btn-comentar-meu-2').addEventListener('click', () => window.adicionarComentarioFirebase('meu-2'));
+        window.verificarEnter = function(event, id) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                window.adicionarComentarioFirebase(id);
+            }
+        };
 
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
@@ -1341,6 +938,7 @@
             document.getElementById('novos-cards-galeria').innerHTML = '';
             document.getElementById('novos-cards-textos').innerHTML = '';
             document.getElementById('novos-cards-playlist').innerHTML = '';
+            
             let numDela = 1; let numMeu = 2;
 
             snapshot.forEach((docSnap) => {
@@ -1351,9 +949,15 @@
                 if (post.destino === 'playlist') {
                     const containerPlaylist = document.getElementById('novos-cards-playlist');
                     const blocoMusica = document.createElement('div');
-                    blocoMusica.className = post.destaque ? 'card-musica destaque' : 'card-musica';
                     
-                    const menuPlaylist = (post.autor === usuarioLogado) ? `
+                    let classesCartao = 'card-musica';
+                    let seloHtml = '';
+                    if (post.destaque) {
+                        classesCartao += ' destaque';
+                        seloHtml = '<div class="selo-destaque">🌟 Música do Momento</div>';
+                    }
+
+                    const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1363,23 +967,31 @@
                         </div>
                     ` : '';
 
+                    blocoMusica.className = classesCartao;
                     blocoMusica.innerHTML = `
-                        ${post.destaque ? '<div class="selo-destaque">🌟 Música do Momento</div>' : ''}
-                        ${menuPlaylist}
+                        ${seloHtml}
+                        ${menuTresPontosPlaylist}
                         <div class="musica-layout">
-                            <img src="${post.imagem}" class="musica-capa" alt="Capa">
+                            <img src="${post.imagem}" class="musica-capa" alt="Capa da Música">
                             <div class="musica-info">
                                 <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
-                                <div class="musica-dedicatoria">Por: <strong>${post.autor}</strong></div>
-                                <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir</a>
+                                <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
+                                <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
                             </div>
                         </div>
-                        <div class="barra-reacoes-polaroid" style="margin-top: 15px;">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">${jaCurtido ? '❤️' : '🤍'}</button>
-                            <span class="contagem-likes">${curtidasArray.length} amaram</span>
+                        <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">
+                                ${jaCurtido ? '❤️' : '🤍'}
+                            </button>
+                            <span class="contagem-likes">${curtidasArray.length} pessoas amaram</span>
                         </div>
                     `;
-                    if (post.destaque) containerPlaylist.prepend(blocoMusica); else containerPlaylist.appendChild(blocoMusica);
+
+                    if (post.destaque) {
+                        containerPlaylist.prepend(blocoMusica);
+                    } else {
+                        containerPlaylist.appendChild(blocoMusica);
+                    }
                     return;
                 }
 
@@ -1387,7 +999,8 @@
                     const containerGaleria = document.getElementById('novos-cards-galeria');
                     const blocoFoto = document.createElement('div');
                     blocoFoto.className = 'quadro-polaroid';
-                    const menuGaleria = (post.autor === usuarioLogado) ? `
+
+                    const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1398,30 +1011,31 @@
                     ` : '';
 
                     blocoFoto.innerHTML = `
-                        ${menuGaleria}
-                        <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px;"><span>🗓️ ${post.data}</span><span class="autor-tag">Por: ${post.autor}</span></div>
-                        <img src="${post.imagem}" class="polaroid-imagem" alt="Varal" onerror="this.src='https://placehold.co/400x400?text=Imagem+Invalida'">
+                        ${menuTresPontosHtml}
+                        <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px;">
+                            <span>🗓️ ${post.data}</span>
+                            <span class="autor-tag">Por: ${post.autor}</span>
+                        </div>
+                        <img src="${post.imagem}" class="polaroid-imagem" alt="Foto Varal" onerror="this.src='https://placehold.co/400x400?text=Link+de+Imagem+Invalido'">
                         <div class="polaroid-legenda-box">
                             ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
                             ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
                         </div>
                         <div class="barra-reacoes-polaroid">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">${jaCurtido ? '❤️' : '🤍'}</button>
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">
+                                ${jaCurtido ? '❤️' : '🤍'}
+                            </button>
                             <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                         </div>
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                             <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
-                                <button class="btn-comentar" id="btn-comentar-${post.id}">✨</button>
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, '${post.id}')">
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨</button>
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
                     `;
                     containerGaleria.appendChild(blocoFoto);
-                    setTimeout(() => {
-                        document.getElementById(`btn-comentar-${post.id}`)?.addEventListener('click', () => window.adicionarComentarioFirebase(post.id));
-                        vincularEnterComentario(`input-${post.id}`, post.id);
-                    }, 50);
                     return;
                 }
 
@@ -1429,7 +1043,8 @@
                     const containerTextos = document.getElementById('novos-cards-textos');
                     const blocoTexto = document.createElement('div');
                     blocoTexto.className = 'card-declaracao-texto';
-                    const menuTexto = (post.autor === usuarioLogado) ? `
+
+                    const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1440,33 +1055,36 @@
                     ` : '';
 
                     blocoTexto.innerHTML = `
-                        ${menuTexto}
-                        <div class="data-card" style="align-items: flex-start; text-align: left;"><span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span><span class="autor-tag">Escrito por: ${post.autor}</span></div>
+                        ${menuTresPontosTextHtml}
+                        <div class="data-card" style="align-items: flex-start; text-align: left;">
+                            <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
+                            <span class="autor-tag">Escrito por: ${post.autor}</span>
+                        </div>
                         ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
                         <div class="declaracao-corpo-render">${sanitizarHTML(post.corpo)}</div>
                         <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">${jaCurtido ? '❤️' : '🤍'}</button>
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">
+                                ${jaCurtido ? '❤️' : '🤍'}
+                            </button>
                             <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                         </div>
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                             <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
-                                <button class="btn-comentar" id="btn-comentar-${post.id}">💬</button>
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado..." onkeypress="verificarEnter(event, '${post.id}')">
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬</button>
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
                     `;
                     containerTextos.appendChild(blocoTexto);
-                    setTimeout(() => {
-                        document.getElementById(`btn-comentar-${post.id}`)?.addEventListener('click', () => window.adicionarComentarioFirebase(post.id));
-                        vincularEnterComentario(`input-${post.id}`, post.id);
-                    }, 50);
                     return;
                 }
 
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
-                if (post.destino === 'dela') { numDela++; post.numero = numDela; } else { numMeu++; post.numero = numMeu; }
+
+                if (post.destino === 'dela') { numDela++; post.numero = numDela; } 
+                else { numMeu++; post.numero = numMeu; }
 
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
@@ -1478,11 +1096,16 @@
                 const bloco = document.createElement('div');
                 bloco.className = 'card-separador-interno';
                 bloco.innerHTML = `
-                    <div class="data-card"><span>🗓️ ${post.data}</span><span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <div class="data-card">
+                        <span>🗓️ ${post.data}</span>
+                        <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span>
+                    </div>
                     <a href="${post.link}" target="_blank" class="pdf-link">
                         <div class="pdf-bloco">
                             <div class="numero-card">${post.numero}</div>
-                            <div class="moldura-imagem"><img src="${post.imagem}" alt="Miniatura"></div>
+                            <div class="moldura-imagem">
+                                <img src="${post.imagem}" alt="${post.titulo}">
+                            </div>
                             <div class="contador-titulo">${post.titulo}</div>
                             <div class="contador-tempo">Clique para abrir 📂</div>
                             <div class="pdf-subtitulo">${post.subtitulo}</div>
@@ -1490,35 +1113,42 @@
                     </a>
                     <div class="secao-comentarios">
                         <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
-                            <button class="btn-comentar" id="btn-comentar-${post.id}">❤️</button>
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo..." onkeypress="verificarEnter(event, '${post.id}')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️</button>
                         </div>
                         <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
                     ${controleModificacao}
                 `;
                 container.appendChild(bloco);
-                setTimeout(() => {
-                    document.getElementById(`btn-comentar-${post.id}`)?.addEventListener('click', () => window.adicionarComentarioFirebase(post.id));
-                    vincularEnterComentario(`input-${post.id}`, post.id);
-                }, 50);
             });
         });
 
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
-            document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
+            const listas = document.querySelectorAll('.lista-comentarios');
+            listas.forEach(l => l.innerHTML = '');
+
             snapshot.forEach((docSnap) => {
                 const com = { id: docSnap.id, ...docSnap.data() };
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
-                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+
+                const botaoExcluir = (com.autor === usuarioLogado) ? `
+                    <button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>
+                ` : '';
 
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
                 item.innerHTML = `
-                    <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
-                    <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
+                    <div class="meta-comentario">
+                        <span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span>
+                        <span>⏱️ ${com.dataHora || 'Recentemente'}</span>
+                    </div>
+                    <div class="corpo-comentario">
+                        <div class="texto-comentario">${sanitizarHTML(com.texto)}</div>
+                        ${botaoExcluir}
+                    </div>
                 `;
                 containerLista.appendChild(item);
             });
@@ -1557,13 +1187,20 @@
 
         function verificarEEnviarMesversario() {
             const hoje = new Date();
-            if (hoje.getDate() === 14) {
-                const mesAtual = hoje.getMonth() + 1; const anoAtual = hoje.getFullYear();
+            const diaAtual = hoje.getDate();
+            const mesAtual = hoje.getMonth() + 1; 
+            const anoAtual = hoje.getFullYear();
+
+            if (diaAtual === 14) {
                 const chaveLocalStorage = `mesversario_enviado_${mesAtual}_${anoAtual}`;
+                
                 if (!localStorage.getItem(chaveLocalStorage)) {
                     const mesesPassados = (anoAtual - 2026) * 12 + (hoje.getMonth() - 4);
+
                     if (mesesPassados > 0 && typeof window.dispararNotificacaoEmail === 'function') {
-                        window.dispararNotificacaoEmail("Aniversário de Namoro", `${mesesPassados}º Mês de Muito Amor! 🥰`, "Sistema do Nosso Canto 🤍");
+                        const textoParabens = `${mesesPassados}º Mês de Muito Amor! 🥰`;
+                        
+                        window.dispararNotificacaoEmail("Aniversário de Namoro", textoParabens, "Sistema do Nosso Canto 🤍");
                         localStorage.setItem(chaveLocalStorage, "true");
                     }
                 }
@@ -1573,6 +1210,7 @@
         const canvas = document.getElementById('canvas-hearts');
         const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
+        let animandoAtivo = true;
 
         function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', redimensionarCanvas);
@@ -1599,16 +1237,19 @@
         }
 
         function animarLoop() {
+            if (!animandoAtivo) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
             requestAnimationFrame(animarLoop);
         }
 
-        window.celebrarAmor = function() { for (let i = 0; i < 35; i++) { setTimeout(() => listaCoracoes.push(new Coracao()), i * 30); } };
-        document.getElementById('trigger-celebrar')?.addEventListener('click', window.celebrarAmor);
+        function celebrarAmor() { for (let i = 0; i < 35; i++) { setTimeout(() => listaCoracoes.push(new Coracao()), i * 30); } }
 
         document.addEventListener('DOMContentLoaded', () => {
-            atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop();
+            atualizarContadores();
+            setInterval(atualizarContadores, 1000);
+            animarLoop();
+            
             setTimeout(verificarEEnviarMesversario, 3000); 
         });
     </script>
