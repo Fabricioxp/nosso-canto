@@ -568,20 +568,23 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // === CONFIGURAÇÃO DO EMAILJS ===
+        // === CONFIGURAÇÃO DO EMAILJS CORRIGIDA ===
         emailjs.init("QqfTPDKvKPnqTCPsf"); 
 
-        function dispararNotificacaoEmail(tipo, titulo, autor) {
-            emailjs.send("service_bjyc673", "template_n994c8j", {
+        window.dispararNotificacaoEmail = function(tipo, titulo, autor) {
+            const templateParams = {
                 tipo: tipo,
-                titulo: titulo,
-                autor: autor
-            }).then(
-                function(response) { console.log("E-mail enviado!", response.status); },
-                function(error) { console.log("Erro no envio:", error); }
+                autor: autor,
+                mensagem_extra: `Publicou algo novo: "${titulo}"`
+            };
+
+            emailjs.send("service_bjyc673", "template_n994c8j", templateParams)
+            .then(
+                function(response) { console.log("E-mail enviado com sucesso!", response.status); },
+                function(error) { console.error("Erro no envio do EmailJS:", error); }
             );
         }
-        // =================================
+        // =======================================
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -702,8 +705,9 @@
                         autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
                     
-                    // Dispara a notificação de email
-                    dispararNotificacaoEmail("Música na Playlist", titulo, usuarioLogado);
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Música na Playlist", titulo, usuarioLogado);
+                    }
 
                     alert('Música dedicada com sucesso! ❤️');
                 }
@@ -762,15 +766,16 @@
                 if (idEditando) {
                     const docRef = doc(db, "posts", idEditando);
                     await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado! ✨');
+                    alert('Card updated! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino, titulo, subtitulo, imagem, link, data: dataFormatada,
                         autor: usuarioLogado, criadoEm: Date.now()
                     });
                     
-                    // Dispara a notificação de email
-                    dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado);
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado);
+                    }
 
                     alert('Card publicado! ❤️');
                 }
@@ -824,8 +829,9 @@
                         autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
                     
-                    // Dispara a notificação de email
-                    dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado);
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado);
+                    }
 
                     alert('Momento guardado no nosso varal! 💞');
                 }
@@ -875,8 +881,9 @@
                         autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
                     
-                    // Dispara a notificação de email
-                    dispararNotificacaoEmail("Carta / Declaração", titulo || "Alguém abriu o coração...", usuarioLogado);
+                    if (typeof window.dispararNotificacaoEmail === 'function') {
+                        window.dispararNotificacaoEmail("Carta / Declaração", titulo || "Alguém abriu o coração...", usuarioLogado);
+                    }
 
                     alert('Sua declaração foi guardada! 📝');
                 }
@@ -1181,6 +1188,29 @@
             elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
+        // === SISTEMA AUTOMÁTICO DE MESVERSÁRIO ===
+        function verificarEEnviarMesversario() {
+            const hoje = new Date();
+            const diaAtual = hoje.getDate();
+            const mesAtual = hoje.getMonth() + 1; 
+            const anoAtual = hoje.getFullYear();
+
+            if (diaAtual === 14) {
+                const chaveLocalStorage = `mesversario_enviado_${mesAtual}_${anoAtual}`;
+                
+                if (!localStorage.getItem(chaveLocalStorage)) {
+                    const mesesPassados = (anoAtual - 2026) * 12 + (hoje.getMonth() - 4);
+
+                    if (mesesPassados > 0 && typeof window.dispararNotificacaoEmail === 'function') {
+                        const textoParabens = `${mesesPassados}º Mês de Muito Amor! 🥰`;
+                        
+                        window.dispararNotificacaoEmail("Aniversário de Namoro", textoParabens, "Sistema do Nosso Canto 🤍");
+                        localStorage.setItem(chaveLocalStorage, "true");
+                    }
+                }
+            }
+        }
+
         const canvas = document.getElementById('canvas-hearts');
         const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
@@ -1195,7 +1225,7 @@
                 this.x = Math.random() * canvas.width;
                 this.y = canvas.height + Math.random() * 20;
                 this.size = Math.random() * 10 + 6;
-                this.speed = Math.random() * 2 + 1.5; // Suavizado para desempenho
+                this.speed = Math.random() * 2 + 1.5; 
                 this.opacity = 1;
                 this.colorValue = 140 + Math.floor(Math.random() * 40);
             }
@@ -1223,6 +1253,8 @@
             atualizarContadores();
             setInterval(atualizarContadores, 1000);
             animarLoop();
+            
+            setTimeout(verificarEEnviarMesversario, 3000); 
         });
     </script>
 </body>
