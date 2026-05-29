@@ -191,6 +191,7 @@
         #bloco-dias-amando { background-color: #ffebeb; }
         #bloco-coisinhas-dela { background-color: #fff0f5; }
         #bloco-coisas-minhas { background-color: #e6f2ff; }
+        #bloco-galeria-momentos { background-color: #fcf6f2; border: 1px dashed var(--border-color); }
 
         .contador-bloco {
             text-align: center;
@@ -383,7 +384,79 @@
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
 
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
+        /* Estilos Novos da Galeria Customizada */
+        .quadro-polaroid {
+            background: #ffffff;
+            padding: 15px 15px 25px 15px;
+            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.15);
+            border-radius: 4px;
+            margin: 20px auto;
+            max-width: 360px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transform: rotate(var(--rotacao, 1deg));
+            transition: transform 0.3s ease;
+        }
+        .quadro-polaroid:hover {
+            transform: rotate(0deg) scale(1.02);
+            z-index: 5;
+        }
+        .polaroid-midia {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: #f7f7f7;
+            display: block;
+        }
+        .polaroid-video {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: #000;
+        }
+        .polaroid-conteudo {
+            text-align: center;
+            padding-top: 15px;
+        }
+        .polaroid-titulo {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .polaroid-descricao {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        .botoes-reacao {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid #fcf0ee;
+            border-bottom: 1px solid #fcf0ee;
+            margin-bottom: 15px;
+        }
+        .btn-reacao {
+            background: none;
+            border: none;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            color: var(--secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.2s;
+        }
+        .btn-reacao:hover { transform: scale(1.1); }
+        .btn-reacao.curtido { color: #d9534f; font-weight: bold; }
+        .btn-reacao.curtido span { animation: pulse 0.4s ease; }
+
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.2); } }
     </style>
 </head>
 <body>
@@ -436,17 +509,19 @@
             </section>
 
             <section class="painel-upload" id="painel-de-postagem">
-                <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card</div>
+                <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Conteúdo</div>
                 <input type="hidden" id="editando-id" value="">
                 
-                <select id="post-destino" class="select-custom">
-                    <option value="dela">Postar em: Coisinhas Dela</option>
-                    <option value="meu">Postar em: Coisas Minhas</option>
+                <select id="post-destino" class="select-custom" onchange="adaptarFormularioPostagem()">
+                    <option value="dela">Postar em: Coisinhas Dela (Apresentação)</option>
+                    <option value="meu">Postar em: Coisas Minhas (Apresentação)</option>
+                    <option value="galeria">Postar em: Nossa Galeria (Fotos/Vídeos)</option>
                 </select>
-                <input type="text" id="post-titulo" class="input-custom" placeholder="Título">
-                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link">
-                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem">
-                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
+                
+                <input type="text" id="post-titulo" class="input-custom" placeholder="Título (Opcional para Galeria)">
+                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link / Descrição da Foto">
+                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem / Vídeo (Drive, Imgur...)">
+                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo (Apenas para Apresentações)">
                 <input type="date" id="post-data" class="input-custom">
                 
                 <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar no Nosso Canto ❤️</button>
@@ -541,6 +616,12 @@
 
                 <div id="novos-cards-meu"></div>
             </section>
+
+            <section class="bloco-separado" id="bloco-galeria-momentos">
+                <div class="titulo-secao">📸 Nossos Momentos & Fotos</div>
+                <div id="container-galeria-fotos"></div>
+            </section>
+
         </div>
     </div>
 
@@ -608,6 +689,26 @@
             document.getElementById('opcoes-menu-balao').classList.toggle('aberto');
         };
 
+        window.adaptarFormularioPostagem = function() {
+            const destino = document.getElementById('post-destino').value;
+            const inputLink = document.getElementById('post-link');
+            const inputTitulo = document.getElementById('post-titulo');
+            const inputSubtitulo = document.getElementById('post-subtitulo');
+            const inputMidia = document.getElementById('post-imagem');
+
+            if (destino === 'galeria') {
+                inputLink.style.display = 'none';
+                inputTitulo.placeholder = 'Título do Momento (Opcional)';
+                inputSubtitulo.placeholder = 'Escreva uma legenda/descrição bem linda... (Opcional)';
+                inputMidia.placeholder = 'Link da Imagem ou Vídeo (Drive / Imgur)';
+            } else {
+                inputLink.style.display = 'block';
+                inputTitulo.placeholder = 'Título';
+                inputSubtitulo.placeholder = 'Subtítulo do link';
+                inputMidia.placeholder = 'Link da Imagem';
+            }
+        };
+
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
             document.getElementById('post-titulo').value = '';
@@ -615,21 +716,52 @@
             document.getElementById('post-imagem').value = '';
             document.getElementById('post-link').value = '';
             document.getElementById('post-data').value = '';
-            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card';
+            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Conteúdo';
             document.getElementById('btn-salvar-post').innerText = 'Publicar no Nosso Canto ❤️';
+            adaptarFormularioPostagem();
+        }
+
+        // Função para formatar links de fotos e vídeos vindos do Drive automaticamente
+        function converterLinkDrive(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com')) {
+                let id = '';
+                const matchFile = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                const matchId = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+                if (matchFile) id = matchFile[1];
+                else if (matchId) id = matchId[1];
+                
+                if (id) {
+                    if (url.includes('file') || url.includes('view')) {
+                        // Tenta detectar se é vídeo pela url ou assume comportamento adaptável via preview embed
+                        return `https://drive.google.com/embed?pb=!1m12!1m8!1m3!1m2!1y18!2zM!2m1!1sz!3m1!1s${id}!4f1`; 
+                    }
+                    return `https://drive.google.com/uc?export=view&id=${id}`;
+                }
+            }
+            return url;
+        }
+
+        function verificarSeEVideo(url) {
+            if (!url) return false;
+            return url.includes('embed') || url.match(/\.(mp4|webm|ogg|mov)$/i) || url.includes('drive.google.com/embed');
         }
 
         window.salvarPostagemFirebase = async function() {
             const idEditando = document.getElementById('editando-id').value;
             const destino = document.getElementById('post-destino').value;
             const titulo = document.getElementById('post-titulo').value.trim();
-            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
+            const subtitulo = document.getElementById('post-subtitulo').value.trim() || '';
             const imagem = document.getElementById('post-imagem').value.trim();
             const link = document.getElementById('post-link').value.trim();
             const dataInput = document.getElementById('post-data').value;
 
-            if (!titulo || !imagem || !link || !dataInput) {
-                alert('Por favor, preencha todos os campos! ❤️');
+            if (destino !== 'galeria' && (!titulo || !imagem || !link || !dataInput)) {
+                alert('Por favor, preencha todos os campos obrigatórios da apresentação! ❤️');
+                return;
+            }
+            if (destino === 'galeria' && (!imagem || !dataInput)) {
+                alert('Por favor, insira pelo menos a mídia e a data do momento! 📸');
                 return;
             }
 
@@ -640,20 +772,20 @@
                 if (idEditando) {
                     const docRef = doc(db, "posts", idEditando);
                     await updateDoc(docRef, { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado! ✨');
+                    alert('Lembrança atualizada! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino, titulo, subtitulo, imagem, link, data: dataFormatada,
-                        autor: usuarioLogado, criadoEm: Date.now()
+                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
-                    alert('Card publicado! ❤️');
+                    alert('Lembrança guardada no coração! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
         };
 
         window.removerPostagemFirebase = async function(id) {
-            if (confirm("Deseja apagar essa lembrança? 🥺")) {
+            if (confirm("Deseja apagar essa lembrança permanente? 🥺")) {
                 await deleteDoc(doc(db, "posts", id));
                 resetarFormulario();
             }
@@ -670,9 +802,27 @@
             const [dia, mes, ano] = data.split('/');
             document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
 
-            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
-            document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
+            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Lembrança Selecionada';
+            document.getElementById('btn-salvar-post').innerText = 'Atualizar Publicação ❤️';
+            adaptarFormularioPostagem();
             document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.interagirCurtida = async function(id, curtidasAtuais = []) {
+            if (!curtidasAtuais || !Array.isArray(curtidasAtuais)) curtidasAtuais = [];
+            const index = curtidasAtuais.indexOf(usuarioLogado);
+            if (index > -1) {
+                curtidasAtuais.splice(index, 1);
+            } else {
+                curtidasAtuais.push(usuarioLogado);
+                celebrarAmor(); // Dispara corações na tela ao curtir!
+            }
+            await updateDoc(doc(db, "posts", id), { curtidas: curtidasAtuais });
+        };
+
+        window.compartilharLinkMomentos = function(titulo) {
+            navigator.clipboard.writeText(`${window.location.href} - Olha nosso momento: ${titulo || 'Especial'}`);
+            alert('Link do nosso momento copiado para enviar! 🌹');
         };
 
         window.adicionarComentarioFirebase = async function(secaoId) {
@@ -703,10 +853,70 @@
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
+            document.getElementById('container-galeria-fotos').innerHTML = '';
             let numDela = 1; let numMeu = 2;
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
+                const midiaFormatada = converterLinkDrive(post.imagem);
+                
+                if (post.destino === 'galeria') {
+                    const containerGaleria = document.getElementById('container-galeria-fotos');
+                    const jaCurtido = post.curtidas && post.curtidas.includes(usuarioLogado);
+                    const totalCurtidas = post.curtidas ? post.curtidas.length : 0;
+                    
+                    const controleGaleria = (post.autor === usuarioLogado) ? `
+                        <div class="acoes-card-custom" style="margin-top:5px; margin-bottom:10px;">
+                            <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '', '${post.data}')">Editar ✏️</button>
+                            <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
+                    ` : '';
+
+                    const blocoFoto = document.createElement('div');
+                    // Cria uma leve inclinação randômica charmosa estilo Varal de Fotos
+                    const rotAleatoria = (Math.random() * 4 - 2).toFixed(1);
+                    blocoFoto.className = 'quadro-polaroid';
+                    blocoFoto.style.setProperty('--rotacao', `${rotAleatoria}deg`);
+
+                    let elementoMidiaHtml = `<img src="${midiaFormatada}" class="polaroid-midia" alt="Nosso Momento" onerror="this.src='https://placehold.co/400?text=Foto+Incrível'">`;
+                    if (verificarSeEVideo(midiaFormatada)) {
+                        elementoMidiaHtml = `<iframe src="${midiaFormatada}" class="polaroid-video" allow="autoplay" allowfullscreen></iframe>`;
+                    }
+
+                    blocoFoto.innerHTML = `
+                        <div class="data-card" style="margin-bottom:15px;">
+                            <span>🗓️ ${post.data}</span>
+                            <span class="autor-tag">Registrado por: ${post.autor || 'Anônimo'}</span>
+                        </div>
+                        ${elementoMidiaHtml}
+                        <div class="polaroid-conteudo">
+                            ${post.titulo ? `<div class="polaroid-titulo">${post.titulo}</div>` : ''}
+                            ${post.subtitulo ? `<div class="polaroid-descricao">${post.subtitulo}</div>` : ''}
+                        </div>
+                        
+                        <div class="botoes-reacao">
+                            <button class="btn-reacao ${jaCurtido ? 'curtido' : ''}" onclick="interagirCurtida('${post.id}', ${JSON.stringify(post.curtidas || [])})">
+                                <span>${jaCurtido ? '❤️' : '🤍'}</span> ${totalCurtidas} amaram
+                            </button>
+                            <button class="btn-reacao" onclick="compartilharLinkMomentos('${post.titulo || ''}')">
+                                🔗 Compartilhar
+                            </button>
+                        </div>
+
+                        <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
+                            <div class="form-comentario">
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo sobre a foto..." onkeypress="verificarEnter(event, '${post.id}')">
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬</button>
+                            </div>
+                            <div id="lista-${post.id}" class="lista-comentarios" style="max-height:140px;"></div>
+                        </div>
+                        ${controleGaleria}
+                    `;
+                    containerGaleria.appendChild(blocoFoto);
+                    return;
+                }
+
+                // Processo padrão para as apresentações normais de cima
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
 
@@ -731,7 +941,7 @@
                         <div class="pdf-bloco">
                             <div class="numero-card">${post.numero}</div>
                             <div class="moldura-imagem">
-                                <img src="${post.imagem}" alt="${post.titulo}">
+                                <img src="${midiaFormatada}" alt="${post.titulo}">
                             </div>
                             <div class="contador-titulo">${post.titulo}</div>
                             <div class="contador-tempo">Clique para abrir 📂</div>
