@@ -78,7 +78,7 @@
             padding-top: 60px;
         }
 
-        /* HEADER FIXO */
+        /* HEADER FIXO CONTENDO APENAS IDENTIFICAÇÃO E LOGOUT */
         .header-status-bar {
             position: fixed;
             top: 0;
@@ -103,36 +103,10 @@
             gap: 10px;
         }
 
-        .status-info-txt {
-            display: flex;
-            flex-direction: column;
-        }
-
         .status-nome-parceiro {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: bold;
             color: var(--primary);
-        }
-
-        .status-subtexto {
-            font-size: 0.72rem;
-            color: #7a6b69;
-        }
-
-        .status-dot {
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            display: inline-block;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-        .status-dot.online {
-            background-color: #2ecc71;
-            box-shadow: 0 0 8px #2ecc71;
-        }
-        .status-dot.offline {
-            background-color: #bdc3c7;
-            box-shadow: none;
         }
 
         /* MENU FLUTUANTE */
@@ -246,7 +220,7 @@
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
             margin-bottom: 25px;
             position: relative;
-            height: auto; /* Correção: Garante crescimento vertical nativo */
+            height: auto;
         }
 
         .card-separador-interno {
@@ -343,7 +317,6 @@
         }
         .btn-postar:hover { background-color: #734f4b; }
 
-        /* CORREÇÃO DO BLOCO DE COMENTÁRIOS: Auto-ajustável e flexível */
         .secao-comentarios { 
             margin-top: 25px; 
             padding-top: 20px; 
@@ -363,7 +336,7 @@
         
         .input-comentario {
             flex: 1; 
-            min-width: 0; /* Impede o input de esticar infinitamente empurrando o botão */
+            min-width: 0;
             padding: 10px 14px; 
             border: 1px solid var(--border-color);
             border-radius: 20px; 
@@ -382,8 +355,8 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 0.9rem;
-            white-space: nowrap; /* Impede que o texto/emoji do botão se quebre */
-            flex-shrink: 0; /* Garante que o botão nunca encolha ou suma */
+            white-space: nowrap;
+            flex-shrink: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -426,7 +399,7 @@
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
 
-        /* CORREÇÃO DAS MÚSICAS: Sem quebras rígidas, textos longos descem de linha graciosamente */
+        /* AJUSTE ADAPTÁVEL DO QUADRO DE MÚSICA */
         .card-musica {
             display: flex; 
             flex-direction: column; 
@@ -441,28 +414,34 @@
             content-visibility: auto;
             height: auto;
         }
+        
+        /* Modificações específicas para fazer o destaque crescer naturalmente para cima */
         .card-musica.destaque {
             border: 2px solid #ff4d4d;
             box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
             background: #fffafa;
+            margin-top: 25px; /* Abre espaço superior nativo para o selo sem cortar nada */
+            padding-top: 22px; 
         }
+
         .selo-destaque {
             position: absolute; 
-            top: -12px; 
+            top: -14px; 
             left: 50%; 
             transform: translateX(-50%);
             background: #ff4d4d; 
             color: white; 
-            padding: 4px 12px; 
+            padding: 4px 14px; 
             border-radius: 20px;
             font-size: 0.75rem; 
             font-weight: bold; 
             text-transform: uppercase; 
             letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4); 
+            box-shadow: 0 3px 8px rgba(255, 77, 77, 0.4); 
             z-index: 2;
             white-space: nowrap;
         }
+
         .musica-layout { 
             display: flex; 
             gap: 15px; 
@@ -481,14 +460,14 @@
         }
         .musica-info { 
             flex: 1; 
-            min-width: 0; /* Crucial para o empacotamento flexbox respeitar os limites */
+            min-width: 0;
         }
         .musica-titulo { 
             font-size: 1.15rem; 
             font-weight: bold; 
             color: var(--primary); 
             margin-bottom: 5px; 
-            white-space: normal; /* Correção: Permite quebrar linha se o nome for gigante */
+            white-space: normal; 
             word-wrap: break-word;
             overflow-wrap: break-word;
             word-break: break-word;
@@ -533,11 +512,7 @@
     <div id="conteudo-site">
         <div class="header-status-bar">
             <div class="status-usuario-container">
-                <span id="dot-presenca" class="status-dot offline"></span>
-                <div class="status-info-txt">
-                    <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
-                    <span id="txt-presenca" class="status-subtexto">Verificando...</span>
-                </div>
+                <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
             </div>
             <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
         </div>
@@ -635,7 +610,7 @@
                 <input type="hidden" id="editando-galeria-id" value="">
                 
                 <input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
-                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
+                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição corta (Opcional)">
                 <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem">
                 <input type="date" id="galeria-data" class="input-custom">
                 
@@ -668,7 +643,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -684,51 +659,10 @@
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
-        function gerenciarPresencaOnline() {
+        function gerenciarSessaoUsuario() {
             if (!usuarioLogado) return;
-
             const parceiro = usuarioLogado === "Maria" ? "Fabricio" : "Maria";
-            document.getElementById('label-parceiro').innerText = parceiro;
-
-            const definirMeuStatus = async (estado) => {
-                const agora = new Date();
-                const horarioString = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                const dataString = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-                
-                try {
-                    await setDoc(doc(db, "presenca", usuarioLogado), {
-                        status: estado,
-                        hora: horarioString,
-                        data: dataString,
-                        timestamp: Date.now()
-                    });
-                } catch(e) { console.error("Erro status presenca:", e); }
-            };
-
-            definirMeuStatus("online");
-
-            window.addEventListener('beforeunload', () => {
-                definirMeuStatus("offline");
-            });
-
-            onSnapshot(doc(db, "presenca", parceiro), (snapshot) => {
-                const dot = document.getElementById('dot-presenca');
-                const txt = document.getElementById('txt-presenca');
-
-                if (snapshot.exists()) {
-                    const dados = snapshot.data();
-                    if (dados.status === "online") {
-                        dot.className = "status-dot online";
-                        txt.innerText = "Online agora";
-                    } else {
-                        dot.className = "status-dot offline";
-                        txt.innerText = `visto por último: ${dados.data} às ${dados.hora}`;
-                    }
-                } else {
-                    dot.className = "status-dot offline";
-                    txt.innerText = "offline";
-                }
-            });
+            document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
         }
 
         async function inicializarCardsOriginais() {
@@ -760,7 +694,7 @@
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('conteudo-site').style.display = 'block';
                 inicializarCardsOriginais();
-                gerenciarPresencaOnline();
+                gerenciarSessaoUsuario();
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('conteudo-site').style.display = 'none';
@@ -783,16 +717,6 @@
         });
 
         const fazerLogout = async function() {
-            if (usuarioLogado) {
-                try {
-                    await setDoc(doc(db, "presenca", usuarioLogado), {
-                        status: "offline",
-                        hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-                        data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-                        timestamp: Date.now()
-                    });
-                } catch(e) { console.error(e); }
-            }
             sessionStorage.removeItem('user_canto');
             usuarioLogado = null;
             verificarSessao();
