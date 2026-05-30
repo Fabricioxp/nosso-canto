@@ -75,10 +75,10 @@
             position: relative;
             z-index: 2;
             pointer-events: auto;
-            padding-top: 60px; /* Espaço para o novo header fixo */
+            padding-top: 60px;
         }
 
-        /* NOVO MODELO DE STATUS: Barra de Topo Fixa Elegante */
+        /* HEADER FIXO */
         .header-status-bar {
             position: fixed;
             top: 0;
@@ -135,7 +135,7 @@
             box-shadow: none;
         }
 
-        /* CORREÇÃO DO MENU FLUTUANTE: Removido cliques fantasmas */
+        /* MENU FLUTUANTE */
         .menu-flutuante-container {
             position: fixed;
             bottom: 25px;
@@ -168,7 +168,7 @@
         .botao-flutuante-principal:active { transform: scale(0.9) translateZ(0); }
 
         .menu-opcoes-flutuantes {
-            display: none; /* CORREÇÃO CRUCIAL: Sumir completamente quando fechado */
+            display: none; 
             flex-direction: column;
             gap: 10px;
             opacity: 0;
@@ -178,7 +178,7 @@
         }
 
         .menu-opcoes-flutuantes.aberto {
-            display: flex; /* Aparece fisicamente apenas ao abrir */
+            display: flex; 
             opacity: 1;
             pointer-events: auto;
             transform: translateY(0) translateZ(0);
@@ -246,6 +246,7 @@
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
             margin-bottom: 25px;
             position: relative;
+            height: auto; /* Correção: Garante crescimento vertical nativo */
         }
 
         .card-separador-interno {
@@ -253,6 +254,7 @@
             padding-bottom: 25px;
             border-bottom: 1px dashed var(--border-color);
             position: relative;
+            height: auto;
         }
 
         .titulo-secao {
@@ -320,6 +322,7 @@
             box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
             position: relative;
             z-index: 6;
+            height: auto;
         }
 
         .input-custom, .select-custom, .textarea-custom {
@@ -340,18 +343,55 @@
         }
         .btn-postar:hover { background-color: #734f4b; }
 
-        .secao-comentarios { margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); position: relative; z-index: 5; }
-        .form-comentario { display: flex; gap: 8px; margin-bottom: 15px; }
-        .input-comentario {
-            flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
-            border-radius: 20px; font-family: var(--font-main); font-size: 0.9rem;
-            outline: none; background-color: rgba(255, 255, 255, 0.6);
+        /* CORREÇÃO DO BLOCO DE COMENTÁRIOS: Auto-ajustável e flexível */
+        .secao-comentarios { 
+            margin-top: 25px; 
+            padding-top: 20px; 
+            border-top: 1px dashed var(--border-color); 
+            position: relative; 
+            z-index: 5;
+            height: auto;
         }
-        .btn-comentar { background-color: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 20px; cursor: pointer; }
+        
+        .form-comentario { 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            margin-bottom: 15px; 
+            width: 100%;
+        }
+        
+        .input-comentario {
+            flex: 1; 
+            min-width: 0; /* Impede o input de esticar infinitamente empurrando o botão */
+            padding: 10px 14px; 
+            border: 1px solid var(--border-color);
+            border-radius: 20px; 
+            font-family: var(--font-main); 
+            font-size: 0.9rem;
+            outline: none; 
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .btn-comentar { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 10px 16px; 
+            border-radius: 20px; 
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            white-space: nowrap; /* Impede que o texto/emoji do botão se quebre */
+            flex-shrink: 0; /* Garante que o botão nunca encolha ou suma */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; }
-        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; }
+        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; }
         .autor-comentario { font-weight: bold; color: var(--primary); }
         .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
         .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
@@ -371,7 +411,7 @@
         .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
         .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        .quadro-polaroid { background: #ffffff; padding: 14px 14px 22px 14px; box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12); border-radius: 4px; margin: 20px auto 30px auto; max-width: 380px; border: 1px solid rgba(0,0,0,0.03); position: relative; content-visibility: auto; }
+        .quadro-polaroid { background: #ffffff; padding: 14px 14px 22px 14px; box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12); border-radius: 4px; margin: 20px auto 30px auto; max-width: 380px; border: 1px solid rgba(0,0,0,0.03); position: relative; content-visibility: auto; height: auto; }
         .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; }
         .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
         .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
@@ -381,17 +421,25 @@
         .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
         .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
 
-        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; }
+        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
 
+        /* CORREÇÃO DAS MÚSICAS: Sem quebras rígidas, textos longos descem de linha graciosamente */
         .card-musica {
-            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
-            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
-            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
+            display: flex; 
+            flex-direction: column; 
+            background: #ffffff; 
+            padding: 16px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            margin-bottom: 20px; 
+            position: relative; 
+            border: 1px solid rgba(230, 179, 168, 0.3);
             transition: transform 0.2s;
             content-visibility: auto;
+            height: auto;
         }
         .card-musica.destaque {
             border: 2px solid #ff4d4d;
@@ -399,17 +447,73 @@
             background: #fffafa;
         }
         .selo-destaque {
-            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            background: #ff4d4d; color: white; padding: 4px 12px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4); z-index: 2;
+            position: absolute; 
+            top: -12px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            background: #ff4d4d; 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 20px;
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4); 
+            z-index: 2;
+            white-space: nowrap;
         }
-        .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
-        .musica-capa { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; }
-        .musica-info { flex: 1; overflow: hidden; }
-        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; }
-        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; }
+        .musica-layout { 
+            display: flex; 
+            gap: 15px; 
+            align-items: center; 
+            margin-top: 10px; 
+            width: 100%;
+        }
+        .musica-capa { 
+            width: 85px; 
+            height: 85px; 
+            border-radius: 12px; 
+            object-fit: cover; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1); 
+            background-color: #f0f0f0; 
+            flex-shrink: 0;
+        }
+        .musica-info { 
+            flex: 1; 
+            min-width: 0; /* Crucial para o empacotamento flexbox respeitar os limites */
+        }
+        .musica-titulo { 
+            font-size: 1.15rem; 
+            font-weight: bold; 
+            color: var(--primary); 
+            margin-bottom: 5px; 
+            white-space: normal; /* Correção: Permite quebrar linha se o nome for gigante */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .musica-dedicatoria { 
+            font-size: 0.8rem; 
+            color: var(--secondary); 
+            margin-bottom: 8px; 
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .musica-link-btn { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 5px; 
+            padding: 6px 12px; 
+            background: var(--secondary); 
+            color: white; 
+            border-radius: 20px; 
+            text-decoration: none; 
+            font-size: 0.8rem; 
+            font-weight: bold; 
+            transition: background 0.2s; 
+            white-space: nowrap;
+        }
         .musica-link-btn:hover { background: var(--primary); }
 
         @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
@@ -472,7 +576,7 @@
                 <div class="secao-comentarios">
                     <div class="form-comentario">
                         <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo...">
-                        <button class="btn-comentar" id="btn-comentar-cronometro">❤️</button>
+                        <button class="btn-comentar" id="btn-comentar-cronometro">❤️ Enviar</button>
                     </div>
                     <div id="lista-cronometro" class="lista-comentarios"></div>
                 </div>
@@ -531,7 +635,7 @@
                 <input type="hidden" id="editando-galeria-id" value="">
                 
                 <input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
-                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição corta (Opcional)">
+                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
                 <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem">
                 <input type="date" id="galeria-data" class="input-custom">
                 
@@ -580,7 +684,6 @@
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
-        // SISTEMA DE PRESENÇA CORRIGIDO PARA ATUALIZAR EM REALTIME
         function gerenciarPresencaOnline() {
             if (!usuarioLogado) return;
 
@@ -602,15 +705,12 @@
                 } catch(e) { console.error("Erro status presenca:", e); }
             };
 
-            // Fica online ao carregar
             definirMeuStatus("online");
 
-            // Define offline ao fechar/recarregar a aba
             window.addEventListener('beforeunload', () => {
                 definirMeuStatus("offline");
             });
 
-            // Monitora o status do parceiro em Realtime
             onSnapshot(doc(db, "presenca", parceiro), (snapshot) => {
                 const dot = document.getElementById('dot-presenca');
                 const txt = document.getElementById('txt-presenca');
@@ -699,7 +799,6 @@
         };
         document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
 
-        // CORREÇÃO DO MENU: Controla visibilidade física usando display
         window.alternarMenuBalao = function() {
             const menu = document.getElementById('opcoes-menu-balao');
             if(menu.classList.contains('aberto')) {
@@ -1044,7 +1143,7 @@
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                             <div class="form-comentario">
                                 <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
-                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨</button>
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
@@ -1088,7 +1187,7 @@
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                             <div class="form-comentario">
                                 <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
-                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬</button>
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
@@ -1130,7 +1229,7 @@
                     <div class="secao-comentarios">
                         <div class="form-comentario">
                             <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️</button>
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
                         </div>
                         <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
