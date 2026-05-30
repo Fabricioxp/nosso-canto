@@ -7,8 +7,6 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <style>
         :root {
@@ -107,6 +105,7 @@
             background-color: #95a5a6;
         }
 
+        /* CORREÇÃO CRUCIAL: pointer-events none no container para não bloquear o meio da tela */
         .menu-flutuante-container {
             position: fixed;
             bottom: 25px;
@@ -116,6 +115,12 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 12px;
+            pointer-events: none; 
+        }
+
+        /* Reativa os cliques apenas nos botões do menu */
+        .botao-flutuante-principal, .menu-opcoes-flutuantes a {
+            pointer-events: auto;
         }
 
         .botao-flutuante-principal {
@@ -327,7 +332,6 @@
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
 
-        /* CRUCIAL PARA CORREÇÃO DO BUG DE NÃO CLICAR: Desativar interceptação de cliques no canvas */
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
 
         .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
@@ -388,7 +392,7 @@
             <h2>Quem está entrando? 🤍</h2>
             <input type="text" id="login-nome" class="input-custom" placeholder="Seu nome (Fabricio ou Maria)">
             <input type="password" id="login-senha" class="input-custom" placeholder="Senha secreta">
-            <button class="btn-postar" onclick="realizarLoginExterno()">Entrar no Nosso Canto</button>
+            <button class="btn-postar" id="btn-login-click">Entrar no Nosso Canto</button>
         </div>
     </div>
 
@@ -402,20 +406,20 @@
         <canvas id="canvas-hearts"></canvas>
 
         <header>
-            <button class="btn-logout" onclick="fazerLogout()">Sair 🚪</button>
+            <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
             <h1>Nosso Lugar no Mundo</h1>
             <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
         </header>
 
         <div class="menu-flutuante-container">
             <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
-                <a href="#bloco-dias-amando" class="item-opcao-flutuante" onclick="alternarMenuBalao()">⏳ Nosso Tempo</a>
-                <a href="#bloco-playlist" class="item-opcao-flutuante" onclick="alternarMenuBalao()">🎧 Nossa Playlist</a>
-                <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" onclick="alternarMenuBalao()">🖼️ Galeria</a>
-                <a href="#bloco-nossos-textos" class="item-opcao-flutuante" onclick="alternarMenuBalao()">✍️ Cartas</a>
-                <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" onclick="alternarMenuBalao()">✨ Apresentações</a>
+                <a href="#bloco-dias-amando" class="item-opcao-flutuante" id="lnk-tempo">⏳ Nosso Tempo</a>
+                <a href="#bloco-playlist" class="item-opcao-flutuante" id="lnk-playlist">🎧 Nossa Playlist</a>
+                <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="lnk-galeria">🖼️ Galeria</a>
+                <a href="#bloco-nossos-textos" class="item-opcao-flutuante" id="lnk-cartas">✍️ Cartas</a>
+                <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="lnk-apresentacoes">✨ Apresentações</a>
             </div>
-            <button class="botao-flutuante-principal" onclick="alternarMenuBalao()">📌</button>
+            <button class="botao-flutuante-principal" id="btn-flutuante-click">📌</button>
         </div>
 
         <div class="container-blocos">
@@ -433,8 +437,8 @@
 
                 <div class="secao-comentarios">
                     <div class="form-comentario">
-                        <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo..." onkeypress="verificarEnter(event, 'cronometro')">
-                        <button class="btn-comentar" onclick="adicionarComentarioFirebase('cronometro')">❤️</button>
+                        <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo...">
+                        <button class="btn-comentar" id="btn-comentar-cronometro">❤️</button>
                     </div>
                     <div id="lista-cronometro" class="lista-comentarios"></div>
                 </div>
@@ -453,7 +457,7 @@
                     <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
                 </div>
                 
-                <button class="btn-postar" id="btn-salvar-playlist" onclick="salvarMusicaFirebase()">Adicionar à Playlist 🎶</button>
+                <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
             </section>
 
             <section class="bloco-separado" id="bloco-playlist">
@@ -475,7 +479,7 @@
                 <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
                 <input type="date" id="post-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-post" onclick="salvarPostagemFirebase()">Publicar Apresentação ❤️</button>
+                <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
             </section>
 
             <section class="bloco-separado" id="bloco-coisinhas-dela">
@@ -497,7 +501,7 @@
                 <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem">
                 <input type="date" id="galeria-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-galeria" onclick="salvarFotoGaleriaFirebase()">Publicar na Galeria ✨</button>
+                <button class="btn-postar" id="btn-salvar-galeria">Publicar na Galeria ✨</button>
             </section>
 
             <section class="bloco-separado" id="bloco-galeria-momentos">
@@ -513,7 +517,7 @@
                 <textarea id="texto-corpo" class="textarea-custom" placeholder="Escreva aqui tudo o que seu coração sente... ❤️"></textarea>
                 <input type="date" id="texto-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-texto" onclick="salvarTextoFirebase()">Eternizar Declaração 🌹</button>
+                <button class="btn-postar" id="btn-salvar-texto">Eternizar Declaração 🌹</button>
             </section>
 
             <section class="bloco-separado" id="bloco-nossos-textos">
@@ -527,18 +531,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        emailjs.init("QqfTPDKvKPnqTCPsf"); 
-
-        window.dispararNotificacaoEmail = function(tipo, titulo, autor) {
-            const templateParams = { tipo, autor, titulo };
-
-            emailjs.send("service_bjyc673", "template_n994c8j", templateParams)
-            .then(
-                function(response) { console.log("✅ E-mail enviado com sucesso!"); },
-                function(error) { console.error("❌ Erro EmailJS:", error); }
-            );
-        }
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -554,18 +546,16 @@
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
-        // SISTEMA DE PRESENÇA REALTIME NO FIRESTORE
+        // SISTEMA DE PRESENÇA REALTIME CORRIGIDO NO ESCOPO MODULE
         function gerenciarPresencaOnline() {
             if (!usuarioLogado) return;
 
             const parceiro = usuarioLogado === "Maria" ? "Fabricio" : "Maria";
             document.getElementById('label-parceiro').innerText = `${parceiro}:`;
 
-            // Função interna para atualizar meu estado no Firestore
             const definirMeuStatus = async (estado) => {
                 const agora = new Date();
                 const horarioString = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                // Formatação melhorada incluindo dia da semana e mês por extenso para o Visto por Último
                 const dataString = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
                 
                 try {
@@ -578,15 +568,12 @@
                 } catch(e) { console.error("Erro status presenca:", e); }
             };
 
-            // Fica online ao entrar
             definirMeuStatus("online");
 
-            // Monitora quando fechar a página ou atualizar para marcar offline
             window.addEventListener('beforeunload', () => {
                 definirMeuStatus("offline");
             });
 
-            // Ouvinte em tempo real do status do parceiro
             onSnapshot(doc(db, "presenca", parceiro), (snapshot) => {
                 const dot = document.getElementById('dot-presenca');
                 const txt = document.getElementById('txt-presenca');
@@ -643,7 +630,7 @@
             }
         }
 
-        window.realizarLoginExterno = function() {
+        document.getElementById('btn-login-click').addEventListener('click', function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
             const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
@@ -656,9 +643,9 @@
             } else {
                 alert('Nome ou senha incorretos! 🥺');
             }
-        };
+        });
 
-        window.fazerLogout = async function() {
+        const fazerLogout = async function() {
             if (usuarioLogado) {
                 try {
                     await setDoc(doc(db, "presenca", usuarioLogado), {
@@ -673,10 +660,17 @@
             usuarioLogado = null;
             verificarSessao();
         };
+        document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
 
         window.alternarMenuBalao = function() {
             document.getElementById('opcoes-menu-balao').classList.toggle('aberto');
         };
+        document.getElementById('btn-flutuante-click').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-tempo').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-playlist').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-galeria').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-cartas').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-apresentacoes').addEventListener('click', window.alternarMenuBalao);
 
         window.alternarMenuTresPontos = function(id) {
             const menu = document.getElementById(`opcoes-${id}`);
@@ -730,14 +724,12 @@
                         destino: 'playlist', titulo, link, imagem, destaque,
                         autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
-                    if (typeof window.dispararNotificacaoEmail === 'function') {
-                        window.dispararNotificacaoEmail("Música na Playlist", titulo, usuarioLogado);
-                    }
                     alert('Música dedicada com sucesso! ❤️');
                 }
                 resetarFormularioPlaylist();
             } catch (error) { console.error(error); }
         };
+        document.getElementById('btn-salvar-playlist').addEventListener('click', window.salvarMusicaFirebase);
 
         window.prepararEdicaoPlaylist = function(id, titulo, link, imagem, destaque) {
             document.getElementById('editando-playlist-id').value = id;
@@ -784,15 +776,15 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card updated! ✨');
+                    alert('Card atualizado! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
-                    if (typeof window.dispararNotificacaoEmail === 'function') { window.dispararNotificacaoEmail("Apresentação", titulo, usuarioLogado); }
                     alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
         };
+        document.getElementById('btn-salvar-post').addEventListener('click', window.salvarPostagemFirebase);
 
         window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
             document.getElementById('editando-id').value = id;
@@ -832,15 +824,15 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, data: dataFormatada });
-                    alert('Foto da galeria updated! 🖼️');
+                    alert('Foto da galeria atualizada! 🖼️');
                 } else {
                     await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
-                    if (typeof window.dispararNotificacaoEmail === 'function') { window.dispararNotificacaoEmail("Foto na Galeria", titulo || "Novo momento lindo!", usuarioLogado); }
                     alert('Momento guardado no nosso varal! 💞');
                 }
                 resetarFormularioGaleria();
             } catch (error) { console.error(error); }
         };
+        document.getElementById('btn-salvar-galeria').addEventListener('click', window.salvarFotoGaleriaFirebase);
 
         window.prepararEdicaoGaleria = function(id, titulo, subtitulo, imagem, data) {
             document.getElementById('editando-galeria-id').value = id;
@@ -879,12 +871,12 @@
                     alert('Sua linda carta foi atualizada! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino: 'texto', titulo, corpo, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
-                    if (typeof window.dispararNotificacaoEmail === 'function') { window.dispararNotificacaoEmail("Carta / Declaração", titulo || "Alguém abriu o coração...", usuarioLogado); }
                     alert('Sua declaração foi guardada! 📝');
                 }
                 resetarFormularioTexto();
             } catch (error) { console.error(error); }
         };
+        document.getElementById('btn-salvar-texto').addEventListener('click', window.salvarTextoFirebase);
 
         window.prepararEdicaoTexto = function(id, titulo, corpo, data) {
             document.getElementById('editando-texto-id').value = id;
@@ -915,12 +907,14 @@
                 if (input) input.value = '';
             } catch (error) { console.error(error); }
         };
+        document.getElementById('btn-comentar-cronometro').addEventListener('click', function() { window.adicionarComentarioFirebase('cronometro'); });
 
         window.excluirComentarioFirebase = async function(id) { await deleteDoc(doc(db, "comentarios", id)); };
 
         window.verificarEnter = function(event, id) {
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
+        document.getElementById('input-cronometro').addEventListener('keypress', function(e) { window.verificarEnter(e, 'cronometro'); });
 
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
@@ -1004,13 +998,18 @@
                         </div>
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                             <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo..." onkeypress="verificarEnter(event, '${post.id}')">
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
                                 <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨</button>
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
                     `;
                     containerGaleria.appendChild(blocoFoto);
+                    
+                    setTimeout(() => {
+                        const inp = document.getElementById(`input-${post.id}`);
+                        if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                    }, 500);
                     return;
                 }
 
@@ -1043,13 +1042,18 @@
                         </div>
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                             <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado..." onkeypress="verificarEnter(event, '${post.id}')">
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
                                 <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬</button>
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
                     `;
                     containerTextos.appendChild(blocoTexto);
+                    
+                    setTimeout(() => {
+                        const inp = document.getElementById(`input-${post.id}`);
+                        if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                    }, 500);
                     return;
                 }
 
@@ -1080,7 +1084,7 @@
                     </a>
                     <div class="secao-comentarios">
                         <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo..." onkeypress="verificarEnter(event, '${post.id}')">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
                             <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️</button>
                         </div>
                         <div id="lista-${post.id}" class="lista-comentarios"></div>
@@ -1088,6 +1092,11 @@
                     ${controleModificacao}
                 `;
                 container.appendChild(bloco);
+                
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
             });
         });
 
@@ -1140,24 +1149,6 @@
             elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
-        function verificarEEnviarMesversario() {
-            const hoje = new Date();
-            const diaAtual = hoje.getDate();
-            const mesAtual = hoje.getMonth() + 1; 
-            const anoAtual = hoje.getFullYear();
-
-            if (diaAtual === 14) {
-                const chaveLocalStorage = `mesversario_enviado_${mesAtual}_${anoAtual}`;
-                if (!localStorage.getItem(chaveLocalStorage)) {
-                    const mesesPassados = (anoAtual - 2026) * 12 + (hoje.getMonth() - 4);
-                    if (mesesPassados > 0 && typeof window.dispararNotificacaoEmail === 'function') {
-                        window.dispararNotificacaoEmail("Aniversário de Namoro", `${mesesPassados}º Mês de Muito Amor! 🥰`, "Sistema do Nosso Canto 🤍");
-                        localStorage.setItem(chaveLocalStorage, "true");
-                    }
-                }
-            }
-        }
-
         const canvas = document.getElementById('canvas-hearts');
         const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
@@ -1205,7 +1196,6 @@
             atualizarContadores();
             setInterval(atualizarContadores, 1000);
             animarLoop();
-            setTimeout(verificarEEnviarMesversario, 3000); 
         });
     </script>
 </body>
