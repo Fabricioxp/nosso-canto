@@ -75,24 +75,53 @@
             position: relative;
             z-index: 2;
             pointer-events: auto;
+            padding-top: 60px; /* Espaço para o novo header fixo */
         }
 
-        /* Ajuste do topo com Barra de Presença */
+        /* NOVO MODELO DE STATUS: Barra de Topo Fixa Elegante */
         .header-status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55px;
+            z-index: 9999;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            background-color: rgba(255, 255, 255, 0.6);
-            padding: 8px 15px;
-            font-size: 0.85rem;
-            color: var(--text-color);
-            border-bottom: 1px solid rgba(230, 179, 168, 0.3);
-            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0 20px;
+            box-shadow: 0 2px 15px rgba(140, 98, 93, 0.08);
+            border-bottom: 1px solid rgba(230, 179, 168, 0.25);
         }
+
+        .status-usuario-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-info-txt {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-nome-parceiro {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .status-subtexto {
+            font-size: 0.72rem;
+            color: #7a6b69;
+        }
+
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
             display: inline-block;
             transition: background-color 0.3s, box-shadow 0.3s;
@@ -102,25 +131,21 @@
             box-shadow: 0 0 8px #2ecc71;
         }
         .status-dot.offline {
-            background-color: #95a5a6;
+            background-color: #bdc3c7;
+            box-shadow: none;
         }
 
-        /* CORREÇÃO CRUCIAL: pointer-events none no container para não bloquear o meio da tela */
+        /* CORREÇÃO DO MENU FLUTUANTE: Removido cliques fantasmas */
         .menu-flutuante-container {
             position: fixed;
             bottom: 25px;
             right: 25px;
-            z-index: 99999;
+            z-index: 99995;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             gap: 12px;
             pointer-events: none; 
-        }
-
-        /* Reativa os cliques apenas nos botões do menu */
-        .botao-flutuante-principal, .menu-opcoes-flutuantes a {
-            pointer-events: auto;
         }
 
         .botao-flutuante-principal {
@@ -136,23 +161,24 @@
             align-items: center;
             justify-content: center;
             font-size: 1.6rem;
+            pointer-events: auto;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .botao-flutuante-principal:active { transform: scale(0.9) translateZ(0); }
 
         .menu-opcoes-flutuantes {
-            display: flex;
+            display: none; /* CORREÇÃO CRUCIAL: Sumir completamente quando fechado */
             flex-direction: column;
             gap: 10px;
             opacity: 0;
-            pointer-events: none;
             transform: translateY(20px) translateZ(0);
             transition: opacity 0.25s ease, transform 0.25s ease;
             will-change: transform, opacity;
         }
 
         .menu-opcoes-flutuantes.aberto {
+            display: flex; /* Aparece fisicamente apenas ao abrir */
             opacity: 1;
             pointer-events: auto;
             transform: translateY(0) translateZ(0);
@@ -173,24 +199,28 @@
             border: 1px solid rgba(230, 179, 168, 0.5);
             transition: transform 0.2s, background 0.2s;
             white-space: nowrap;
+            pointer-events: auto;
         }
         .item-opcao-flutuante:hover { background-color: #fff0ee; }
 
         header {
             text-align: center;
-            padding: 40px 20px 35px 20px;
+            padding: 30px 20px 35px 20px;
             position: relative;
         }
 
         .btn-logout {
-            position: absolute;
-            top: 15px; right: 20px;
-            background: none; border: 1px solid var(--border-color);
-            padding: 6px 12px; border-radius: 12px;
-            font-size: 0.85rem; font-family: var(--font-main);
-            color: var(--secondary); cursor: pointer;
-            z-index: 10;
+            background: none; 
+            border: 1px solid var(--border-color);
+            padding: 5px 10px; 
+            border-radius: 10px;
+            font-size: 0.8rem; 
+            font-family: var(--font-main);
+            color: var(--secondary); 
+            cursor: pointer;
+            transition: background 0.2s;
         }
+        .btn-logout:hover { background: rgba(230, 179, 168, 0.15); }
 
         header h1 {
             font-family: var(--font-title);
@@ -398,15 +428,19 @@
 
     <div id="conteudo-site">
         <div class="header-status-bar">
-            <span id="label-parceiro">Carregando status...</span>
-            <span id="dot-presenca" class="status-dot offline"></span>
-            <span id="txt-presenca">Verificando...</span>
+            <div class="status-usuario-container">
+                <span id="dot-presenca" class="status-dot offline"></span>
+                <div class="status-info-txt">
+                    <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
+                    <span id="txt-presenca" class="status-subtexto">Verificando...</span>
+                </div>
+            </div>
+            <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
         </div>
 
         <canvas id="canvas-hearts"></canvas>
 
         <header>
-            <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
             <h1>Nosso Lugar no Mundo</h1>
             <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
         </header>
@@ -546,17 +580,17 @@
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
-        // SISTEMA DE PRESENÇA REALTIME CORRIGIDO NO ESCOPO MODULE
+        // SISTEMA DE PRESENÇA CORRIGIDO PARA ATUALIZAR EM REALTIME
         function gerenciarPresencaOnline() {
             if (!usuarioLogado) return;
 
             const parceiro = usuarioLogado === "Maria" ? "Fabricio" : "Maria";
-            document.getElementById('label-parceiro').innerText = `${parceiro}:`;
+            document.getElementById('label-parceiro').innerText = parceiro;
 
             const definirMeuStatus = async (estado) => {
                 const agora = new Date();
                 const horarioString = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                const dataString = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+                const dataString = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
                 
                 try {
                     await setDoc(doc(db, "presenca", usuarioLogado), {
@@ -568,12 +602,15 @@
                 } catch(e) { console.error("Erro status presenca:", e); }
             };
 
+            // Fica online ao carregar
             definirMeuStatus("online");
 
+            // Define offline ao fechar/recarregar a aba
             window.addEventListener('beforeunload', () => {
                 definirMeuStatus("offline");
             });
 
+            // Monitora o status do parceiro em Realtime
             onSnapshot(doc(db, "presenca", parceiro), (snapshot) => {
                 const dot = document.getElementById('dot-presenca');
                 const txt = document.getElementById('txt-presenca');
@@ -582,14 +619,14 @@
                     const dados = snapshot.data();
                     if (dados.status === "online") {
                         dot.className = "status-dot online";
-                        txt.innerText = "Online";
+                        txt.innerText = "Online agora";
                     } else {
                         dot.className = "status-dot offline";
                         txt.innerText = `visto por último: ${dados.data} às ${dados.hora}`;
                     }
                 } else {
                     dot.className = "status-dot offline";
-                    txt.innerText = "Nenhum registro";
+                    txt.innerText = "offline";
                 }
             });
         }
@@ -651,7 +688,7 @@
                     await setDoc(doc(db, "presenca", usuarioLogado), {
                         status: "offline",
                         hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-                        data: new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }),
+                        data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
                         timestamp: Date.now()
                     });
                 } catch(e) { console.error(e); }
@@ -662,8 +699,16 @@
         };
         document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
 
+        // CORREÇÃO DO MENU: Controla visibilidade física usando display
         window.alternarMenuBalao = function() {
-            document.getElementById('opcoes-menu-balao').classList.toggle('aberto');
+            const menu = document.getElementById('opcoes-menu-balao');
+            if(menu.classList.contains('aberto')) {
+                menu.classList.remove('aberto');
+                setTimeout(() => { menu.style.display = "none"; }, 250);
+            } else {
+                menu.style.display = "flex";
+                setTimeout(() => { menu.classList.add('aberto'); }, 10);
+            }
         };
         document.getElementById('btn-flutuante-click').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-tempo').addEventListener('click', window.alternarMenuBalao);
@@ -776,10 +821,10 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado! ✨');
+                    alert('Card updated! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
-                    alert('Card publicado! ❤️');
+                    alert('Card published! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
@@ -960,7 +1005,7 @@
                         </div>
                         <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
                             <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">${jaCurtido ? '❤️' : '🤍'}</button>
-                            <span class="contagem-likes">${curtidasArray.length} pessoas amaram</span>
+                            <span class="contagem-likes">${curtidasArray.length} amaram</span>
                         </div>
                     `;
                     if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
