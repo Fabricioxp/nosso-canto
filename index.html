@@ -399,6 +399,27 @@
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
 
+        /* MODIFICAÇÃO APENAS AQUI: Estilos para o efeito "Ler mais" das Declarações */
+        .limitar-texto {
+            max-height: 120px; /* Limita a aba visível inicialmente */
+            overflow: hidden;
+            position: relative;
+        }
+        .btn-ler-mais {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 5px 0;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-align: left;
+            font-family: var(--font-main);
+        }
+
         /* AJUSTE ADAPTÁVEL DO QUADRO DE MÚSICA */
         .card-musica {
             display: flex; 
@@ -628,6 +649,22 @@
         </div>
     </div>
 
+    <script>
+        window.alternarTextoCompleto = function(id) {
+            const corpo = document.getElementById(`corpo-texto-${id}`);
+            const botao = document.getElementById(`btn-ler-${id}`);
+            if (corpo && botao) {
+                if (corpo.classList.contains('limitar-texto')) {
+                    corpo.classList.remove('limitar-texto');
+                    botao.innerText = 'Ler menos ↩️';
+                } else {
+                    corpo.classList.add('limitar-texto');
+                    botao.innerText = 'Ler mais... 📑';
+                }
+            }
+        };
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -668,7 +705,7 @@
         }
 
         function sanitizarHTML(str) { 
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[tag] || tag)); 
         }
 
         function obterDataHoraAtual() {
@@ -1083,6 +1120,7 @@
                     return;
                 }
 
+                /* MODIFICAÇÃO APENAS AQUI: Ajustado o HTML interno da renderização do texto para suportar o 'Ler mais' */
                 if (post.destino === 'texto') {
                     const containerTextos = document.getElementById('novos-cards-textos');
                     const blocoTexto = document.createElement('div');
@@ -1105,7 +1143,11 @@
                             <span class="autor-tag">Escrito por: ${post.autor}</span>
                         </div>
                         ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
-                        <div class="declaracao-corpo-render">${sanitizarHTML(post.corpo)}</div>
+                        
+                        <div class="declaracao-corpo-render limitar-texto" id="corpo-texto-${post.id}">${sanitizarHTML(post.corpo)}</div>
+                        
+                        <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarTextoCompleto('${post.id}')">Ler mais... 📑</button>
+
                         <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
                             <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                             <span class="contagem-likes">${curtidasArray.length} curtidas</span>
@@ -1269,4 +1311,4 @@
         });
     </script>
 </body>
-    </html>
+</html>
