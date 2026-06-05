@@ -410,36 +410,23 @@
             margin-bottom: 20px; 
             position: relative; 
             border: 1px solid rgba(230, 179, 168, 0.3);
-            transition: transform 0.2s;
+            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s;
             content-visibility: auto;
             height: auto;
         }
         
-        /* Modificações específicas para fazer o destaque crescer naturalmente para cima */
+        /* Efeitos elegantes para quando a música está destacada, sem a escrita esteticamente feia */
         .card-musica.destaque {
-            border: 2px solid #ff4d4d;
-            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
-            background: #fffafa;
-            margin-top: 25px; /* Abre espaço superior nativo para o selo sem cortar nada */
-            padding-top: 22px; 
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
+            background: #fffbfb;
+            animation: pulsarDestaqueMusica 3s infinite ease-in-out;
         }
 
-        .selo-destaque {
-            position: absolute; 
-            top: -14px; 
-            left: 50%; 
-            transform: translateX(-50%);
-            background: #ff4d4d; 
-            color: white; 
-            padding: 4px 14px; 
-            border-radius: 20px;
-            font-size: 0.75rem; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            box-shadow: 0 3px 8px rgba(255, 77, 77, 0.4); 
-            z-index: 2;
-            white-space: nowrap;
+        @keyframes pulsarDestaqueMusica {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(140, 98, 93, 0.4); border-color: var(--border-color); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); border-color: var(--primary); }
         }
 
         .musica-layout { 
@@ -643,7 +630,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -681,7 +668,7 @@
         }
 
         function sanitizarHTML(str) { 
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
 
         function obterDataHoraAtual() {
@@ -957,12 +944,28 @@
             document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
         };
 
-        window.alternarCurtidaItem = async function(id, listaLikes = []) {
-            if (!Array.isArray(listaLikes)) listaLikes = [];
-            const index = listaLikes.indexOf(usuarioLogado);
-            if (index > -1) { listaLikes.splice(index, 1); } 
-            else { listaLikes.push(usuarioLogado); celebrarAmor(); }
-            await updateDoc(doc(db, "posts", id), { curtidas: listaLikes });
+        /* SISTEMA DE CURTIDAS CORRIGIDO EM TEMPO REAL */
+        window.alternarCurtidaItem = async function(id) {
+            try {
+                const docRef = doc(db, "posts", id);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    let listaLikes = docSnap.data().curtidas || [];
+                    if (!Array.isArray(listaLikes)) listaLikes = [];
+                    
+                    const index = listaLikes.indexOf(usuarioLogado);
+                    if (index > -1) { 
+                        listaLikes.splice(index, 1); 
+                    } else { 
+                        listaLikes.push(usuarioLogado); 
+                        if (typeof celebrarAmor === "function") celebrarAmor(); 
+                    }
+                    await updateDoc(docRef, { curtidas: listaLikes });
+                }
+            } catch (error) {
+                console.error("Erro ao processar curtida:", error);
+            }
         };
 
         window.adicionarComentarioFirebase = async function(secaoId) {
@@ -1002,8 +1005,7 @@
                     const containerPlaylist = document.getElementById('novos-cards-playlist');
                     const blocoMusica = document.createElement('div');
                     let classesCartao = 'card-musica';
-                    let seloHtml = '';
-                    if (post.destaque) { classesCartao += ' destaque'; seloHtml = '<div class="selo-destaque">🌟 Música do Momento</div>'; }
+                    if (post.destaque) { classesCartao += ' destaque'; }
 
                     const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
@@ -1017,7 +1019,7 @@
 
                     blocoMusica.className = classesCartao;
                     blocoMusica.innerHTML = `
-                        ${seloHtml} ${menuTresPontosPlaylist}
+                        ${menuTresPontosPlaylist}
                         <div class="musica-layout">
                             <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
                             <div class="musica-info">
@@ -1027,7 +1029,7 @@
                             </div>
                         </div>
                         <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">${jaCurtido ? '❤️' : '🤍'}</button>
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                             <span class="contagem-likes">${curtidasArray.length} amaram</span>
                         </div>
                     `;
@@ -1061,7 +1063,7 @@
                             ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
                         </div>
                         <div class="barra-reacoes-polaroid">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">${jaCurtido ? '❤️' : '🤍'}</button>
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                             <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                         </div>
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
@@ -1105,7 +1107,7 @@
                         ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
                         <div class="declaracao-corpo-render">${sanitizarHTML(post.corpo)}</div>
                         <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}', ${JSON.stringify(curtidasArray)})">${jaCurtido ? '❤️' : '🤍'}</button>
+                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                             <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                         </div>
                         <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
