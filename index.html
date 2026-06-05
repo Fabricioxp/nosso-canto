@@ -397,28 +397,51 @@
         .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
-        .declaracao-corpo-render { font-size: 1rem; line-height: 1.6; color: var(--text-color); white-space: pre-wrap; margin-bottom: 15px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
-
-        /* MODIFICAÇÃO APENAS AQUI: Estilos para o efeito "Ler mais" das Declarações */
-        .limitar-texto {
-            max-height: 120px; /* Limita a aba visível inicialmente */
-            overflow: hidden;
+        
+        /* ALTERAÇÃO AQUI: Limitação de tamanho e efeito fade nas declarações longas */
+        .declaracao-wrapper {
             position: relative;
+            margin-bottom: 10px;
+        }
+        .declaracao-corpo-render { 
+            font-size: 1rem; 
+            line-height: 1.6; 
+            color: var(--text-color); 
+            white-space: pre-wrap; 
+            overflow: hidden; 
+            max-height: 95px; /* Altura limite visível inicial aproximada (3 linhas) */
+            transition: max-height 0.4s ease;
+            overflow-wrap: break-word; 
+            word-wrap: break-word; 
+            word-break: break-word; 
+        }
+        .declaracao-corpo-render.expandido {
+            max-height: 2000px; /* Permite expandir totalmente */
+        }
+        .declaracao-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 35px;
+            background: linear-gradient(transparent, rgba(255,255,255,0.95));
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .declaracao-wrapper.expandido::after {
+            opacity: 0; /* Remove o degradê quando estiver aberto completamento */
         }
         .btn-ler-mais {
             background: none;
             border: none;
             color: var(--primary);
+            font-size: 0.85rem;
             font-weight: bold;
-            font-size: 0.9rem;
             cursor: pointer;
             padding: 5px 0;
-            display: block;
-            margin-top: -10px;
-            margin-bottom: 15px;
-            text-align: left;
+            margin-bottom: 10px;
+            display: inline-block;
             font-family: var(--font-main);
         }
+        .btn-ler-mais:hover { text-decoration: underline; }
 
         /* AJUSTE ADAPTÁVEL DO QUADRO DE MÚSICA */
         .card-musica {
@@ -436,7 +459,7 @@
             height: auto;
         }
         
-        /* Efeitos elegantes para quando a música está destacada, sem a escrita esteticamente feia */
+        /* Efeitos elegantes para quando a música está destacada */
         .card-musica.destaque {
             border: 2px solid var(--primary);
             box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
@@ -649,22 +672,6 @@
         </div>
     </div>
 
-    <script>
-        window.alternarTextoCompleto = function(id) {
-            const corpo = document.getElementById(`corpo-texto-${id}`);
-            const botao = document.getElementById(`btn-ler-${id}`);
-            if (corpo && botao) {
-                if (corpo.classList.contains('limitar-texto')) {
-                    corpo.classList.remove('limitar-texto');
-                    botao.innerText = 'Ler menos ↩️';
-                } else {
-                    corpo.classList.add('limitar-texto');
-                    botao.innerText = 'Ler mais... 📑';
-                }
-            }
-        };
-    </script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -705,7 +712,7 @@
         }
 
         function sanitizarHTML(str) { 
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[tag] || tag)); 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
 
         function obterDataHoraAtual() {
@@ -981,6 +988,24 @@
             document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
         };
 
+        /* ALTERAÇÃO AQUI: Função para expandir ou recolher as cartas dinamicamente */
+        window.alternarLeituraCarta = function(botao, idElemento) {
+            const containerCorpo = document.getElementById(idElemento);
+            const wrapper = containerCorpo.parentElement;
+
+            if (containerCorpo.classList.contains('expandido')) {
+                containerCorpo.classList.remove('expandido');
+                wrapper.classList.remove('expandido');
+                botao.innerText = 'Ler mais... 📖';
+                // Rola suavemente de volta para o início da carta para não se perder na página
+                wrapper.parentElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                containerCorpo.classList.add('expandido');
+                wrapper.classList.add('expandido');
+                botao.innerText = 'Ler menos ↩️';
+            }
+        };
+
         /* SISTEMA DE CURTIDAS CORRIGIDO EM TEMPO REAL */
         window.alternarCurtidaItem = async function(id) {
             try {
@@ -1120,7 +1145,6 @@
                     return;
                 }
 
-                /* MODIFICAÇÃO APENAS AQUI: Ajustado o HTML interno da renderização do texto para suportar o 'Ler mais' */
                 if (post.destino === 'texto') {
                     const containerTextos = document.getElementById('novos-cards-textos');
                     const blocoTexto = document.createElement('div');
@@ -1136,6 +1160,7 @@
                         </div>
                     ` : '';
 
+                    /* ALTERAÇÃO AQUI: Renderização com a div wrapper e o botão de "Ler mais" */
                     blocoTexto.innerHTML = `
                         ${menuTresPontosTextHtml}
                         <div class="data-card" style="align-items: flex-start; text-align: left;">
@@ -1144,9 +1169,10 @@
                         </div>
                         ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
                         
-                        <div class="declaracao-corpo-render limitar-texto" id="corpo-texto-${post.id}">${sanitizarHTML(post.corpo)}</div>
-                        
-                        <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarTextoCompleto('${post.id}')">Ler mais... 📑</button>
+                        <div class="declaracao-wrapper">
+                            <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
+                        </div>
+                        <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
 
                         <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
                             <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
@@ -1162,6 +1188,16 @@
                     `;
                     containerTextos.appendChild(blocoTexto);
                     
+                    // Oculta o botão "Ler mais" se o texto for curto demais para precisar dele
+                    setTimeout(() => {
+                        const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
+                        const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
+                        if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
+                            if(botaoLerMais) botaoLerMais.style.display = 'none';
+                            if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
+                        }
+                    }, 100);
+
                     setTimeout(() => {
                         const inp = document.getElementById(`input-${post.id}`);
                         if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
