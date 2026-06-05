@@ -370,6 +370,11 @@
         .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
         .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; }
 
+        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
+        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
+        .btn-editar { color: #428bca; }
+        .btn-excluir { color: #d9534f; }
+
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
 
         .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
@@ -410,7 +415,7 @@
             height: auto;
         }
         
-        /* Efeitos elegantes para quando a música está destacada */
+        /* Efeitos elegantes para quando a música está destacada, sem a escrita esteticamente feia */
         .card-musica.destaque {
             border: 2px solid var(--primary);
             box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
@@ -686,7 +691,6 @@
         document.getElementById('btn-login-click').addEventListener('click', function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
-            if (!nomeInput) return alert('Digite seu nome! 🥺');
             const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
 
             if ((nomeFormatado === 'Fabricio' || nomeFormatado === 'Maria') && senhaInput === 'winchester') {
@@ -827,10 +831,10 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado! ✨');
+                    alert('Card updated! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
-                    alert('Card publicado! ❤️');
+                    alert('Card published! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
@@ -902,7 +906,7 @@
             document.getElementById('texto-titulo').value = '';
             document.getElementById('texto-corpo').value = '';
             document.getElementById('texto-data').value = '';
-            document.getElementById('titulo-painel-texto').innerText = '✍️ Escrever Nova Declân';
+            document.getElementById('titulo-painel-texto').innerText = '✍️ Escrever Nova Declaração';
             document.getElementById('btn-salvar-texto').innerText = 'Eternizar Declaração 🌹';
         }
 
@@ -996,9 +1000,6 @@
                 const post = { id: docSnap.id, ...docSnap.data() };
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
-                
-                // Validação tolerante a maiúsculas/minúsculas para evitar sumiço dos botões
-                const ehAutor = post.autor && usuarioLogado && (post.autor.trim().toLowerCase() === usuarioLogado.trim().toLowerCase());
 
                 if (post.destino === 'playlist') {
                     const containerPlaylist = document.getElementById('novos-cards-playlist');
@@ -1006,7 +1007,7 @@
                     let classesCartao = 'card-musica';
                     if (post.destaque) { classesCartao += ' destaque'; }
 
-                    const menuTresPontosPlaylist = ehAutor ? `
+                    const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1041,7 +1042,7 @@
                     const blocoFoto = document.createElement('div');
                     blocoFoto.className = 'quadro-polaroid';
 
-                    const menuTresPontosHtml = ehAutor ? `
+                    const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1087,7 +1088,7 @@
                     const blocoTexto = document.createElement('div');
                     blocoTexto.className = 'card-declaracao-texto';
 
-                    const menuTresPontosTextHtml = ehAutor ? `
+                    const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1126,28 +1127,22 @@
                     return;
                 }
 
-                // PROCESSAMENTO DOS BLOCOS DE APRESENTAÇÃO (dela E meu) COM OS 3 PONTINHOS PADRONIZADOS
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
 
                 if (post.destino === 'dela') { numDela++; post.numero = numDela; } else { numMeu++; post.numero = numMeu; }
 
-                const menuTresPontosApresentacoes = ehAutor ? `
-                    <div class="menu-acoes-container">
-                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
-                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                        </div>
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                     </div>
                 ` : '';
 
                 const bloco = document.createElement('div');
                 bloco.className = 'card-separador-interno';
-                bloco.style.position = 'relative'; // Necessário para fixar o menu de 3 pontinhos no topo
                 bloco.innerHTML = `
-                    ${menuTresPontosApresentacoes}
-                    <div class="data-card" style="padding-right: 25px;"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
                     <a href="${post.link}" target="_blank" class="pdf-link">
                         <div class="pdf-bloco">
                             <div class="numero-card">${post.numero}</div>
@@ -1164,6 +1159,7 @@
                         </div>
                         <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
+                    ${controleModificacao}
                 `;
                 container.appendChild(bloco);
                 
@@ -1183,8 +1179,7 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
-                const ehAutorComentario = com.autor && usuarioLogado && (com.autor.trim().toLowerCase() === usuarioLogado.trim().toLowerCase());
-                const botaoExcluir = ehAutorComentario ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
 
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
@@ -1274,4 +1269,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
