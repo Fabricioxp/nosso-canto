@@ -107,7 +107,60 @@
             font-size: 0.95rem;
             font-weight: bold;
             color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline dotted;
         }
+
+        /* ABA PRIVADA (MODAL HISTÓRICO DE ACESSOS) */
+        .modal-privado-logs {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(74, 62, 61, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 200000;
+            padding: 20px;
+        }
+
+        .conteudo-modal-logs {
+            background-color: white;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(140, 98, 93, 0.2);
+            position: relative;
+        }
+
+        .fechar-modal-logs {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 1.5rem; cursor: pointer; color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .lista-logs-acesso {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid rgba(230, 179, 168, 0.4);
+            border-radius: 12px;
+            background: #fffcfc;
+        }
+
+        .lista-logs-acesso li {
+            padding: 10px 14px;
+            border-bottom: 1px dashed rgba(230, 179, 168, 0.3);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
+        .lista-logs-acesso li:last-child { border-bottom: none; }
 
         /* MENU FLUTUANTE */
         .menu-flutuante-container {
@@ -398,7 +451,6 @@
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         
-        /* ALTERAÇÃO AQUI: Limitação de tamanho e efeito fade nas declarações longas */
         .declaracao-wrapper {
             position: relative;
             margin-bottom: 10px;
@@ -409,14 +461,14 @@
             color: var(--text-color); 
             white-space: pre-wrap; 
             overflow: hidden; 
-            max-height: 95px; /* Altura limite visível inicial aproximada (3 linhas) */
+            max-height: 95px; 
             transition: max-height 0.4s ease;
             overflow-wrap: break-word; 
             word-wrap: break-word; 
             word-break: break-word; 
         }
         .declaracao-corpo-render.expandido {
-            max-height: 2000px; /* Permite expandir totalmente */
+            max-height: 2000px; 
         }
         .declaracao-wrapper::after {
             content: '';
@@ -427,7 +479,7 @@
             transition: opacity 0.3s ease;
         }
         .declaracao-wrapper.expandido::after {
-            opacity: 0; /* Remove o degradê quando estiver aberto completamento */
+            opacity: 0; 
         }
         .btn-ler-mais {
             background: none;
@@ -443,7 +495,6 @@
         }
         .btn-ler-mais:hover { text-decoration: underline; }
 
-        /* AJUSTE ADAPTÁVEL DO QUADRO DE MÚSICA */
         .card-musica {
             display: flex; 
             flex-direction: column; 
@@ -459,7 +510,6 @@
             height: auto;
         }
         
-        /* Efeitos elegantes para quando a música está destacada */
         .card-musica.destaque {
             border: 2px solid var(--primary);
             box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
@@ -537,6 +587,16 @@
             <input type="text" id="login-nome" class="input-custom" placeholder="Seu nome (Fabricio ou Maria)">
             <input type="password" id="login-senha" class="input-custom" placeholder="Senha secreta">
             <button class="btn-postar" id="btn-login-click">Entrar no Nosso Canto</button>
+        </div>
+    </div>
+
+    <div id="modal-logs-privado" class="modal-privado-logs">
+        <div class="conteudo-modal-logs">
+            <span class="fechar-modal-logs" id="btn-fechar-logs">&times;</span>
+            <h3 style="font-family: var(--font-title); color: var(--primary); text-align: center; margin-bottom: 10px;">🔐 Registro de Acessos</h3>
+            <p style="font-size: 0.85rem; text-align: center; color: var(--secondary);">Histórico confidencial de acessos do casal.</p>
+            <ul id="lista-logs-render" class="lista-logs-acesso">
+                </ul>
         </div>
     </div>
 
@@ -720,19 +780,59 @@
             return `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
         }
 
+        // NOVA FUNÇÃO: Grava o login no banco de dados do Firebase
+        async function registrarLogAcessoFirebase(nome) {
+            try {
+                const agora = new Date();
+                const dataF = agora.toLocaleDateString('pt-BR');
+                const horaF = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const mensagem = `O usuário ${nome} conectou no dia ${dataF} às ${horaF}.`;
+
+                await addDoc(collection(db, "logs_acesso"), {
+                    mensagem: mensagem,
+                    criadoEm: Date.now()
+                });
+            } catch (error) {
+                console.error("Erro ao registrar acesso:", error);
+            }
+        }
+
+        // NOVA FUNÇÃO: Escuta e carrega em tempo real o histórico de acessos
+        function ativarEscutaLogsAcesso() {
+            const qLogs = query(collection(db, "logs_acesso"), orderBy("criadoEm", "desc"));
+            onSnapshot(qLogs, (snapshot) => {
+                const listaContainer = document.getElementById('lista-logs-render');
+                if (!listaContainer) return;
+                listaContainer.innerHTML = '';
+
+                if (snapshot.empty) {
+                    listaContainer.innerHTML = '<li style="text-align:center; color:var(--secondary);">Nenhum acesso gravado ainda.</li>';
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const dados = docSnap.data();
+                    const li = document.createElement('li');
+                    li.innerText = dados.mensagem;
+                    listaContainer.appendChild(li);
+                });
+            });
+        }
+
         function verificarSessao() {
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('conteudo-site').style.display = 'block';
                 inicializarCardsOriginais();
                 gerenciarSessaoUsuario();
+                ativarEscutaLogsAcesso(); // Ativa os logs assim que entra
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('conteudo-site').style.display = 'none';
             }
         }
 
-        document.getElementById('btn-login-click').addEventListener('click', function() {
+        document.getElementById('btn-login-click').addEventListener('click', async function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
             const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
@@ -740,11 +840,30 @@
             if ((nomeFormatado === 'Fabricio' || nomeFormatado === 'Maria') && senhaInput === 'winchester') {
                 sessionStorage.setItem('user_canto', nomeFormatado);
                 usuarioLogado = nomeFormatado;
+                
+                // Grava o acesso no Firebase antes de abrir o site
+                await registrarLogAcessoFirebase(nomeFormatado);
+                
                 verificarSessao();
                 alert(`Bem-vindo, meu amor! — ${nomeFormatado} ❤️`);
             } else {
                 alert('Nome ou senha incorretos! 🥺');
             }
+        });
+
+        // SISTEMA DO PIN PRIVADO
+        const PIN_SEGURANCA = "1566";
+        document.getElementById('label-parceiro').addEventListener('click', function() {
+            const pinDigitado = prompt("Digite o PIN de segurança para acessar o Histórico Privado:");
+            if (pinDigitado === PIN_SEGURANCA) {
+                document.getElementById('modal-logs-privado').style.display = 'flex';
+            } else if (pinDigitado !== null) {
+                alert("PIN incorreto! Acesso negado. 🔐");
+            }
+        });
+
+        document.getElementById('btn-fechar-logs').addEventListener('click', function() {
+            document.getElementById('modal-logs-privado').style.display = 'none';
         });
 
         const fazerLogout = async function() {
@@ -875,10 +994,10 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card updated! ✨');
+                    alert('Card atualizado! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
-                    alert('Card published! ❤️');
+                    alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
@@ -983,12 +1102,11 @@
             document.getElementById('texto-corpo').value = corpo;
             const [dia, mes, ano] = data.split('/');
             document.getElementById('texto-data').value = `${ano}-${mes}-${dia}`;
-            document.getElementById('titulo-painel-texto').innerText = '✏️ Editar Declaração Escritura';
+            document.getElementById('titulo-painel-texto').innerText = '✏️ Editar Declaração Escrita';
             document.getElementById('btn-salvar-texto').innerText = 'Atualizar Carta ❤️';
             document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
         };
 
-        /* ALTERAÇÃO AQUI: Função para expandir ou recolher as cartas dinamicamente */
         window.alternarLeituraCarta = function(botao, idElemento) {
             const containerCorpo = document.getElementById(idElemento);
             const wrapper = containerCorpo.parentElement;
@@ -997,7 +1115,6 @@
                 containerCorpo.classList.remove('expandido');
                 wrapper.classList.remove('expandido');
                 botao.innerText = 'Ler mais... 📖';
-                // Rola suavemente de volta para o início da carta para não se perder na página
                 wrapper.parentElement.scrollIntoView({ behavior: 'smooth' });
             } else {
                 containerCorpo.classList.add('expandido');
@@ -1006,7 +1123,6 @@
             }
         };
 
-        /* SISTEMA DE CURTIDAS CORRIGIDO EM TEMPO REAL */
         window.alternarCurtidaItem = async function(id) {
             try {
                 const docRef = doc(db, "posts", id);
@@ -1160,7 +1276,6 @@
                         </div>
                     ` : '';
 
-                    /* ALTERAÇÃO AQUI: Renderização com a div wrapper e o botão de "Ler mais" */
                     blocoTexto.innerHTML = `
                         ${menuTresPontosTextHtml}
                         <div class="data-card" style="align-items: flex-start; text-align: left;">
@@ -1188,7 +1303,6 @@
                     `;
                     containerTextos.appendChild(blocoTexto);
                     
-                    // Oculta o botão "Ler mais" se o texto for curto demais para precisar dele
                     setTimeout(() => {
                         const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
                         const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
