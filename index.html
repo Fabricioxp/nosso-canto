@@ -415,7 +415,7 @@
             height: auto;
         }
         
-        /* Efeitos elegantes para quando a música está destacada, sem a escrita esteticamente feia */
+        /* Efeitos elegantes para quando a música está destacada */
         .card-musica.destaque {
             border: 2px solid var(--primary);
             box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
@@ -668,7 +668,7 @@
         }
 
         function sanitizarHTML(str) { 
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[tag] || tag)); 
         }
 
         function obterDataHoraAtual() {
@@ -831,10 +831,10 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card updated! ✨');
+                    alert('Card atualizado! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
-                    alert('Card published! ❤️');
+                    alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
@@ -1132,16 +1132,21 @@
 
                 if (post.destino === 'dela') { numDela++; post.numero = numDela; } else { numMeu++; post.numero = numMeu; }
 
-                const controleModificacao = (post.autor === usuarioLogado) ? `
-                    <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
-                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                /* ATUALIZAÇÃO AQUI: Implementação completa dos 3 pontinhos para as Apresentações */
+                const menuTresPontosApresentacoes = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
                     </div>
                 ` : '';
 
                 const bloco = document.createElement('div');
                 bloco.className = 'card-separador-interno';
                 bloco.innerHTML = `
+                    ${menuTresPontosApresentacoes}
                     <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
                     <a href="${post.link}" target="_blank" class="pdf-link">
                         <div class="pdf-bloco">
@@ -1159,7 +1164,6 @@
                         </div>
                         <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
-                    ${controleModificacao}
                 `;
                 container.appendChild(bloco);
                 
