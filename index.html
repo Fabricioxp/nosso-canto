@@ -370,11 +370,6 @@
         .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
         .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; }
 
-        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
-        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
-        .btn-editar { color: #428bca; }
-        .btn-excluir { color: #d9534f; }
-
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
 
         .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
@@ -668,7 +663,7 @@
         }
 
         function sanitizarHTML(str) { 
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[tag] || tag)); 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
 
         function obterDataHoraAtual() {
@@ -691,6 +686,7 @@
         document.getElementById('btn-login-click').addEventListener('click', function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
+            if (!nomeInput) return alert('Digite seu nome! 🥺');
             const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
 
             if ((nomeFormatado === 'Fabricio' || nomeFormatado === 'Maria') && senhaInput === 'winchester') {
@@ -906,7 +902,7 @@
             document.getElementById('texto-titulo').value = '';
             document.getElementById('texto-corpo').value = '';
             document.getElementById('texto-data').value = '';
-            document.getElementById('titulo-painel-texto').innerText = '✍️ Escrever Nova Declaração';
+            document.getElementById('titulo-painel-texto').innerText = '✍️ Escrever Nova Declân';
             document.getElementById('btn-salvar-texto').innerText = 'Eternizar Declaração 🌹';
         }
 
@@ -1000,6 +996,9 @@
                 const post = { id: docSnap.id, ...docSnap.data() };
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
+                
+                // Validação tolerante a maiúsculas/minúsculas para evitar sumiço dos botões
+                const ehAutor = post.autor && usuarioLogado && (post.autor.trim().toLowerCase() === usuarioLogado.trim().toLowerCase());
 
                 if (post.destino === 'playlist') {
                     const containerPlaylist = document.getElementById('novos-cards-playlist');
@@ -1007,7 +1006,7 @@
                     let classesCartao = 'card-musica';
                     if (post.destaque) { classesCartao += ' destaque'; }
 
-                    const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
+                    const menuTresPontosPlaylist = ehAutor ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1042,7 +1041,7 @@
                     const blocoFoto = document.createElement('div');
                     blocoFoto.className = 'quadro-polaroid';
 
-                    const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
+                    const menuTresPontosHtml = ehAutor ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1088,7 +1087,7 @@
                     const blocoTexto = document.createElement('div');
                     blocoTexto.className = 'card-declaracao-texto';
 
-                    const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
+                    const menuTresPontosTextHtml = ehAutor ? `
                         <div class="menu-acoes-container">
                             <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                             <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1127,13 +1126,13 @@
                     return;
                 }
 
+                // PROCESSAMENTO DOS BLOCOS DE APRESENTAÇÃO (dela E meu) COM OS 3 PONTINHOS PADRONIZADOS
                 const container = document.getElementById(`novos-cards-${post.destino}`);
                 if (!container) return;
 
                 if (post.destino === 'dela') { numDela++; post.numero = numDela; } else { numMeu++; post.numero = numMeu; }
 
-                /* ATUALIZAÇÃO AQUI: Implementação completa dos 3 pontinhos para as Apresentações */
-                const menuTresPontosApresentacoes = (post.autor === usuarioLogado) ? `
+                const menuTresPontosApresentacoes = ehAutor ? `
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1145,9 +1144,10 @@
 
                 const bloco = document.createElement('div');
                 bloco.className = 'card-separador-interno';
+                bloco.style.position = 'relative'; // Necessário para fixar o menu de 3 pontinhos no topo
                 bloco.innerHTML = `
                     ${menuTresPontosApresentacoes}
-                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <div class="data-card" style="padding-right: 25px;"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
                     <a href="${post.link}" target="_blank" class="pdf-link">
                         <div class="pdf-bloco">
                             <div class="numero-card">${post.numero}</div>
@@ -1183,7 +1183,8 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
-                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+                const ehAutorComentario = com.autor && usuarioLogado && (com.autor.trim().toLowerCase() === usuarioLogado.trim().toLowerCase());
+                const botaoExcluir = ehAutorComentario ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
 
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
