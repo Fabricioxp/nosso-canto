@@ -78,7 +78,6 @@
             padding-top: 60px;
         }
 
-        /* HEADER FIXO CONTENDO APENAS IDENTIFICAÇÃO E LOGOUT */
         .header-status-bar {
             position: fixed;
             top: 0;
@@ -109,7 +108,6 @@
             color: var(--primary);
         }
 
-        /* MENU FLUTUANTE */
         .menu-flutuante-container {
             position: fixed;
             bottom: 25px;
@@ -248,7 +246,7 @@
         #bloco-coisas-minhas { background-color: #e6f2ff; }
         #bloco-galeria-momentos { background-color: #fdf8f5; }
         #bloco-nossos-textos { background-color: #f7f3f9; }
-        #bloco-configuracoes { background-color: #f0f0f0; display: none; }
+        #bloco-configuracoes { background-color: #fcfcfc; display: none; border: 2px dashed var(--primary); }
 
         .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
         .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
@@ -416,9 +414,7 @@
             word-wrap: break-word; 
             word-break: break-word; 
         }
-        .declaracao-corpo-render.expandido {
-            max-height: 2000px; 
-        }
+        .declaracao-corpo-render.expandido { max-height: 2000px; }
         .declaracao-wrapper::after {
             content: '';
             position: absolute;
@@ -427,43 +423,23 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
-        .declaracao-wrapper.expandido::after {
-            opacity: 0; 
-        }
+        .declaracao-wrapper.expandido::after { opacity: 0; }
         .btn-ler-mais {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 5px 0;
-            margin-bottom: 10px;
-            display: inline-block;
-            font-family: var(--font-main);
+            background: none; border: none; color: var(--primary); font-size: 0.85rem;
+            font-weight: bold; cursor: pointer; padding: 5px 0; margin-bottom: 10px;
+            display: inline-block; font-family: var(--font-main);
         }
         .btn-ler-mais:hover { text-decoration: underline; }
 
         .card-musica {
-            display: flex; 
-            flex-direction: column; 
-            background: #ffffff; 
-            padding: 16px; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
-            margin-bottom: 20px; 
-            position: relative; 
-            border: 1px solid rgba(230, 179, 168, 0.3);
-            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s;
-            content-visibility: auto;
-            height: auto;
+            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
+            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
+            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
         }
-        
         .card-musica.destaque {
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
-            background: #fffbfb;
-            animation: pulsarDestaqueMusica 3s infinite ease-in-out;
+            border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
+            background: #fffbfb; animation: pulsarDestaqueMusica 3s infinite ease-in-out;
         }
 
         @keyframes pulsarDestaqueMusica {
@@ -472,68 +448,20 @@
             100% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); border-color: var(--primary); }
         }
 
-        .musica-layout { 
-            display: flex; 
-            gap: 15px; 
-            align-items: center; 
-            margin-top: 10px; 
-            width: 100%;
-        }
-        .musica-capa { 
-            width: 85px; 
-            height: 85px; 
-            border-radius: 12px; 
-            object-fit: cover; 
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1); 
-            background-color: #f0f0f0; 
-            flex-shrink: 0;
-        }
-        .musica-info { 
-            flex: 1; 
-            min-width: 0;
-        }
-        .musica-titulo { 
-            font-size: 1.15rem; 
-            font-weight: bold; 
-            color: var(--primary); 
-            margin-bottom: 5px; 
-            white-space: normal; 
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-        .musica-dedicatoria { 
-            font-size: 0.8rem; 
-            color: var(--secondary); 
-            margin-bottom: 8px; 
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-        .musica-link-btn { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 5px; 
-            padding: 6px 12px; 
-            background: var(--secondary); 
-            color: white; 
-            border-radius: 20px; 
-            text-decoration: none; 
-            font-size: 0.8rem; 
-            font-weight: bold; 
-            transition: background 0.2s; 
-            white-space: nowrap;
-        }
+        .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; width: 100%; }
+        .musica-capa { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; flex-shrink: 0; }
+        .musica-info { flex: 1; min-width: 0; }
+        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; }
+        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; white-space: nowrap; }
         .musica-link-btn:hover { background: var(--primary); }
 
         .item-historico {
-            background: #ffffff;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            border-left: 4px solid var(--primary);
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background: #ffffff; padding: 12px 15px; border-radius: 12px; margin-bottom: 10px;
+            border-left: 4px solid var(--primary); font-size: 0.9rem; box-shadow: 0 4px 10px rgba(140, 98, 93, 0.05);
+            display: flex; flex-direction: column; gap: 2px;
         }
+        .item-historico span { font-size: 0.8rem; color: var(--secondary); font-weight: bold; }
 
         @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
     </style>
@@ -679,11 +607,10 @@
                 <div id="novos-cards-textos"></div>
             </section>
 
-            <!-- NOVA SEÇÃO ADICIONADA: CONFIGURAÇÕES -->
             <section class="bloco-separado" id="bloco-configuracoes">
-                <div class="titulo-secao">⚙️ Histórico de Acessos</div>
+                <div class="titulo-secao">⚙️ Histórico Geral de Acessos</div>
                 <div id="lista-historico-logins">
-                    <p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Carregando histórico...</p>
+                    <p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Carregando histórico em tempo real...</p>
                 </div>
             </section>
 
@@ -710,7 +637,6 @@
 
         function gerenciarSessaoUsuario() {
             if (!usuarioLogado) return;
-            const parceiro = usuarioLogado === "Maria" ? "Fabricio" : "Maria";
             document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
         }
 
@@ -751,15 +677,14 @@
         }
 
         document.getElementById('btn-login-click').addEventListener('click', async function() {
-            const nomeInput = document.getElementById('login-nome').value.trim();
+            const nomeInput = document.getElementById('login-nome').value.trim().toLowerCase();
             const senhaInput = document.getElementById('login-senha').value.trim();
-            const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
-
-            if ((nomeFormatado === 'Fabricio' || nomeFormatado === 'Maria') && senhaInput === 'winchester') {
+            
+            if ((nomeInput === 'fabricio' || nomeInput === 'maria') && senhaInput === 'winchester') {
+                const nomeFormatado = nomeInput === 'fabricio' ? 'Fabricio' : 'Maria';
                 sessionStorage.setItem('user_canto', nomeFormatado);
                 usuarioLogado = nomeFormatado;
                 
-                // SALVA O LOG DE LOGIN NO FIREBASE
                 try {
                     await addDoc(collection(db, "historico_logins"), {
                         usuario: nomeFormatado,
@@ -769,7 +694,6 @@
                 } catch (e) { console.error("Erro ao salvar log de login:", e); }
 
                 verificarSessao();
-                alert(`Bem-vindo, meu amor! — ${nomeFormatado} ❤️`);
             } else {
                 alert('Nome ou senha incorretos! 🥺');
             }
@@ -800,7 +724,6 @@
         document.getElementById('lnk-cartas').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-apresentacoes').addEventListener('click', window.alternarMenuBalao);
 
-        // EVENTO DO CLIQUE EM CONFIGURAÇÕES COM VALIDAÇÃO DO PIN
         document.getElementById('lnk-configuracoes').addEventListener('click', function() {
             window.alternarMenuBalao();
             const pinDigitado = prompt("Digite o PIN de acesso para as configurações: 🔐");
@@ -918,10 +841,10 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card updated! ✨');
+                    alert('Card atualizado! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
-                    alert('Card published! ❤️');
+                    alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
             } catch (error) { console.error(error); }
@@ -1065,9 +988,7 @@
                     }
                     await updateDoc(docRef, { curtidas: listaLikes });
                 }
-            } catch (error) {
-                console.error("Erro ao processar curtida:", error);
-            }
+            } catch (error) { console.error(error); }
         };
 
         window.adicionarComentarioFirebase = async function(secaoId) {
@@ -1211,7 +1132,7 @@
                         <div class="declaracao-wrapper">
                             <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
                         </div>
-                        <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
+                        <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Lower / expand 📖</button>
 
                         <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
                             <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
@@ -1286,8 +1207,6 @@
             });
         });
 
-        const qComentarios = query(collection(db, "comentarios"), orderBy("criatedEm", "asc"));
-        // Correção de digitação do Firestore original de "criatedEm" para "criadoEm" conforme usado no envio do comentário
         const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentariosCorreto, (snapshot) => {
             document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
@@ -1309,15 +1228,15 @@
             });
         });
 
-        // ESCUTA EM TEMPO REAL O HISTÓRICO DE LOGINS DO FIREBASE
+        // COMPORTAMENTO GLOBAL CORRIGIDO PARA O HISTÓRICO DE ACESSOS DO FIREBASE
         const qLogins = query(collection(db, "historico_logins"), orderBy("criadoEm", "desc"));
         onSnapshot(qLogins, (snapshot) => {
             const containerHistorico = document.getElementById('lista-historico-logins');
             if (!containerHistorico) return;
             containerHistorico.innerHTML = '';
 
-            if(snapshot.empty){
-                containerHistorico.innerHTML = '<p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Nenhum login registrado ainda.</p>';
+            if (snapshot.empty) {
+                containerHistorico.innerHTML = '<p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Nenhum login registrado na nuvem ainda.</p>';
                 return;
             }
 
@@ -1325,9 +1244,15 @@
                 const log = docSnap.data();
                 const item = document.createElement('div');
                 item.className = 'item-historico';
-                item.innerHTML = `👤 <strong>${log.usuario}</strong> acessou em ${log.dataHoraStr}`;
+                item.innerHTML = `
+                    <div>👤 Usuário: <strong>${log.usuario}</strong></div>
+                    <span>📅 ${log.dataHoraStr}</span>
+                `;
                 containerHistorico.appendChild(item);
             });
+        }, (error) => {
+            console.error("Erro ao ler o histórico:", error);
+            document.getElementById('lista-historico-logins').innerHTML = '<p style="text-align: center; color: red; font-size: 0.85rem;">Erro de conexão com a nuvem.</p>';
         });
 
         verificarSessao();
