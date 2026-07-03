@@ -299,8 +299,9 @@
             height: auto;
         }
 
+        /* CORREÇÃO DO PADDING DA TELA DE LOGIN AQUI */
         .input-custom, .select-custom, .textarea-custom {
-            width: 100%; padding: 12px 166px; border: 1px solid rgba(230, 179, 168, 0.6);
+            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
             border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
             margin-bottom: 12px; outline: none; background: #fffbfb;
             color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
@@ -519,7 +520,6 @@
                 </div>
             </section>
 
-            <!-- ABA DO HISTÓRICO DE ACESSOS CORRIGIDA -->
             <section class="bloco-separado" id="bloco-historico-acessos">
                 <div class="titulo-secao">📜 Histórico de Acessos</div>
                 <div id="lista-historico-container" class="lista-comentarios" style="max-height: 400px;"></div>
@@ -679,7 +679,6 @@
             }
         }
 
-        // LOGIN CORRIGIDO: PUBLICA DIRETO NA LISTA IGUAL UM COMENTÁRIO
         document.getElementById('btn-login-click').addEventListener('click', async function() {
             const nomeInput = document.getElementById('login-nome').value.trim().toLowerCase();
             const senhaInput = document.getElementById('login-senha').value.trim();
@@ -689,7 +688,6 @@
                 sessionStorage.setItem('user_canto', nomeFormatado);
                 usuarioLogado = nomeFormatado;
                 
-                // Publica na mesma coleção principal com destino 'historico'
                 try {
                     await addDoc(collection(db, "posts"), {
                         destino: "historico",
@@ -1018,7 +1016,6 @@
         };
         document.getElementById('input-cronometro').addEventListener('keypress', function(e) { window.verificarEnter(e, 'cronometro'); });
 
-        // MOTOR PRINCIPAL RENDERIZADOR (DEIXADO EM ORDEM DE CRIAÇÃO PARA O HISTÓRICO IR PARA O TOPO)
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
@@ -1026,7 +1023,7 @@
             document.getElementById('novos-cards-galeria').innerHTML = '';
             document.getElementById('novos-cards-textos').innerHTML = '';
             document.getElementById('novos-cards-playlist').innerHTML = '';
-            document.getElementById('lista-historico-container').innerHTML = ''; // Limpa histórico
+            document.getElementById('lista-historico-container').innerHTML = '';
             
             let numDela = 0; let numMeu = 0;
 
@@ -1035,7 +1032,6 @@
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
 
-                // FILTRO DO SEU HISTÓRICO EM TEMPO REAL RENDERIZADO IGUAL COMENTÁRIO
                 if (post.destino === 'historico') {
                     const containerHist = document.getElementById('lista-historico-container');
                     if (containerHist) {
