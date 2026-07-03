@@ -174,6 +174,7 @@
             transition: transform 0.2s, background 0.2s;
             white-space: nowrap;
             pointer-events: auto;
+            cursor: pointer;
         }
         .item-opcao-flutuante:hover { background-color: #fff0ee; }
 
@@ -247,6 +248,7 @@
         #bloco-coisas-minhas { background-color: #e6f2ff; }
         #bloco-galeria-momentos { background-color: #fdf8f5; }
         #bloco-nossos-textos { background-color: #f7f3f9; }
+        #bloco-configuracoes { background-color: #f0f0f0; display: none; }
 
         .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
         .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
@@ -398,7 +400,6 @@
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         
-        /* ALTERAÇÃO AQUI: Limitação de tamanho e efeito fade nas declarações longas */
         .declaracao-wrapper {
             position: relative;
             margin-bottom: 10px;
@@ -409,14 +410,14 @@
             color: var(--text-color); 
             white-space: pre-wrap; 
             overflow: hidden; 
-            max-height: 95px; /* Altura limite visível inicial aproximada (3 linhas) */
+            max-height: 95px; 
             transition: max-height 0.4s ease;
             overflow-wrap: break-word; 
             word-wrap: break-word; 
             word-break: break-word; 
         }
         .declaracao-corpo-render.expandido {
-            max-height: 2000px; /* Permite expandir totalmente */
+            max-height: 2000px; 
         }
         .declaracao-wrapper::after {
             content: '';
@@ -427,7 +428,7 @@
             transition: opacity 0.3s ease;
         }
         .declaracao-wrapper.expandido::after {
-            opacity: 0; /* Remove o degradê quando estiver aberto completamento */
+            opacity: 0; 
         }
         .btn-ler-mais {
             background: none;
@@ -443,7 +444,6 @@
         }
         .btn-ler-mais:hover { text-decoration: underline; }
 
-        /* AJUSTE ADAPTÁVEL DO QUADRO DE MÚSICA */
         .card-musica {
             display: flex; 
             flex-direction: column; 
@@ -459,7 +459,6 @@
             height: auto;
         }
         
-        /* Efeitos elegantes para quando a música está destacada */
         .card-musica.destaque {
             border: 2px solid var(--primary);
             box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
@@ -526,6 +525,16 @@
         }
         .musica-link-btn:hover { background: var(--primary); }
 
+        .item-historico {
+            background: #ffffff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
         @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
     </style>
 </head>
@@ -562,6 +571,7 @@
                 <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="lnk-galeria">🖼️ Galeria</a>
                 <a href="#bloco-nossos-textos" class="item-opcao-flutuante" id="lnk-cartas">✍️ Cartas</a>
                 <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="lnk-apresentacoes">✨ Apresentações</a>
+                <div class="item-opcao-flutuante" id="lnk-configuracoes">⚙️ Configurações</div>
             </div>
             <button class="botao-flutuante-principal" id="btn-flutuante-click">📌</button>
         </div>
@@ -669,6 +679,14 @@
                 <div id="novos-cards-textos"></div>
             </section>
 
+            <!-- NOVA SEÇÃO ADICIONADA: CONFIGURAÇÕES -->
+            <section class="bloco-separado" id="bloco-configuracoes">
+                <div class="titulo-secao">⚙️ Histórico de Acessos</div>
+                <div id="lista-historico-logins">
+                    <p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Carregando histórico...</p>
+                </div>
+            </section>
+
         </div>
     </div>
 
@@ -732,7 +750,7 @@
             }
         }
 
-        document.getElementById('btn-login-click').addEventListener('click', function() {
+        document.getElementById('btn-login-click').addEventListener('click', async function() {
             const nomeInput = document.getElementById('login-nome').value.trim();
             const senhaInput = document.getElementById('login-senha').value.trim();
             const nomeFormatado = nomeInput.charAt(0).toUpperCase() + nomeInput.slice(1).toLowerCase();
@@ -740,6 +758,16 @@
             if ((nomeFormatado === 'Fabricio' || nomeFormatado === 'Maria') && senhaInput === 'winchester') {
                 sessionStorage.setItem('user_canto', nomeFormatado);
                 usuarioLogado = nomeFormatado;
+                
+                // SALVA O LOG DE LOGIN NO FIREBASE
+                try {
+                    await addDoc(collection(db, "historico_logins"), {
+                        usuario: nomeFormatado,
+                        dataHoraStr: obterDataHoraAtual(),
+                        criadoEm: Date.now()
+                    });
+                } catch (e) { console.error("Erro ao salvar log de login:", e); }
+
                 verificarSessao();
                 alert(`Bem-vindo, meu amor! — ${nomeFormatado} ❤️`);
             } else {
@@ -750,6 +778,7 @@
         const fazerLogout = async function() {
             sessionStorage.removeItem('user_canto');
             usuarioLogado = null;
+            document.getElementById('bloco-configuracoes').style.display = 'none';
             verificarSessao();
         };
         document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
@@ -770,6 +799,20 @@
         document.getElementById('lnk-galeria').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-cartas').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-apresentacoes').addEventListener('click', window.alternarMenuBalao);
+
+        // EVENTO DO CLIQUE EM CONFIGURAÇÕES COM VALIDAÇÃO DO PIN
+        document.getElementById('lnk-configuracoes').addEventListener('click', function() {
+            window.alternarMenuBalao();
+            const pinDigitado = prompt("Digite o PIN de acesso para as configurações: 🔐");
+            
+            if (pinDigitado === "1566") {
+                const blocoConfig = document.getElementById('bloco-configuracoes');
+                blocoConfig.style.display = 'block';
+                blocoConfig.scrollIntoView({ behavior: 'smooth' });
+            } else if (pinDigitado !== null) {
+                alert("PIN incorreto! Acesso negado. 🚫");
+            }
+        });
 
         window.alternarMenuTresPontos = function(id) {
             const menu = document.getElementById(`opcoes-${id}`);
@@ -988,7 +1031,6 @@
             document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
         };
 
-        /* ALTERAÇÃO AQUI: Função para expandir ou recolher as cartas dinamicamente */
         window.alternarLeituraCarta = function(botao, idElemento) {
             const containerCorpo = document.getElementById(idElemento);
             const wrapper = containerCorpo.parentElement;
@@ -997,7 +1039,6 @@
                 containerCorpo.classList.remove('expandido');
                 wrapper.classList.remove('expandido');
                 botao.innerText = 'Ler mais... 📖';
-                // Rola suavemente de volta para o início da carta para não se perder na página
                 wrapper.parentElement.scrollIntoView({ behavior: 'smooth' });
             } else {
                 containerCorpo.classList.add('expandido');
@@ -1006,7 +1047,6 @@
             }
         };
 
-        /* SISTEMA DE CURTIDAS CORRIGIDO EM TEMPO REAL */
         window.alternarCurtidaItem = async function(id) {
             try {
                 const docRef = doc(db, "posts", id);
@@ -1160,7 +1200,6 @@
                         </div>
                     ` : '';
 
-                    /* ALTERAÇÃO AQUI: Renderização com a div wrapper e o botão de "Ler mais" */
                     blocoTexto.innerHTML = `
                         ${menuTresPontosTextHtml}
                         <div class="data-card" style="align-items: flex-start; text-align: left;">
@@ -1188,7 +1227,6 @@
                     `;
                     containerTextos.appendChild(blocoTexto);
                     
-                    // Oculta o botão "Ler mais" se o texto for curto demais para precisar dele
                     setTimeout(() => {
                         const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
                         const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
@@ -1248,8 +1286,10 @@
             });
         });
 
-        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
-        onSnapshot(qComentarios, (snapshot) => {
+        const qComentarios = query(collection(db, "comentarios"), orderBy("criatedEm", "asc"));
+        // Correção de digitação do Firestore original de "criatedEm" para "criadoEm" conforme usado no envio do comentário
+        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentariosCorreto, (snapshot) => {
             document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
 
             snapshot.forEach((docSnap) => {
@@ -1266,6 +1306,27 @@
                     <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
                 `;
                 containerLista.appendChild(item);
+            });
+        });
+
+        // ESCUTA EM TEMPO REAL O HISTÓRICO DE LOGINS DO FIREBASE
+        const qLogins = query(collection(db, "historico_logins"), orderBy("criadoEm", "desc"));
+        onSnapshot(qLogins, (snapshot) => {
+            const containerHistorico = document.getElementById('lista-historico-logins');
+            if (!containerHistorico) return;
+            containerHistorico.innerHTML = '';
+
+            if(snapshot.empty){
+                containerHistorico.innerHTML = '<p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Nenhum login registrado ainda.</p>';
+                return;
+            }
+
+            snapshot.forEach((docSnap) => {
+                const log = docSnap.data();
+                const item = document.createElement('div');
+                item.className = 'item-historico';
+                item.innerHTML = `👤 <strong>${log.usuario}</strong> acessou em ${log.dataHoraStr}`;
+                containerHistorico.appendChild(item);
             });
         });
 
