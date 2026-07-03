@@ -246,7 +246,6 @@
         #bloco-coisas-minhas { background-color: #e6f2ff; }
         #bloco-galeria-momentos { background-color: #fdf8f5; }
         #bloco-nossos-textos { background-color: #f7f3f9; }
-        #bloco-configuracoes { background-color: #fcfcfc; display: none; border: 2px dashed var(--primary); }
 
         .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
         .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
@@ -456,13 +455,6 @@
         .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; white-space: nowrap; }
         .musica-link-btn:hover { background: var(--primary); }
 
-        .item-historico {
-            background: #ffffff; padding: 12px 15px; border-radius: 12px; margin-bottom: 10px;
-            border-left: 4px solid var(--primary); font-size: 0.9rem; box-shadow: 0 4px 10px rgba(140, 98, 93, 0.05);
-            display: flex; flex-direction: column; gap: 2px;
-        }
-        .item-historico span { font-size: 0.8rem; color: var(--secondary); font-weight: bold; }
-
         @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
     </style>
 </head>
@@ -499,7 +491,6 @@
                 <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="lnk-galeria">🖼️ Galeria</a>
                 <a href="#bloco-nossos-textos" class="item-opcao-flutuante" id="lnk-cartas">✍️ Cartas</a>
                 <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="lnk-apresentacoes">✨ Apresentações</a>
-                <div class="item-opcao-flutuante" id="lnk-configuracoes">⚙️ Configurações</div>
             </div>
             <button class="botao-flutuante-principal" id="btn-flutuante-click">📌</button>
         </div>
@@ -607,13 +598,6 @@
                 <div id="novos-cards-textos"></div>
             </section>
 
-            <section class="bloco-separado" id="bloco-configuracoes">
-                <div class="titulo-secao">⚙️ Histórico Geral de Acessos</div>
-                <div id="lista-historico-logins">
-                    <p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Carregando histórico em tempo real...</p>
-                </div>
-            </section>
-
         </div>
     </div>
 
@@ -670,53 +654,29 @@
                 document.getElementById('conteudo-site').style.display = 'block';
                 inicializarCardsOriginais();
                 gerenciarSessaoUsuario();
-
-                // Salva o registro de sessão continuada na nuvem se a página recarregar
-                if (!sessionStorage.getItem('log_salvo_sessao')) {
-                    try {
-                        await addDoc(collection(db, "historico_logins"), {
-                            usuario: usuarioLogado,
-                            dataHoraStr: obterDataHoraAtual(),
-                            criadoEm: Date.now()
-                        });
-                        sessionStorage.setItem('log_salvo_sessao', 'true');
-                    } catch (e) { console.error("Erro ao salvar log continuado:", e); }
-                }
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('conteudo-site').style.display = 'none';
             }
         }
 
-        document.getElementById('btn-login-click').addEventListener('click', async function() {
+        document.getElementById('btn-login-click').addEventListener('click', function() {
             const nomeInput = document.getElementById('login-nome').value.trim().toLowerCase();
             const senhaInput = document.getElementById('login-senha').value.trim();
             
             if ((nomeInput === 'fabricio' || nomeInput === 'maria') && senhaInput === 'winchester') {
                 const nomeFormatado = nomeInput === 'fabricio' ? 'Fabricio' : 'Maria';
                 sessionStorage.setItem('user_canto', nomeFormatado);
-                sessionStorage.setItem('log_salvo_sessao', 'true');
                 usuarioLogado = nomeFormatado;
-                
-                try {
-                    await addDoc(collection(db, "historico_logins"), {
-                        usuario: nomeFormatado,
-                        dataHoraStr: obterDataHoraAtual(),
-                        criadoEm: Date.now()
-                    });
-                } catch (e) { console.error("Erro ao salvar log de login direto:", e); }
-
                 verificarSessao();
             } else {
                 alert('Nome ou senha incorretos! 🥺');
             }
         });
 
-        const fazerLogout = async function() {
+        const fazerLogout = function() {
             sessionStorage.removeItem('user_canto');
-            sessionStorage.removeItem('log_salvo_sessao');
             usuarioLogado = null;
-            document.getElementById('bloco-configuracoes').style.display = 'none';
             verificarSessao();
         };
         document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
@@ -737,19 +697,6 @@
         document.getElementById('lnk-galeria').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-cartas').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-apresentacoes').addEventListener('click', window.alternarMenuBalao);
-
-        document.getElementById('lnk-configuracoes').addEventListener('click', function() {
-            window.alternarMenuBalao();
-            const pinDigitado = prompt("Digite o PIN de acesso para as configurações: 🔐");
-            
-            if (pinDigitado === "1566") {
-                const blocoConfig = document.getElementById('bloco-configuracoes');
-                blocoConfig.style.display = 'block';
-                blocoConfig.scrollIntoView({ behavior: 'smooth' });
-            } else if (pinDigitado !== null) {
-                alert("PIN incorreto! Acesso negado. 🚫");
-            }
-        });
 
         window.alternarMenuTresPontos = function(id) {
             const menu = document.getElementById(`opcoes-${id}`);
@@ -1240,33 +1187,6 @@
                 `;
                 containerLista.appendChild(item);
             });
-        });
-
-        // COMPORTAMENTO GLOBAL CORRIGIDO PARA O HISTÓRICO DE ACESSOS DO FIREBASE
-        const qLogins = query(collection(db, "historico_logins"), orderBy("criadoEm", "desc"));
-        onSnapshot(qLogins, (snapshot) => {
-            const containerHistorico = document.getElementById('lista-historico-logins');
-            if (!containerHistorico) return;
-            containerHistorico.innerHTML = '';
-
-            if (snapshot.empty) {
-                containerHistorico.innerHTML = '<p style="text-align: center; color: var(--secondary); font-size: 0.9rem;">Nenhum login registrado na nuvem ainda.</p>';
-                return;
-            }
-
-            snapshot.forEach((docSnap) => {
-                const log = docSnap.data();
-                const item = document.createElement('div');
-                item.className = 'item-historico';
-                item.innerHTML = `
-                    <div>👤 Usuário: <strong>${log.usuario}</strong></div>
-                    <span>📅 ${log.dataHoraStr}</span>
-                `;
-                containerHistorico.appendChild(item);
-            });
-        }, (error) => {
-            console.error("Erro ao ler o histórico:", error);
-            document.getElementById('lista-historico-logins').innerHTML = '<p style="text-align: center; color: red; font-size: 0.85rem;">Erro de conexão com a nuvem.</p>';
         });
 
         verificarSessao();
