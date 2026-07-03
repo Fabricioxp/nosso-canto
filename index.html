@@ -656,7 +656,7 @@
         }
 
         function sanitizarHTML(str) { 
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
 
         function obterDataHoraAtual() {
@@ -664,12 +664,24 @@
             return `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
         }
 
-        function verificarSessao() {
+        async function verificarSessao() {
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('conteudo-site').style.display = 'block';
                 inicializarCardsOriginais();
                 gerenciarSessaoUsuario();
+
+                // Salva o registro de sessão continuada na nuvem se a página recarregar
+                if (!sessionStorage.getItem('log_salvo_sessao')) {
+                    try {
+                        await addDoc(collection(db, "historico_logins"), {
+                            usuario: usuarioLogado,
+                            dataHoraStr: obterDataHoraAtual(),
+                            criadoEm: Date.now()
+                        });
+                        sessionStorage.setItem('log_salvo_sessao', 'true');
+                    } catch (e) { console.error("Erro ao salvar log continuado:", e); }
+                }
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('conteudo-site').style.display = 'none';
@@ -683,6 +695,7 @@
             if ((nomeInput === 'fabricio' || nomeInput === 'maria') && senhaInput === 'winchester') {
                 const nomeFormatado = nomeInput === 'fabricio' ? 'Fabricio' : 'Maria';
                 sessionStorage.setItem('user_canto', nomeFormatado);
+                sessionStorage.setItem('log_salvo_sessao', 'true');
                 usuarioLogado = nomeFormatado;
                 
                 try {
@@ -691,7 +704,7 @@
                         dataHoraStr: obterDataHoraAtual(),
                         criadoEm: Date.now()
                     });
-                } catch (e) { console.error("Erro ao salvar log de login:", e); }
+                } catch (e) { console.error("Erro ao salvar log de login direto:", e); }
 
                 verificarSessao();
             } else {
@@ -701,6 +714,7 @@
 
         const fazerLogout = async function() {
             sessionStorage.removeItem('user_canto');
+            sessionStorage.removeItem('log_salvo_sessao');
             usuarioLogado = null;
             document.getElementById('bloco-configuracoes').style.display = 'none';
             verificarSessao();
