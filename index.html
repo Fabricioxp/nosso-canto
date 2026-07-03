@@ -246,6 +246,7 @@
         #bloco-coisas-minhas { background-color: #e6f2ff; }
         #bloco-galeria-momentos { background-color: #fdf8f5; }
         #bloco-nossos-textos { background-color: #f7f3f9; }
+        #bloco-historico-acessos { background-color: #f2f2f2; display: none; }
 
         .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
         .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
@@ -491,6 +492,7 @@
                 <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="lnk-galeria">🖼️ Galeria</a>
                 <a href="#bloco-nossos-textos" class="item-opcao-flutuante" id="lnk-cartas">✍️ Cartas</a>
                 <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="lnk-apresentacoes">✨ Apresentações</a>
+                <div class="item-opcao-flutuante" id="lnk-historico">📜 Histórico (PIN)</div>
             </div>
             <button class="botao-flutuante-principal" id="btn-flutuante-click">📌</button>
         </div>
@@ -515,6 +517,12 @@
                     </div>
                     <div id="lista-cronometro" class="lista-comentarios"></div>
                 </div>
+            </section>
+
+            <!-- ABA DO HISTÓRICO DE ACESSOS -->
+            <section class="bloco-separado" id="bloco-historico-acessos">
+                <div class="titulo-secao">📜 Histórico de Acessos</div>
+                <div id="lista-historico-container" class="lista-comentarios" style="max-height: 400px;"></div>
             </section>
 
             <section class="painel-upload" id="painel-playlist-posts">
@@ -649,7 +657,7 @@
         }
 
         function verificarPinSeguranca() {
-            const pinDigitado = prompt("⚠️ Para deletar este item, digite o PIN de segurança:");
+            const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
             if (pinDigitado === "1566") {
                 return true;
             } else if (pinDigitado !== null) {
@@ -667,10 +675,12 @@
             } else {
                 document.getElementById('tela-login').style.display = 'flex';
                 document.getElementById('conteudo-site').style.display = 'none';
+                document.getElementById('bloco-historico-acessos').style.display = 'none';
             }
         }
 
-        document.getElementById('btn-login-click').addEventListener('click', function() {
+        // FUNÇÃO DE LOGIN ADAPTADA PARA SALVAR NO HISTÓRICO IGUAL OS COMENTÁRIOS
+        document.getElementById('btn-login-click').addEventListener('click', async function() {
             const nomeInput = document.getElementById('login-nome').value.trim().toLowerCase();
             const senhaInput = document.getElementById('login-senha').value.trim();
             
@@ -678,6 +688,17 @@
                 const nomeFormatado = nomeInput === 'fabricio' ? 'Fabricio' : 'Maria';
                 sessionStorage.setItem('user_canto', nomeFormatado);
                 usuarioLogado = nomeFormatado;
+                
+                // Publica automaticamente no histórico o evento de acesso
+                try {
+                    await addDoc(collection(db, "historico"), {
+                        texto: "Fez login no site.",
+                        autor: nomeFormatado,
+                        dataHora: obterDataHoraAtual(),
+                        criadoEm: Date.now()
+                    });
+                } catch(err) { console.error("Erro ao salvar histórico:", err); }
+
                 verificarSessao();
             } else {
                 alert('Nome ou senha incorretos! 🥺');
@@ -707,6 +728,16 @@
         document.getElementById('lnk-galeria').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-cartas').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-apresentacoes').addEventListener('click', window.alternarMenuBalao);
+        
+        // CLICK DO BOTÃO HISTÓRICO PEDINDO O PIN PARA EXIBIR A ABA
+        document.getElementById('lnk-historico').addEventListener('click', function() {
+            window.alternarMenuBalao();
+            if (verificarPinSeguranca()) {
+                const abaHist = document.getElementById('bloco-historico-acessos');
+                abaHist.style.display = 'block';
+                abaHist.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
 
         window.alternarMenuTresPontos = function(id) {
             const menu = document.getElementById(`opcoes-${id}`);
@@ -861,7 +892,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, data: dataFormatada });
-                    alert('Foto da galeria atualizada! 🖼️');
+                    alert('Foto da galeria updated! 🖼️');
                 } else {
                     await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
                     alert('Momento guardado no nosso varal! 💞');
@@ -979,6 +1010,14 @@
             if (verificarPinSeguranca()) {
                 await deleteDoc(doc(db, "comentarios", id)); 
                 alert("Comentário removido! 👍");
+            }
+        };
+
+        // FUNÇÃO PARA APAGAR DO HISTÓRICO PEDINDO O PIN
+        window.excluirHistoricoFirebase = async function(id) {
+            if (verificarPinSeguranca()) {
+                await deleteDoc(doc(db, "historico", id));
+                alert("Registro de histórico apagado! 👍");
             }
         };
 
@@ -1186,7 +1225,9 @@
 
         const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentariosCorreto, (snapshot) => {
-            document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
+            document.querySelectorAll('.lista-comentarios').forEach(l => {
+                if(l.id !== 'lista-historico-container') l.innerHTML = '';
+            });
 
             snapshot.forEach((docSnap) => {
                 const com = { id: docSnap.id, ...docSnap.data() };
@@ -1203,6 +1244,31 @@
                 `;
                 containerLista.appendChild(item);
             });
+        });
+
+        // ESCUTADOR EM TEMPO REAL PARA A COLEÇÃO DE HISTÓRICO (DO MAIS RECENTE PARA O MAIS ANTIGO)
+        const qHistorico = query(collection(db, "historico"), orderBy("criadoEm", "desc"));
+        onSnapshot(qHistorico, (snapshot) => {
+            const containerHist = document.getElementById('lista-historico-container');
+            if(containerHist) {
+                containerHist.innerHTML = '';
+                snapshot.forEach((docSnap) => {
+                    const h = { id: docSnap.id, ...docSnap.data() };
+                    const item = document.createElement('div');
+                    item.className = 'item-comentario';
+                    item.innerHTML = `
+                        <div class="meta-comentario">
+                            <span class="autor-comentario">👤 ${h.autor}</span>
+                            <span>⏱️ ${h.dataHora}</span>
+                        </div>
+                        <div class="corpo-comentario">
+                            <div class="texto-comentario" style="color: #666;">${sanitizarHTML(h.texto)}</div>
+                            <button class="btn-excluir-comentario" onclick="excluirHistoricoFirebase('${h.id}')">Excluir</button>
+                        </div>
+                    `;
+                    containerHist.appendChild(item);
+                });
+            }
         });
 
         verificarSessao();
