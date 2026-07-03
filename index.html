@@ -300,7 +300,7 @@
         }
 
         .input-custom, .select-custom, .textarea-custom {
-            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
+            width: 100%; padding: 12px 166px; border: 1px solid rgba(230, 179, 168, 0.6);
             border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
             margin-bottom: 12px; outline: none; background: #fffbfb;
             color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
@@ -519,7 +519,7 @@
                 </div>
             </section>
 
-            <!-- ABA DO HISTÓRICO DE ACESSOS -->
+            <!-- ABA DO HISTÓRICO DE ACESSOS CORRIGIDA -->
             <section class="bloco-separado" id="bloco-historico-acessos">
                 <div class="titulo-secao">📜 Histórico de Acessos</div>
                 <div id="lista-historico-container" class="lista-comentarios" style="max-height: 400px;"></div>
@@ -679,7 +679,7 @@
             }
         }
 
-        // FUNÇÃO DE LOGIN ADAPTADA PARA SALVAR NO HISTÓRICO IGUAL OS COMENTÁRIOS
+        // LOGIN CORRIGIDO: PUBLICA DIRETO NA LISTA IGUAL UM COMENTÁRIO
         document.getElementById('btn-login-click').addEventListener('click', async function() {
             const nomeInput = document.getElementById('login-nome').value.trim().toLowerCase();
             const senhaInput = document.getElementById('login-senha').value.trim();
@@ -689,15 +689,16 @@
                 sessionStorage.setItem('user_canto', nomeFormatado);
                 usuarioLogado = nomeFormatado;
                 
-                // Publica automaticamente no histórico o evento de acesso
+                // Publica na mesma coleção principal com destino 'historico'
                 try {
-                    await addDoc(collection(db, "historico"), {
-                        texto: "Fez login no site.",
+                    await addDoc(collection(db, "posts"), {
+                        destino: "historico",
+                        corpo: "Fez login no site. 👋",
                         autor: nomeFormatado,
-                        dataHora: obterDataHoraAtual(),
+                        data: obterDataHoraAtual(),
                         criadoEm: Date.now()
                     });
-                } catch(err) { console.error("Erro ao salvar histórico:", err); }
+                } catch(err) { console.error("Erro ao publicar acesso:", err); }
 
                 verificarSessao();
             } else {
@@ -729,7 +730,6 @@
         document.getElementById('lnk-cartas').addEventListener('click', window.alternarMenuBalao);
         document.getElementById('lnk-apresentacoes').addEventListener('click', window.alternarMenuBalao);
         
-        // CLICK DO BOTÃO HISTÓRICO PEDINDO O PIN PARA EXIBIR A ABA
         document.getElementById('lnk-historico').addEventListener('click', function() {
             window.alternarMenuBalao();
             if (verificarPinSeguranca()) {
@@ -1013,32 +1013,48 @@
             }
         };
 
-        // FUNÇÃO PARA APAGAR DO HISTÓRICO PEDINDO O PIN
-        window.excluirHistoricoFirebase = async function(id) {
-            if (verificarPinSeguranca()) {
-                await deleteDoc(doc(db, "historico", id));
-                alert("Registro de histórico apagado! 👍");
-            }
-        };
-
         window.verificarEnter = function(event, id) {
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
         document.getElementById('input-cronometro').addEventListener('keypress', function(e) { window.verificarEnter(e, 'cronometro'); });
 
-        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
+        // MOTOR PRINCIPAL RENDERIZADOR (DEIXADO EM ORDEM DE CRIAÇÃO PARA O HISTÓRICO IR PARA O TOPO)
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
             document.getElementById('novos-cards-galeria').innerHTML = '';
             document.getElementById('novos-cards-textos').innerHTML = '';
             document.getElementById('novos-cards-playlist').innerHTML = '';
+            document.getElementById('lista-historico-container').innerHTML = ''; // Limpa histórico
+            
             let numDela = 0; let numMeu = 0;
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
+
+                // FILTRO DO SEU HISTÓRICO EM TEMPO REAL RENDERIZADO IGUAL COMENTÁRIO
+                if (post.destino === 'historico') {
+                    const containerHist = document.getElementById('lista-historico-container');
+                    if (containerHist) {
+                        const itemHist = document.createElement('div');
+                        itemHist.className = 'item-comentario';
+                        itemHist.innerHTML = `
+                            <div class="meta-comentario">
+                                <span class="autor-comentario">👤 ${post.autor}</span>
+                                <span>⏱️ ${post.data}</span>
+                            </div>
+                            <div class="corpo-comentario">
+                                <div class="texto-comentario" style="color: #666;">${sanitizarHTML(post.corpo)}</div>
+                                <button class="btn-excluir-comentario" onclick="removerPostagemFirebase('${post.id}')">Excluir</button>
+                            </div>
+                        `;
+                        containerHist.appendChild(itemHist);
+                    }
+                    return;
+                }
 
                 if (post.destino === 'playlist') {
                     const containerPlaylist = document.getElementById('novos-cards-playlist');
@@ -1162,7 +1178,7 @@
                             <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                         </div>
                     `;
-                    containerTextos.appendChild(blocoTexto);
+                    containerTextos.insertBefore(blocoTexto, containerTextos.firstChild);
                     
                     setTimeout(() => {
                         const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
@@ -1214,7 +1230,7 @@
                     </div>
                     ${controleModificacao}
                 `;
-                container.appendChild(bloco);
+                container.insertBefore(bloco, container.firstChild);
                 
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
@@ -1244,31 +1260,6 @@
                 `;
                 containerLista.appendChild(item);
             });
-        });
-
-        // ESCUTADOR EM TEMPO REAL PARA A COLEÇÃO DE HISTÓRICO (DO MAIS RECENTE PARA O MAIS ANTIGO)
-        const qHistorico = query(collection(db, "historico"), orderBy("criadoEm", "desc"));
-        onSnapshot(qHistorico, (snapshot) => {
-            const containerHist = document.getElementById('lista-historico-container');
-            if(containerHist) {
-                containerHist.innerHTML = '';
-                snapshot.forEach((docSnap) => {
-                    const h = { id: docSnap.id, ...docSnap.data() };
-                    const item = document.createElement('div');
-                    item.className = 'item-comentario';
-                    item.innerHTML = `
-                        <div class="meta-comentario">
-                            <span class="autor-comentario">👤 ${h.autor}</span>
-                            <span>⏱️ ${h.dataHora}</span>
-                        </div>
-                        <div class="corpo-comentario">
-                            <div class="texto-comentario" style="color: #666;">${sanitizarHTML(h.texto)}</div>
-                            <button class="btn-excluir-comentario" onclick="excluirHistoricoFirebase('${h.id}')">Excluir</button>
-                        </div>
-                    `;
-                    containerHist.appendChild(item);
-                });
-            }
         });
 
         verificarSessao();
