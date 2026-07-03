@@ -648,6 +648,16 @@
             return `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
         }
 
+        function verificarPinSeguranca() {
+            const pinDigitado = prompt("⚠️ Para deletar este item, digite o PIN de segurança:");
+            if (pinDigitado === "1566") {
+                return true;
+            } else if (pinDigitado !== null) {
+                alert("PIN incorreto! Ação cancelada. 🔐");
+            }
+            return false;
+        }
+
         async function verificarSessao() {
             if (usuarioLogado) {
                 document.getElementById('tela-login').style.display = 'none';
@@ -769,9 +779,10 @@
         };
 
         window.removerPostagemFirebase = async function(id) {
-            if (confirm("Deseja apagar essa lembrança? 🥺")) {
+            if (verificarPinSeguranca()) {
                 await deleteDoc(doc(db, "posts", id));
                 resetarFormulario(); resetarFormularioGaleria(); resetarFormularioTexto(); resetarFormularioPlaylist();
+                alert("Lembrança apagada com sucesso! 👍");
             }
         };
 
@@ -802,7 +813,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado! ✨');
+                    alert('Card updated! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
                     alert('Card publicado! ❤️');
@@ -964,7 +975,12 @@
         };
         document.getElementById('btn-comentar-cronometro').addEventListener('click', function() { window.adicionarComentarioFirebase('cronometro'); });
 
-        window.excluirComentarioFirebase = async function(id) { await deleteDoc(doc(db, "comentarios", id)); };
+        window.excluirComentarioFirebase = async function(id) { 
+            if (verificarPinSeguranca()) {
+                await deleteDoc(doc(db, "comentarios", id)); 
+                alert("Comentário removido! 👍");
+            }
+        };
 
         window.verificarEnter = function(event, id) {
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
