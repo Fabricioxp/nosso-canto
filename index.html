@@ -317,6 +317,14 @@
         }
         .btn-postar:hover { background-color: #734f4b; }
 
+        .btn-excluir-tudo {
+            width: 100%; background-color: #d9534f; color: white; border: none;
+            padding: 10px; border-radius: 12px; font-family: var(--font-main);
+            font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-bottom: 15px;
+            transition: background 0.2s;
+        }
+        .btn-excluir-tudo:hover { background-color: #c9302c; }
+
         .secao-comentarios { 
             margin-top: 25px; 
             padding-top: 20px; 
@@ -529,6 +537,7 @@
 
             <section class="bloco-separado" id="bloco-historico-acessos">
                 <div class="titulo-secao">📜 Histórico de Acessos</div>
+                <button id="btn-excluir-todo-historico" class="btn-excluir-tudo">⚠️ Excluir Todo Histórico</button>
                 <div id="lista-historico-container" class="lista-comentarios" style="max-height: none; overflow-y: visible;"></div>
                 <button id="btn-ver-mais-historico" class="btn-ver-mais-hist" style="display: none;">Ver mais históricos 🔽</button>
             </section>
@@ -619,7 +628,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -824,6 +833,34 @@
                 alert("Lembrança apagada com sucesso! 👍");
             }
         };
+
+        window.excluirTodoHistoricoFirebase = async function() {
+            if (verificarPinSeguranca()) {
+                if (confirm("Você tem certeza absoluta que deseja apagar TODOS os históricos de uma vez só? Esta ação não pode ser desfeita!")) {
+                    try {
+                        const q = query(collection(db, "posts"), where("destino", "==", "historico"));
+                        const snap = await getDocs(q);
+                        
+                        if (snap.empty) {
+                            alert("Não há históricos para excluir! 😊");
+                            return;
+                        }
+
+                        const batch = writeBatch(db);
+                        snap.forEach((docSnap) => {
+                            batch.delete(docSnap.ref);
+                        });
+
+                        await batch.commit();
+                        alert("Todo o histórico de acessos foi limpo com sucesso! 🧹");
+                    } catch (error) {
+                        console.error("Erro ao limpar todo o histórico:", error);
+                        alert("Ocorreu um erro ao tentar limpar o histórico. Verifique o console.");
+                    }
+                }
+            }
+        };
+        document.getElementById('btn-excluir-todo-historico').addEventListener('click', window.excluirTodoHistoricoFirebase);
 
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
