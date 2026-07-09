@@ -535,7 +535,7 @@
 
         .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
-        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .declaracao-titulo-render font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         
         .declaracao-wrapper {
             position: relative;
@@ -667,7 +667,7 @@
         <div class="menu-flutuante-container">
             <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
                 <a href="#bloco-dias-amando" class="item-opcao-flutuante" id="lnk-tempo">⏳ Nosso Tempo</a>
-                <a href="#bloco-playlist" class="item-opcao-flutuante" id="lnk-playlist">🎧 Nossa Playlist</a>
+                <a href="playlist.html" class="item-opcao-flutuante" id="lnk-playlist">🎧 Nossa Playlist</a>
                 <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="lnk-galeria">🖼️ Galeria</a>
                 <a href="#bloco-nossos-textos" class="item-opcao-flutuante" id="lnk-cartas">✍️ Cartas</a>
                 <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="lnk-apresentacoes">✨ Apresentações</a>
@@ -735,6 +735,7 @@
             <section class="bloco-separado" id="bloco-playlist">
                 <div class="titulo-secao">🎶 Nossa Playlist</div>
                 <div id="novos-cards-playlist"></div>
+                <a href="playlist.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-playlist">Ver o restante da playlist 🔽</a>
             </section>
 
             <section class="painel-upload" id="painel-de-postagem">
@@ -872,33 +873,22 @@
             }
         }
 
-        // --- ATUALIZADO: Medição Fiel e Correta baseada em 1GB Real ---
         function calcularArmazenamento(snapshotPosts, snapshotComentarios) {
             let totalBytes = 0;
-            const limiteMaximoBytes = 1024 * 1024 * 1024; // 1 Gigabyte real em Bytes
+            const limiteMaximoBytes = 1024 * 1024 * 1024; 
 
             if (snapshotPosts && typeof snapshotPosts.forEach === 'function') {
-                snapshotPosts.forEach((docSnap) => {
-                    totalBytes += JSON.stringify(docSnap.data()).length;
-                });
+                snapshotPosts.forEach((docSnap) => { totalBytes += JSON.stringify(docSnap.data()).length; });
             }
-
             if (snapshotComentarios && typeof snapshotComentarios.forEach === 'function') {
-                snapshotComentarios.forEach((docSnap) => {
-                    totalBytes += JSON.stringify(docSnap.data()).length;
-                });
+                snapshotComentarios.forEach((docSnap) => { totalBytes += JSON.stringify(docSnap.data()).length; });
             }
 
             let textoFormatado = "";
-            if (totalBytes < 1024) {
-                textoFormatado = `${totalBytes} Bytes`;
-            } else if (totalBytes < 1024 * 1024) {
-                textoFormatado = `${(totalBytes / 1024).toFixed(2)} KB`;
-            } else if (totalBytes < 1024 * 1024 * 1024) {
-                textoFormatado = `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`;
-            } else {
-                textoFormatado = `${(totalBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-            }
+            if (totalBytes < 1024) { textoFormatado = `${totalBytes} Bytes`; } 
+            else if (totalBytes < 1024 * 1024) { textoFormatado = `${(totalBytes / 1024).toFixed(2)} KB`; } 
+            else if (totalBytes < 1024 * 1024 * 1024) { textoFormatado = `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`; } 
+            else { textoFormatado = `${(totalBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`; }
 
             let porcentagem = (totalBytes / limiteMaximoBytes) * 100;
             if (porcentagem > 100) porcentagem = 100;
@@ -922,24 +912,15 @@
                 
                 try {
                     await addDoc(collection(db, "posts"), {
-                        destino: "historico",
-                        corpo: "Fez login no site. 👋",
-                        autor: nomeFormatado,
-                        data: obterDataHoraAtual(),
-                        criadoEm: Date.now()
+                        destino: "historico", corpo: "Fez login no site. 👋", autor: nomeFormatado, data: obterDataHoraAtual(), criadoEm: Date.now()
                     });
                 } catch(err) { console.error("Erro ao publicar acesso:", err); }
-
                 verificarSessao();
-            } else {
-                alert('Nome ou senha incorretos! 🥺');
-            }
+            } else { alert('Nome ou senha incorretos! 🥺'); }
         });
 
         const fazerLogout = function() {
-            sessionStorage.removeItem('user_canto');
-            usuarioLogado = null;
-            verificarSessao();
+            sessionStorage.removeItem('user_canto'); usuarioLogado = null; verificarSessao();
         };
         document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
 
@@ -964,8 +945,7 @@
             window.alternarMenuBalao();
             if (verificarPinSeguranca()) {
                 const abaHist = document.getElementById('bloco-historico-acessos');
-                abaHist.style.display = 'block';
-                abaHist.scrollIntoView({ behavior: 'smooth' });
+                abaHist.style.display = 'block'; abaHist.scrollIntoView({ behavior: 'smooth' });
             }
         });
 
@@ -1003,10 +983,7 @@
             let imagem = document.getElementById('playlist-capa').value.trim();
             const destaque = document.getElementById('playlist-destaque').checked;
 
-            if (!titulo || !link) {
-                alert('Por favor, digite o nome e cole o link da música! 🎧'); return;
-            }
-
+            if (!titulo || !link) { alert('Por favor, digite o nome e cole o link da música! 🎧'); return; }
             if (!imagem) {
                 const idYT = extrairIDYouTube(link);
                 imagem = idYT ? `https://img.youtube.com/vi/${idYT}/hqdefault.jpg` : 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa';
@@ -1018,8 +995,7 @@
                     alert('Música atualizada! 🎶');
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        destino: 'playlist', titulo, link, imagem, destaque,
-                        autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                        destino: 'playlist', titulo, link, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
                     });
                     alert('Música dedicada com sucesso! ❤️');
                 }
@@ -1049,27 +1025,15 @@
 
         window.excluirTodoHistoricoFirebase = async function() {
             if (verificarPinSeguranca()) {
-                if (confirm("Você tem certeza absoluta que deseja apagar TODOS os históricos de uma vez só? Esta ação não pode ser desfeita!")) {
+                if (confirm("Você tem certeza absoluta que deseja apagar TODOS os históricos de uma vez só?")) {
                     try {
                         const q = query(collection(db, "posts"), where("destino", "==", "historico"));
                         const snap = await getDocs(q);
-                        
-                        if (snap.empty) {
-                            alert("Não há históricos para excluir! 😊");
-                            return;
-                        }
-
+                        if (snap.empty) { alert("Não há históricos para excluir! 😊"); return; }
                         const batch = writeBatch(db);
-                        snap.forEach((docSnap) => {
-                            batch.delete(docSnap.ref);
-                        });
-
-                        await batch.commit();
-                        alert("Todo o histórico de acessos foi limpo com sucesso! 🧹");
-                    } catch (error) {
-                        console.error("Erro ao limpar todo o histórico:", error);
-                        alert("Ocorreu um erro ao tentar limpar o histórico. Verifique o console.");
-                    }
+                        snap.forEach((docSnap) => { batch.delete(docSnap.ref); });
+                        await batch.commit(); alert("Todo o histórico de acessos foi limpo com sucesso! 🧹");
+                    } catch (error) { console.error(error); }
                 }
             }
         };
@@ -1220,18 +1184,14 @@
             const wrapper = containerCorpo.parentElement;
 
             if (containerCorpo.classList.contains('expandido')) {
-                containerCorpo.classList.remove('expandido');
-                wrapper.classList.remove('expandido');
-                botao.innerText = 'Ler mais... 📖';
-                wrapper.parentElement.scrollIntoView({ behavior: 'smooth' });
+                containerCorpo.classList.remove('expandido'); wrapper.classList.remove('expandido');
+                botao.innerText = 'Ler mais... 📖'; wrapper.parentElement.scrollIntoView({ behavior: 'smooth' });
             } else {
-                containerCorpo.classList.add('expandido');
-                wrapper.classList.add('expandido');
+                containerCorpo.classList.add('expandido'); wrapper.classList.add('expandido');
                 botao.innerText = 'Ler menos ↩️';
             }
         };
 
-        // --- CORREÇÃO DO BUG DAS CURTIDAS (Evita recriar a DOM inteira e descer a tela) ---
         window.alternarCurtidaItem = async function(id) {
             try {
                 const docRef = doc(db, "posts", id);
@@ -1245,21 +1205,13 @@
                     const btn = document.querySelector(`#polaroid-${id} .btn-coracao-minimalista, #opcoes-${id} ~ .barra-reacoes-polaroid .btn-coracao-minimalista, .card-musica .btn-coracao-minimalista`);
                     const txtContagem = document.querySelector(`#polaroid-${id} .contagem-likes, #opcoes-${id} ~ .barra-reacoes-polaroid .contagem-likes, .card-musica .contagem-likes`);
 
-                    if (index > -1) { 
-                        listaLikes.splice(index, 1); 
-                        if (btn) btn.innerText = '🤍';
-                    } else { 
-                        listaLikes.push(usuarioLogado); 
-                        if (btn) btn.innerText = '❤️';
-                        if (typeof celebrarAmor === "function") celebrarAmor(); 
-                    }
+                    if (index > -1) { listaLikes.splice(index, 1); if (btn) btn.innerText = '🤍'; } 
+                    else { listaLikes.push(usuarioLogado); if (btn) btn.innerText = '❤️'; if (typeof celebrarAmor === "function") celebrarAmor(); }
 
                     if (txtContagem) {
                         const sufixo = docSnap.data().destino === 'galeria' || docSnap.data().destino === 'texto' ? 'curtidas' : 'amaram';
                         txtContagem.innerText = `${listaLikes.length} ${sufixo}`;
                     }
-
-                    // Grava no Firebase sem forçar re-renderização completa da lista
                     await updateDoc(docRef, { curtidas: listaLikes });
                 }
             } catch (error) { console.error(error); }
@@ -1269,7 +1221,6 @@
             const input = document.getElementById(`input-${secaoId}`);
             const texto = input?.value.trim();
             if (!texto) return;
-
             try {
                 await addDoc(collection(db, "comentarios"), { secaoId, texto, autor: usuarioLogado, dataHora: obterDataHoraAtual(), criadoEm: Date.now() });
                 if (input) input.value = '';
@@ -1278,10 +1229,7 @@
         document.getElementById('btn-comentar-cronometro').addEventListener('click', function() { window.adicionarComentarioFirebase('cronometro'); });
 
         window.excluirComentarioFirebase = async function(id) { 
-            if (verificarPinSeguranca()) {
-                await deleteDoc(doc(db, "comentarios", id)); 
-                alert("Comentário removido! 👍");
-            }
+            if (verificarPinSeguranca()) { await deleteDoc(doc(db, "comentarios", id)); alert("Comentário removido! 👍"); }
         };
 
         window.verificarEnter = function(event, id) {
@@ -1293,7 +1241,6 @@
             const containerHist = document.getElementById('lista-historico-container');
             const btnVerMais = document.getElementById('btn-ver-mais-historico');
             if (!containerHist) return;
-
             containerHist.innerHTML = '';
             
             let historicosExibidos = limiteHistorico ? todosHistoricos.slice(0, 5) : todosHistoricos;
@@ -1302,52 +1249,29 @@
                 const itemHist = document.createElement('div');
                 itemHist.className = 'item-comentario';
                 itemHist.innerHTML = `
-                    <div class="meta-comentario">
-                        <span class="autor-comentario">👤 ${post.autor}</span>
-                        <span>⏱️ ${post.data}</span>
-                    </div>
-                    <div class="corpo-comentario">
-                        <div class="texto-comentario" style="color: #666;">${sanitizarHTML(post.corpo)}</div>
-                        <button class="btn-excluir-comentario" onclick="removerPostagemFirebase('${post.id}')">Excluir</button>
-                    </div>
+                    <div class="meta-comentario"><span class="autor-comentario">👤 ${post.autor}</span><span>⏱️ ${post.data}</span></div>
+                    <div class="corpo-comentario"><div class="texto-comentario" style="color: #666;">${sanitizarHTML(post.corpo)}</div><button class="btn-excluir-comentario" onclick="removerPostagemFirebase('${post.id}')">Excluir</button></div>
                 `;
                 containerHist.appendChild(itemHist);
             });
-
-            if (limiteHistorico && todosHistoricos.length > 5) {
-                btnVerMais.style.display = 'block';
-            } else {
-                btnVerMais.style.display = 'none';
-            }
+            btnVerMais.style.display = (limiteHistorico && todosHistoricos.length > 5) ? 'block' : 'none';
         }
 
-        document.getElementById('btn-ver-mais-historico').addEventListener('click', function() {
-            limiteHistorico = false;
-            renderizarHistoricoDOM();
-        });
+        document.getElementById('btn-ver-mais-historico').addEventListener('click', function() { limiteHistorico = false; renderizarHistoricoDOM(); });
 
         window.abrirLightbox = function(src) {
             if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) return;
             const modal = document.getElementById('lightbox-galeria');
             const img = document.getElementById('lightbox-img-source');
-            img.src = src;
-            img.style.transform = 'scale(1)'; 
-            modal.classList.add('ativo');
+            img.src = src; img.style.transform = 'scale(1)'; modal.classList.add('ativo');
         };
 
-        window.fecharLightbox = function() {
-            document.getElementById('lightbox-galeria').classList.remove('ativo');
-        };
+        window.fecharLightbox = function() { document.getElementById('lightbox-galeria').classList.remove('ativo'); };
 
         window.alternarZoomInterno = function(event) {
             const img = event.target;
-            if (img.style.transform === 'scale(2)') {
-                img.style.transform = 'scale(1)';
-                img.style.cursor = 'zoom-in';
-            } else {
-                img.style.transform = 'scale(2)';
-                img.style.cursor = 'zoom-out';
-            }
+            if (img.style.transform === 'scale(2)') { img.style.transform = 'scale(1)'; img.style.cursor = 'zoom-in'; } 
+            else { img.style.transform = 'scale(2)'; img.style.cursor = 'zoom-out'; }
         };
 
         window.virarPolaroidCard = function(idCard) {
@@ -1357,34 +1281,21 @@
 
         let cliqueTimer = null;
         window.lidarCliqueFoto = function(event, src, cardId) {
-            event.stopPropagation();
-            event.preventDefault(); 
-            if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) {
-                window.virarPolaroidCard(cardId);
-                return;
-            }
+            event.stopPropagation(); event.preventDefault(); 
+            if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) { window.virarPolaroidCard(cardId); return; }
             if (!cliqueTimer) {
-                cliqueTimer = setTimeout(() => {
-                    cliqueTimer = null;
-                    window.abrirLightbox(src);
-                }, 300); 
-            } else {
-                clearTimeout(cliqueTimer);
-                cliqueTimer = null;
-                window.virarPolaroidCard(cardId);
-            }
+                cliqueTimer = setTimeout(() => { cliqueTimer = null; window.abrirLightbox(src); }, 300); 
+            } else { clearTimeout(cliqueTimer); cliqueTimer = null; window.virarPolaroidCard(cardId); }
         };
 
         let ultimoSnapshotPosts = null;
         let ultimoSnapshotComentarios = null;
 
-        // Escuta atualizações do banco — ORDENAÇÃO CRONOLÓGICA (Mais antigo em cima)
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             ultimoSnapshotPosts = snapshot;
             calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
 
-            // Mapeamento dos containers atuais para preservar itens existentes
             const containers = {
                 dela: document.getElementById('novos-cards-dela'),
                 meu: document.getElementById('novos-cards-meu'),
@@ -1396,11 +1307,7 @@
             Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
             todosHistoricos = [];
             
-            let itensDela = [];
-            let itensMeu = [];
-            let itensGaleria = [];
-            let itensTextos = [];
-            let itensPlaylist = [];
+            let itensDela = []; let itensMeu = []; let itensGaleria = []; let itensTextos = []; let itensPlaylist = [];
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
@@ -1414,8 +1321,13 @@
 
             todosHistoricos.reverse();
 
-            // Playlist
-            itensPlaylist.forEach((post) => {
+            // Lógica de Limite da Playlist Principal (Exibe apenas as 5 primeiras)
+            const playlistExibida = itensPlaylist.slice(0, 5);
+            const btnPlaylistRestante = document.getElementById('btn-ver-restante-playlist');
+            if(itensPlaylist.length > 5 && btnPlaylistRestante) { btnPlaylistRestante.style.display = 'block'; } 
+            else if(btnPlaylistRestante) { btnPlaylistRestante.style.display = 'none'; }
+
+            playlistExibida.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
                 const blocoMusica = document.createElement('div');
@@ -1484,7 +1396,6 @@
                     ${controleModificacao}
                 `;
                 containers.dela.appendChild(bloco);
-                
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
                     if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
@@ -1524,7 +1435,6 @@
                     ${controleModificacao}
                 `;
                 containers.meu.appendChild(bloco);
-                
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
                     if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
@@ -1536,8 +1446,7 @@
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
                 const blocoFoto = document.createElement('div');
-                blocoFoto.className = 'quadro-polaroid';
-                blocoFoto.id = `polaroid-${post.id}`;
+                blocoFoto.className = 'quadro-polaroid'; blocoFoto.id = `polaroid-${post.id}`;
 
                 const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
                     <div class="menu-acoes-container">
@@ -1552,13 +1461,9 @@
                 let midiaHtml = '';
                 const idYT = extrairIDYouTube(post.imagem);
 
-                if (idYT) {
-                    midiaHtml = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" allowfullscreen></iframe>`;
-                } else if (post.imagem.match(/\.(mp4|webm|ogg)/i)) {
-                    midiaHtml = `<video class="polaroid-video" src="${post.imagem}" controls preload="metadata"></video>`;
-                } else {
-                    midiaHtml = `<img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+Invalido'">`;
-                }
+                if (idYT) { midiaHtml = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" allowfullscreen></iframe>`; } 
+                else if (post.imagem.match(/\.(mp4|webm|ogg)/i)) { midiaHtml = `<video class="polaroid-video" src="${post.imagem}" controls preload="metadata"></video>`; } 
+                else { midiaHtml = `<img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+Invalido'">`; }
 
                 blocoFoto.innerHTML = `
                     <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
@@ -1567,13 +1472,10 @@
                             <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px; font-size: 0.75rem;">
                                 <span>🗓️ Publicado: ${post.data}</span>
                             </div>
-                            
                             ${midiaHtml}
-                            
                             <div class="data-card" style="align-items: center; text-align: center; margin-top:12px; margin-bottom:0;">
                                 <span style="font-size:0.75rem; font-weight:normal; color:var(--secondary);">✨ Dê 2 cliques na moldura para girar</span>
                             </div>
-
                             <div class="polaroid-legenda-box">
                                 ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
                                 ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
@@ -1590,7 +1492,6 @@
                                 <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                             </div>
                         </div>
-                        
                         <div class="polaroid-verso">
                             <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
                             <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
@@ -1600,7 +1501,6 @@
                     </div>
                 `;
                 containers.galeria.appendChild(blocoFoto);
-                
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
                     if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
@@ -1611,8 +1511,7 @@
             itensTextos.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoTexto = document.createElement('div');
-                blocoTexto.className = 'card-declaracao-texto';
+                const blocoTexto = document.createElement('div'); blocoTexto.className = 'card-declaracao-texto';
 
                 const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
                     <div class="menu-acoes-container">
@@ -1631,12 +1530,10 @@
                         <span class="autor-tag">Escrito por: ${post.autor}</span>
                     </div>
                     ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
-                    
                     <div class="declaracao-wrapper">
                         <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
                     </div>
                     <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
-
                     <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
                         <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                         <span class="contagem-likes">${curtidasArray.length} curtidas</span>
@@ -1667,30 +1564,20 @@
             });
 
             renderizarHistoricoDOM();
-
-            // Forçar re-injeção dos comentários sempre que a estrutura base de posts for alterada
             if(ultimoSnapshotComentarios) renderizarComentariosDOM(ultimoSnapshotComentarios);
         });
 
-        // --- ATUALIZADO: Renderizador isolado de comentários para impedir o sumiço dos cards das mídias ---
         function renderizarComentariosDOM(snapshot) {
-            document.querySelectorAll('.lista-comentarios').forEach(l => {
-                if(l.id !== 'lista-historico-container') l.innerHTML = '';
-            });
-
+            document.querySelectorAll('.lista-comentarios').forEach(l => { if(l.id !== 'lista-historico-container') l.innerHTML = ''; });
             snapshot.forEach((docSnap) => {
                 const com = { id: docSnap.id, ...docSnap.data() };
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
-
-                // Evitar duplicações verificando se o ID do comentário específico já existe lá dentro
                 if (containerLista.querySelector(`[data-comment-id="${com.id}"]`)) return;
 
                 const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
-
                 const item = document.createElement('div');
-                item.className = 'item-comentario';
-                item.setAttribute('data-comment-id', com.id);
+                item.className = 'item-comentario'; item.setAttribute('data-comment-id', com.id);
                 item.innerHTML = `
                     <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
                     <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
@@ -1710,21 +1597,13 @@
     </script>
 
     <script>
-        const CONFIG_DATAS = {
-            amor: new Date(2026, 4, 14, 0, 0, 0),   
-            namoro: new Date(2026, 7, 12, 0, 0, 0)  
-        };
+        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2026, 7, 12, 0, 0, 0) };
 
-        function atualizarContadores() {
-            renderizarTempo(CONFIG_DATAS.amor, 'contador-amor');
-            renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro');
-        }
+        function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
 
         function renderizarTempo(dataAlvo, elementoId) {
-            const elemento = document.getElementById(elementoId);
-            if (!elemento) return;
+            const elemento = document.getElementById(elementoId); if (!elemento) return;
             const diferenca = new Date().getTime() - dataAlvo.getTime();
-
             if (diferenca < 0) { elemento.innerHTML = "Contando as horas... ✨"; return; }
             elemento.className = "contador-tempo ativo";
             const dias = Math.floor(diferenca / 86400000);
@@ -1734,28 +1613,21 @@
             elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
-        const canvas = document.getElementById('canvas-hearts');
-        const ctx = canvas.getContext('2d');
-        let listaCoracoes = [];
-        let animandoAtivo = true;
+        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
+        let listaCoracoes = []; let animandoAtivo = true;
 
         function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', redimensionarCanvas);
-        redimensionarCanvas();
+        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
 
         class Coracao {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 8 + 5;
-                this.speed = Math.random() * 1.5 + 1.2; 
-                this.opacity = 1;
-                this.colorValue = 140 + Math.floor(Math.random() * 40);
+                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
+                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
+                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
             }
             atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
             desenhar() {
-                ctx.save(); ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
+                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
                 ctx.beginPath(); ctx.moveTo(this.x, this.y);
                 ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
                 ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
@@ -1764,24 +1636,17 @@
         }
 
         function animarLoop() {
-            if (!animandoAtivo) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!animandoAtivo) return; ctx.clearRect(0, 0, canvas.width, canvas.height);
             listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
             requestAnimationFrame(animarLoop);
         }
 
         function celebrarAmor() { 
             let total = 25;
-            for (let i = 0; i < total; i++) { 
-                setTimeout(() => { if(listaCoracoes.length < 80) listaCoracoes.push(new Coracao()); }, i * 40); 
-            } 
+            for (let i = 0; i < total; i++) { setTimeout(() => { if(listaCoracoes.length < 80) listaCoracoes.push(new Coracao()); }, i * 40); } 
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            atualizarContadores();
-            setInterval(atualizarContadores, 1000);
-            animarLoop();
-        });
+        document.addEventListener('DOMContentLoaded', () => { atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop(); });
     </script>
 </body>
 </html>
