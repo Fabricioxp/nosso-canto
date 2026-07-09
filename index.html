@@ -470,7 +470,22 @@
             margin-bottom: 8px;
         }
 
-        .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; cursor: pointer; }
+        /* CORREÇÃO AQUI: Bloqueia comportamento nativo do navegador na foto */
+        .polaroid-imagem { 
+            width: 100%; 
+            aspect-ratio: 1 / 1; 
+            object-fit: cover; 
+            background: #fafafa; 
+            display: block; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
         .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
         .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
@@ -1243,15 +1258,16 @@
             if (card) card.classList.toggle('flipped');
         };
 
-        /* Temporizador Inteligente: diferencia clique simples (Zoom) de clique duplo (Girar Card) na imagem */
+        /* CORREÇÃO AQUI: adicionado event.preventDefault() para cortar o reflexo azul e o menu nativo do celular */
         let cliqueTimer = null;
         window.lidarCliqueFoto = function(event, src, cardId) {
             event.stopPropagation();
+            event.preventDefault(); 
             if (!cliqueTimer) {
                 cliqueTimer = setTimeout(() => {
                     cliqueTimer = null;
                     window.abrirLightbox(src);
-                }, 250); // Janela de espera para capturar o segundo clique
+                }, 300); 
             } else {
                 clearTimeout(cliqueTimer);
                 cliqueTimer = null;
