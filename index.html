@@ -400,8 +400,67 @@
         .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
         .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        .quadro-polaroid { background: #ffffff; padding: 14px 14px 22px 14px; box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12); border-radius: 4px; margin: 20px auto 30px auto; max-width: 380px; border: 1px solid rgba(0,0,0,0.03); position: relative; content-visibility: auto; height: auto; }
-        .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; }
+        /* Estilos atualizados para o efeito Flip 3D da Polaroid */
+        .quadro-polaroid { 
+            background: transparent; 
+            margin: 20px auto 30px auto; 
+            max-width: 380px; 
+            perspective: 1000px;
+            height: auto;
+            content-visibility: auto;
+        }
+        
+        .polaroid-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: left;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .quadro-polaroid.flipped .polaroid-inner {
+            transform: rotateY(180deg);
+        }
+
+        .polaroid-frente, .polaroid-verso {
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background: #ffffff;
+            padding: 14px 14px 22px 14px;
+            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .polaroid-verso {
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 350px;
+            background: #fffcfc;
+            border: 2px dashed var(--border-color);
+        }
+
+        .polaroid-verso-titulo {
+            font-family: var(--font-title);
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .polaroid-verso-info {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .polaroid-imagem { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #fafafa; display: block; border-radius: 4px; cursor: pointer; }
         .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
         .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
@@ -409,6 +468,45 @@
         .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
         .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
         .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
+
+        /* Estilos do Lightbox (Zoom e abertura da Imagem Completa) */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 200000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .lightbox-modal.ativo { display: flex; }
+        .lightbox-img-wrapper {
+            max-width: 95%;
+            max-height: 85vh;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 4px;
+            transition: transform 0.2s;
+            cursor: zoom-in;
+        }
+        .lightbox-img:active { cursor: grabbing; }
+        .lightbox-fechar {
+            position: absolute;
+            top: 20px; right: 25px;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
 
         .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
@@ -483,6 +581,14 @@
             <input type="text" id="login-nome" class="input-custom" placeholder="Seu nome (Fabricio ou Maria)">
             <input type="password" id="login-senha" class="input-custom" placeholder="Senha secreta">
             <button class="btn-postar" id="btn-login-click">Entrar no Nosso Canto</button>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal para o Zoom das Fotos da Galeria -->
+    <div id="lightbox-galeria" class="lightbox-modal">
+        <span class="lightbox-fechar" onclick="fecharLightbox()">&times;</span>
+        <div class="lightbox-img-wrapper">
+            <img id="lightbox-img-source" class="lightbox-img" src="" alt="Zoom" onclick="alternarZoomInterno(event)">
         </div>
     </div>
 
@@ -1100,7 +1206,37 @@
             renderizarHistoricoDOM();
         });
 
-        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
+        // Funções para manipular o Lightbox de Imagens da Galeria
+        window.abrirLightbox = function(src) {
+            const modal = document.getElementById('lightbox-galeria');
+            const img = document.getElementById('lightbox-img-source');
+            img.src = src;
+            img.style.transform = 'scale(1)'; // Reseta o zoom ao abrir
+            modal.classList.add('ativo');
+        };
+
+        window.fecharLightbox = function() {
+            document.getElementById('lightbox-galeria').classList.remove('ativo');
+        };
+
+        window.alternarZoomInterno = function(event) {
+            const img = event.target;
+            if (img.style.transform === 'scale(2)') {
+                img.style.transform = 'scale(1)';
+                img.style.cursor = 'zoom-in';
+            } else {
+                img.style.transform = 'scale(2)';
+                img.style.cursor = 'zoom-out';
+            }
+        };
+
+        window.virarPolaroidCard = function(idCard) {
+            const card = document.getElementById(idCard);
+            if (card) card.classList.toggle('flipped');
+        };
+
+        // Escuta as atualizações das postagens
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc")); // Ordem cronológica por padrão de carregamento global
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
@@ -1109,163 +1245,72 @@
             document.getElementById('novos-cards-playlist').innerHTML = '';
             
             todosHistoricos = [];
-            let numDela = 0; let numMeu = 0;
+            
+            // Arrays auxiliares para organizar separadamente e manter a lógica de numeração correta
+            let itensDela = [];
+            let itensMeu = [];
+            let itensGaleria = [];
+            let itensTextos = [];
+            let itensPlaylist = [];
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
+                if (post.destino === 'historico') { todosHistoricos.push(post); }
+                else if (post.destino === 'dela') { itensDela.push(post); }
+                else if (post.destino === 'meu') { itensMeu.push(post); }
+                else if (post.destino === 'galeria') { itensGaleria.push(post); }
+                else if (post.destino === 'texto') { itensTextos.push(post); }
+                else if (post.destino === 'playlist') { itensPlaylist.push(post); }
+            });
+
+            // Reverte o histórico para que os mais recentes apareçam no topo
+            todosHistoricos.reverse();
+
+            // Renderização da Playlist (Mapeando curtidas)
+            const containerPlaylist = document.getElementById('novos-cards-playlist');
+            itensPlaylist.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoMusica = document.createElement('div');
+                let classesCartao = 'card-musica';
+                if (post.destaque) { classesCartao += ' destaque'; }
 
-                if (post.destino === 'historico') {
-                    todosHistoricos.push(post);
-                    return;
-                }
-
-                if (post.destino === 'playlist') {
-                    const containerPlaylist = document.getElementById('novos-cards-playlist');
-                    const blocoMusica = document.createElement('div');
-                    let classesCartao = 'card-musica';
-                    if (post.destaque) { classesCartao += ' destaque'; }
-
-                    const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
-                        <div class="menu-acoes-container">
-                            <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                            <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                                <button onclick="prepararEdicaoPlaylist('${post.id}', '${post.titulo}', '${post.link}', '${post.imagem}', ${post.destaque})">Editar ✏️</button>
-                                <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                            </div>
+                const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick="prepararEdicaoPlaylist('${post.id}', '${post.titulo}', '${post.link}', '${post.imagem}', ${post.destaque})">Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
-                    ` : '';
+                    </div>
+                ` : '';
 
-                    blocoMusica.className = classesCartao;
-                    blocoMusica.innerHTML = `
-                        ${menuTresPontosPlaylist}
-                        <div class="musica-layout">
-                            <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
-                            <div class="musica-info">
-                                <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
-                                <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
-                                <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
-                            </div>
+                blocoMusica.className = classesCartao;
+                blocoMusica.innerHTML = `
+                    ${menuTresPontosPlaylist}
+                    <div class="musica-layout">
+                        <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
+                        <div class="musica-info">
+                            <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
+                            <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
+                            <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
                         </div>
-                        <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                            <span class="contagem-likes">${curtidasArray.length} amaram</span>
-                        </div>
-                    `;
-                    if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
-                    return;
-                }
+                    </div>
+                    <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
+                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                        <span class="contagem-likes">${curtidasArray.length} amaram</span>
+                    </div>
+                `;
+                if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
+            });
 
-                if (post.destino === 'galeria') {
-                    const containerGaleria = document.getElementById('novos-cards-galeria');
-                    const blocoFoto = document.createElement('div');
-                    blocoFoto.className = 'quadro-polaroid';
-
-                    const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
-                        <div class="menu-acoes-container">
-                            <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                            <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                                <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
-                                <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                            </div>
-                        </div>
-                    ` : '';
-
-                    blocoFoto.innerHTML = `
-                        ${menuTresPontosHtml}
-                        <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px;">
-                            <span>🗓️ ${post.data}</span> <span class="autor-tag">Por: ${post.autor}</span>
-                        </div>
-                        <img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onerror="this.src='https://placehold.co/400x400?text=Link+de+Imagem+Invalido'">
-                        <div class="polaroid-legenda-box">
-                            ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
-                            ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
-                        </div>
-                        <div class="barra-reacoes-polaroid">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                            <span class="contagem-likes">${curtidasArray.length} curtidas</span>
-                        </div>
-                        <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                            <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
-                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
-                            </div>
-                            <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
-                        </div>
-                    `;
-                    containerGaleria.appendChild(blocoFoto);
-                    
-                    setTimeout(() => {
-                        const inp = document.getElementById(`input-${post.id}`);
-                        if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                    }, 500);
-                    return;
-                }
-
-                if (post.destino === 'texto') {
-                    const containerTextos = document.getElementById('novos-cards-textos');
-                    const blocoTexto = document.createElement('div');
-                    blocoTexto.className = 'card-declaracao-texto';
-
-                    const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
-                        <div class="menu-acoes-container">
-                            <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                            <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                                <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
-                                <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                            </div>
-                        </div>
-                    ` : '';
-
-                    blocoTexto.innerHTML = `
-                        ${menuTresPontosTextHtml}
-                        <div class="data-card" style="align-items: flex-start; text-align: left;">
-                            <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
-                            <span class="autor-tag">Escrito por: ${post.autor}</span>
-                        </div>
-                        ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
-                        
-                        <div class="declaracao-wrapper">
-                            <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
-                        </div>
-                        <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Lower / expand 📖</button>
-
-                        <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                            <span class="contagem-likes">${curtidasArray.length} curtidas</span>
-                        </div>
-                        <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                            <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
-                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
-                            </div>
-                            <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
-                        </div>
-                    `;
-                    containerTextos.insertBefore(blocoTexto, containerTextos.firstChild);
-                    
-                    setTimeout(() => {
-                        const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
-                        const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
-                        if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
-                            if(botaoLerMais) botaoLerMais.style.display = 'none';
-                            if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
-                        }
-                    }, 100);
-
-                    setTimeout(() => {
-                        const inp = document.getElementById(`input-${post.id}`);
-                        if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                    }, 500);
-                    return;
-                }
-
-                const container = document.getElementById(`novos-cards-${post.destino}`);
-                if (!container) return;
-
-                if (post.destino === 'dela') { numDela++; post.numero = numDela; } else { numMeu++; post.numero = numMeu; }
-
+            // Renderização das Apresentações (Dela e Meu) - Corrigindo a ordem visual vs numeração cronológica progressiva
+            // O loop roda do mais antigo para o mais novo, a numeração segue de 1 em diante, mas fazemos o 'prepend' para que o mais recente fique no topo da tela.
+            
+            const containerDela = document.getElementById('novos-cards-dela');
+            itensDela.forEach((post, index) => {
+                const numeroProgressivo = index + 1; // Mais antigo vira o 1
+                const curtidasArray = post.curtidas || [];
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
                         <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
@@ -1279,7 +1324,7 @@
                     <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
                     <a href="${post.link}" target="_blank" class="pdf-link">
                         <div class="pdf-bloco">
-                            <div class="numero-card">${post.numero}</div>
+                            <div class="numero-card">${numeroProgressivo}</div>
                             <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
                             <div class="contador-titulo">${post.titulo}</div>
                             <div class="contador-tempo">Clique para abrir 📂</div>
@@ -1295,8 +1340,171 @@
                     </div>
                     ${controleModificacao}
                 `;
-                container.insertBefore(bloco, container.firstChild);
+                containerDela.insertBefore(bloco, containerDela.firstChild);
                 
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
+            });
+
+            const containerMeu = document.getElementById('novos-cards-meu');
+            itensMeu.forEach((post, index) => {
+                const numeroProgressivo = index + 1;
+                const curtidasArray = post.curtidas || [];
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                    </div>
+                ` : '';
+
+                const bloco = document.createElement('div');
+                bloco.className = 'card-separador-interno';
+                bloco.innerHTML = `
+                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <a href="${post.link}" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">${numeroProgressivo}</div>
+                            <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                            <div class="contador-titulo">${post.titulo}</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">${post.subtitulo}</div>
+                        </div>
+                    </a>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
+                        </div>
+                        <div id="lista-${post.id}" class="lista-comentarios"></div>
+                    </div>
+                    ${controleModificacao}
+                `;
+                containerMeu.insertBefore(bloco, containerMeu.firstChild);
+                
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
+            });
+
+            // Renderização da Galeria de Fotos (Invertido para o mais novo aparecer em cima)
+            const containerGaleria = document.getElementById('novos-cards-galeria');
+            itensGaleria.reverse().forEach((post) => {
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoFoto = document.createElement('div');
+                blocoFoto.className = 'quadro-polaroid';
+                blocoFoto.id = `polaroid-${post.id}`;
+
+                const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
+                    </div>
+                ` : '';
+
+                blocoFoto.innerHTML = `
+                    <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
+                        <!-- Parte da frente da foto polaroid -->
+                        <div class="polaroid-frente">
+                            ${menuTresPontosHtml}
+                            <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px;">
+                                <span>✨ Dê 2 cliques para virar</span>
+                            </div>
+                            <img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="abrirLightbox('${post.imagem}')" onerror="this.src='https://placehold.co/400x400?text=Link+de+Imagem+Invalido'">
+                            <div class="polaroid-legenda-box">
+                                ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
+                                ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
+                            </div>
+                            <div class="barra-reacoes-polaroid">
+                                <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                                <span class="contagem-likes">${curtidasArray.length} curtidas</span>
+                            </div>
+                            <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
+                                <div class="form-comentario">
+                                    <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
+                                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
+                                </div>
+                                <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Parte de trás da foto polaroid contendo os detalhes -->
+                        <div class="polaroid-verso">
+                            <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
+                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
+                            <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
+                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para ver a foto de novo ↩️</div>
+                        </div>
+                    </div>
+                `;
+                containerGaleria.appendChild(blocoFoto);
+                
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
+            });
+
+            // Renderização de Cartas & Declarações
+            const containerTextos = document.getElementById('novos-cards-textos');
+            itensTextos.forEach((post) => {
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoTexto = document.createElement('div');
+                blocoTexto.className = 'card-declaracao-texto';
+
+                const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
+                    </div>
+                ` : '';
+
+                blocoTexto.innerHTML = `
+                    ${menuTresPontosTextHtml}
+                    <div class="data-card" style="align-items: flex-start; text-align: left;">
+                        <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
+                        <span class="autor-tag">Escrito por: ${post.autor}</span>
+                    </div>
+                    ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
+                    
+                    <div class="declaracao-wrapper">
+                        <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
+                    </div>
+                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Lower / expand 📖</button>
+
+                    <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
+                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                        <span class="contagem-likes">${curtidasArray.length} curtidas</span>
+                    </div>
+                    <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
+                        </div>
+                        <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
+                    </div>
+                `;
+                containerTextos.insertBefore(blocoTexto, containerTextos.firstChild);
+                
+                setTimeout(() => {
+                    const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
+                    const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
+                    if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
+                        if(botaoLerMais) botaoLerMais.style.display = 'none';
+                        if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
+                    }
+                }, 100);
+
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
                     if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
