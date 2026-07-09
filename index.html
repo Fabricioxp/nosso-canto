@@ -240,7 +240,7 @@
             letter-spacing: 1px;
         }
 
-        #bloco-dias-amando Bronze { background-color: #ffebeb; }
+        #bloco-dias-amando { background-color: #ffebeb; }
         #bloco-playlist { background-color: #fff5f0; } 
         #bloco-coisinhas-dela { background-color: #fff0f5; }
         #bloco-coisas-minhas { background-color: #e6f2ff; }
@@ -701,11 +701,10 @@
             <section class="bloco-separado" id="bloco-historico-acessos">
                 <div class="titulo-secao">📜 Histórico de Acessos</div>
                 
-                <!-- Barra de Medição de Espaço Fofa -->
                 <div class="armazenamento-container">
                     <div class="armazenamento-info">
                         <span id="armazenamento-texto-usado">Usado: 0 KB</span>
-                        <span id="armazenamento-texto-disponivel">Disponível: 50 MB</span>
+                        <span id="armazenamento-texto-disponivel">Total: 1 GB</span>
                     </div>
                     <div class="armazenamento-barra-bg">
                         <div id="armazenamento-barra-interna" class="armazenamento-barra-progresso"></div>
@@ -873,41 +872,38 @@
             }
         }
 
-        // Função interna para medir e atualizar a barra de progresso
+        // --- ATUALIZADO: Medição Fiel e Correta baseada em 1GB Real ---
         function calcularArmazenamento(snapshotPosts, snapshotComentarios) {
             let totalBytes = 0;
-            const limiteMaximoBytes = 50 * 1024 * 1024; // Simulação fofa de 50 MB
+            const limiteMaximoBytes = 1024 * 1024 * 1024; // 1 Gigabyte real em Bytes
 
-            // Soma tamanho de todas as postagens
-            snapshotPosts.forEach((docSnap) => {
-                const dados = docSnap.data();
-                const stringfied = JSON.stringify(dados);
-                totalBytes += stringfied.length; // Cada caractere no JS conta aproximadamente 1 byte
-            });
+            if (snapshotPosts && typeof snapshotPosts.forEach === 'function') {
+                snapshotPosts.forEach((docSnap) => {
+                    totalBytes += JSON.stringify(docSnap.data()).length;
+                });
+            }
 
-            // Soma tamanho de todos os comentários
-            snapshotComentarios.forEach((docSnap) => {
-                const dados = docSnap.data();
-                const stringfied = JSON.stringify(dados);
-                totalBytes += stringfied.length;
-            });
+            if (snapshotComentarios && typeof snapshotComentarios.forEach === 'function') {
+                snapshotComentarios.forEach((docSnap) => {
+                    totalBytes += JSON.stringify(docSnap.data()).length;
+                });
+            }
 
-            // Converte e formata o texto de exibição
             let textoFormatado = "";
             if (totalBytes < 1024) {
                 textoFormatado = `${totalBytes} Bytes`;
             } else if (totalBytes < 1024 * 1024) {
                 textoFormatado = `${(totalBytes / 1024).toFixed(2)} KB`;
-            } else {
+            } else if (totalBytes < 1024 * 1024 * 1024) {
                 textoFormatado = `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`;
+            } else {
+                textoFormatado = `${(totalBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
             }
 
-            // Calcula porcentagem ocupada
             let porcentagem = (totalBytes / limiteMaximoBytes) * 100;
             if (porcentagem > 100) porcentagem = 100;
-            if (porcentagem < 0.5 && totalBytes > 0) porcentagem = 0.5; // Garante uma pontinha visível se houver dados
+            if (porcentagem < 0.2 && totalBytes > 0) porcentagem = 0.2; 
 
-            // Atualiza o DOM da barra
             const textoUsado = document.getElementById("armazenamento-texto-usado");
             const barraInterna = document.getElementById("armazenamento-barra-interna");
             
@@ -1235,6 +1231,7 @@
             }
         };
 
+        // --- CORREÇÃO DO BUG DAS CURTIDAS (Evita recriar a DOM inteira e descer a tela) ---
         window.alternarCurtidaItem = async function(id) {
             try {
                 const docRef = doc(db, "posts", id);
@@ -1245,12 +1242,24 @@
                     if (!Array.isArray(listaLikes)) listaLikes = [];
                     
                     const index = listaLikes.indexOf(usuarioLogado);
+                    const btn = document.querySelector(`#polaroid-${id} .btn-coracao-minimalista, #opcoes-${id} ~ .barra-reacoes-polaroid .btn-coracao-minimalista, .card-musica .btn-coracao-minimalista`);
+                    const txtContagem = document.querySelector(`#polaroid-${id} .contagem-likes, #opcoes-${id} ~ .barra-reacoes-polaroid .contagem-likes, .card-musica .contagem-likes`);
+
                     if (index > -1) { 
                         listaLikes.splice(index, 1); 
+                        if (btn) btn.innerText = '🤍';
                     } else { 
                         listaLikes.push(usuarioLogado); 
+                        if (btn) btn.innerText = '❤️';
                         if (typeof celebrarAmor === "function") celebrarAmor(); 
                     }
+
+                    if (txtContagem) {
+                        const sufixo = docSnap.data().destino === 'galeria' || docSnap.data().destino === 'texto' ? 'curtidas' : 'amaram';
+                        txtContagem.innerText = `${listaLikes.length} ${sufixo}`;
+                    }
+
+                    // Grava no Firebase sem forçar re-renderização completa da lista
                     await updateDoc(docRef, { curtidas: listaLikes });
                 }
             } catch (error) { console.error(error); }
@@ -1366,9 +1375,8 @@
             }
         };
 
-        // Cache local para fazer a medição cruzada em tempo real
-        let ultimoSnapshotPosts = [];
-        let ultimoSnapshotComentarios = [];
+        let ultimoSnapshotPosts = null;
+        let ultimoSnapshotComentarios = null;
 
         // Escuta atualizações do banco — ORDENAÇÃO CRONOLÓGICA (Mais antigo em cima)
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
@@ -1376,12 +1384,16 @@
             ultimoSnapshotPosts = snapshot;
             calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
 
-            document.getElementById('novos-cards-dela').innerHTML = '';
-            document.getElementById('novos-cards-meu').innerHTML = '';
-            document.getElementById('novos-cards-galeria').innerHTML = '';
-            document.getElementById('novos-cards-textos').innerHTML = '';
-            document.getElementById('novos-cards-playlist').innerHTML = '';
-            
+            // Mapeamento dos containers atuais para preservar itens existentes
+            const containers = {
+                dela: document.getElementById('novos-cards-dela'),
+                meu: document.getElementById('novos-cards-meu'),
+                galeria: document.getElementById('novos-cards-galeria'),
+                texto: document.getElementById('novos-cards-textos'),
+                playlist: document.getElementById('novos-cards-playlist')
+            };
+
+            Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
             todosHistoricos = [];
             
             let itensDela = [];
@@ -1403,7 +1415,6 @@
             todosHistoricos.reverse();
 
             // Playlist
-            const containerPlaylist = document.getElementById('novos-cards-playlist');
             itensPlaylist.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
@@ -1437,11 +1448,10 @@
                         <span class="contagem-likes">${curtidasArray.length} amaram</span>
                     </div>
                 `;
-                if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
+                if (post.destaque) { containers.playlist.prepend(blocoMusica); } else { containers.playlist.appendChild(blocoMusica); }
             });
 
             // Apresentações Coisinhas Dela
-            const containerDela = document.getElementById('novos-cards-dela');
             itensDela.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
@@ -1473,7 +1483,7 @@
                     </div>
                     ${controleModificacao}
                 `;
-                containerDela.appendChild(bloco);
+                containers.dela.appendChild(bloco);
                 
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
@@ -1482,7 +1492,6 @@
             });
 
             // Apresentações Coisas Minhas
-            const containerMeu = document.getElementById('novos-cards-meu');
             itensMeu.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
@@ -1514,7 +1523,7 @@
                     </div>
                     ${controleModificacao}
                 `;
-                containerMeu.appendChild(bloco);
+                containers.meu.appendChild(bloco);
                 
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
@@ -1523,7 +1532,6 @@
             });
 
             // Varal de Fotos e Vídeos da Galeria
-            const containerGaleria = document.getElementById('novos-cards-galeria');
             itensGaleria.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
@@ -1591,7 +1599,7 @@
                         </div>
                     </div>
                 `;
-                containerGaleria.appendChild(blocoFoto);
+                containers.galeria.appendChild(blocoFoto);
                 
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
@@ -1600,7 +1608,6 @@
             });
 
             // Cartas & Declarações
-            const containerTextos = document.getElementById('novos-cards-textos');
             itensTextos.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
@@ -1642,7 +1649,7 @@
                         <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                     </div>
                 `;
-                containerTextos.appendChild(blocoTexto);
+                containers.texto.appendChild(blocoTexto);
                 
                 setTimeout(() => {
                     const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
@@ -1660,13 +1667,13 @@
             });
 
             renderizarHistoricoDOM();
+
+            // Forçar re-injeção dos comentários sempre que a estrutura base de posts for alterada
+            if(ultimoSnapshotComentarios) renderizarComentariosDOM(ultimoSnapshotComentarios);
         });
 
-        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
-        onSnapshot(qComentariosCorreto, (snapshot) => {
-            ultimoSnapshotComentarios = snapshot;
-            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
-
+        // --- ATUALIZADO: Renderizador isolado de comentários para impedir o sumiço dos cards das mídias ---
+        function renderizarComentariosDOM(snapshot) {
             document.querySelectorAll('.lista-comentarios').forEach(l => {
                 if(l.id !== 'lista-historico-container') l.innerHTML = '';
             });
@@ -1676,16 +1683,27 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
+                // Evitar duplicações verificando se o ID do comentário específico já existe lá dentro
+                if (containerLista.querySelector(`[data-comment-id="${com.id}"]`)) return;
+
                 const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
 
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
+                item.setAttribute('data-comment-id', com.id);
                 item.innerHTML = `
                     <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
                     <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
                 `;
                 containerLista.appendChild(item);
             });
+        }
+
+        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentariosCorreto, (snapshot) => {
+            ultimoSnapshotComentarios = snapshot;
+            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
+            renderizarComentariosDOM(snapshot);
         });
 
         verificarSessao();
@@ -1713,7 +1731,7 @@
             const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
             const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
             const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
-            element.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
+            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
         const canvas = document.getElementById('canvas-hearts');
