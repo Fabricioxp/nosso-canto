@@ -167,6 +167,12 @@
             margin-bottom: 8px;
         }
 
+        .acoes-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
         .musica-link-btn {
             display: inline-flex;
             align-items: center;
@@ -183,6 +189,28 @@
 
         .musica-link-btn:hover {
             background: var(--primary);
+        }
+
+        .btn-acao-adm {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-acao-adm:hover {
+            background: #fff0ee;
+        }
+
+        .btn-acao-adm.excluir:hover {
+            background: #ffebeb;
+            color: #c94a4a;
+            border-color: #ffcccc;
         }
 
         .barra-reacoes-polaroid {
@@ -237,7 +265,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -253,6 +281,7 @@
         
         let usuarioLogado = sessionStorage.getItem('user_canto') || "Alguém";
 
+        // Função para Curtir/Descurtir
         window.alternarCurtidaItem = async function(id) {
             try {
                 const docRef = doc(db, "posts", id);
@@ -275,7 +304,52 @@
             } catch (error) { console.error("Erro ao curtir:", error); }
         };
 
-        // Usamos a mesma query base do index.html para evitar erros de índice composto no Firebase
+        // Função para Excluir Música
+        window.excluirMusica = async function(id) {
+            if (confirm("Tem certeza que deseja apagar essa música da nossa playlist? 🥺")) {
+                try {
+                    await deleteDoc(doc(db, "posts", id));
+                    alert("Música removida com sucesso!");
+                } catch (error) {
+                    console.error("Erro ao excluir:", error);
+                    alert("Ops! Ocorreu um erro ao excluir.");
+                }
+            }
+        };
+
+        // Função para Editar Música
+        window.editarMusica = async function(id) {
+            try {
+                const docRef = doc(db, "posts", id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const dadosAtuais = docSnap.data();
+
+                    const novoTitulo = prompt("Editar nome da música / artista:", dadosAtuais.titulo);
+                    if (novoTitulo === null) return; // cancelou
+
+                    const novoLink = prompt("Editar link da música (YouTube/Spotify):", dadosAtuais.link);
+                    if (novoLink === null) return;
+
+                    const novaImagem = prompt("Editar URL da imagem de capa (opcional):", dadosAtuais.imagem);
+                    if (novaImagem === null) return;
+
+                    await updateDoc(docRef, {
+                        titulo: novoTitulo,
+                        link: novoLink,
+                        imagem: novaImagem || dadosAtuais.imagem
+                    });
+
+                    alert("Música atualizada com sucesso! ✨");
+                }
+            } catch (error) {
+                console.error("Erro ao editar:", error);
+                alert("Não foi possível editar a música.");
+            }
+        };
+
+        // Busca e escuta as atualizações em tempo real
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         
         onSnapshot(qCards, (snapshot) => {
@@ -288,7 +362,6 @@
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
                 
-                // Filtramos apenas o que pertence à playlist
                 if (post.destino === 'playlist') {
                     temMusica = true;
                     const curtidasArray = post.curtidas || [];
@@ -305,7 +378,11 @@
                             <div class="musica-info">
                                 <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
                                 <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
-                                <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
+                                <div class="acoes-container">
+                                    <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir</a>
+                                    <button class="btn-acao-adm" onclick="editarMusica('${post.id}')">✏️ Editar</button>
+                                    <button class="btn-acao-adm excluir" onclick="excluirMusica('${post.id}')">🗑️ Excluir</button>
+                                </div>
                             </div>
                         </div>
                         <div class="barra-reacoes-polaroid">
@@ -314,7 +391,6 @@
                         </div>
                     `;
 
-                    // Mantém a animação/estilo e joga os destaques para o topo
                     if (post.destaque) { 
                         container.prepend(blocoMusica); 
                     } else { 
