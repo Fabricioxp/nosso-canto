@@ -241,10 +241,9 @@
     </div>
 
     <script type="module">
-        // TRAVA DE SEGURANÇA: Bloqueia acesso direto por link se não estiver logado
+        // TRAVA INSTANTÂNEA: Redireciona na hora sem alerta prévio para evitar brechas visuais
         let usuarioLogado = sessionStorage.getItem('user_canto');
         if (!usuarioLogado) {
-            alert("⚠️ Acesso negado! Faça o login na página principal primeiro. ❤️");
             window.location.href = "index.html";
         }
 
@@ -318,7 +317,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, link, imagem, destaque });
-                    alert('Música atualizada! 🎶');
+                    alert('Música updated! 🎶');
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino: 'playlist', titulo, link, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
