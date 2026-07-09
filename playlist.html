@@ -241,6 +241,13 @@
     </div>
 
     <script type="module">
+        // TRAVA DE SEGURANÇA: Bloqueia acesso direto por link se não estiver logado
+        let usuarioLogado = sessionStorage.getItem('user_canto');
+        if (!usuarioLogado) {
+            alert("⚠️ Acesso negado! Faça o login na página principal primeiro. ❤️");
+            window.location.href = "index.html";
+        }
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -256,7 +263,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let usuarioLogado = sessionStorage.getItem('user_canto') || 'Anônimo';
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
         function verificarPinSeguranca() {
@@ -374,7 +380,6 @@
                 if (post.destino === 'playlist') { itensPlaylist.push(post); }
             });
 
-            // Mostra todas as músicas sem usar slice(0, 5)
             itensPlaylist.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
