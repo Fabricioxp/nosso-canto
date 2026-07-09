@@ -240,7 +240,7 @@
             letter-spacing: 1px;
         }
 
-        #bloco-dias-amando { background-color: #ffebeb; }
+        #bloco-dias-amando Bronze { background-color: #ffebeb; }
         #bloco-playlist { background-color: #fff5f0; } 
         #bloco-coisinhas-dela { background-color: #fff0f5; }
         #bloco-coisas-minhas { background-color: #e6f2ff; }
@@ -595,6 +595,39 @@
         .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; white-space: nowrap; }
         .musica-link-btn:hover { background: var(--primary); }
 
+        /* Estilos da nova barra de progresso de espaço */
+        .armazenamento-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(140, 98, 93, 0.05);
+        }
+        .armazenamento-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        .armazenamento-barra-bg {
+            width: 100%;
+            height: 12px;
+            background-color: #f2f2f2;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(230, 179, 168, 0.3);
+        }
+        .armazenamento-barra-progresso {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 6px;
+            transition: width 0.5s ease-out;
+        }
+
         @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
     </style>
 </head>
@@ -667,6 +700,18 @@
 
             <section class="bloco-separado" id="bloco-historico-acessos">
                 <div class="titulo-secao">📜 Histórico de Acessos</div>
+                
+                <!-- Barra de Medição de Espaço Fofa -->
+                <div class="armazenamento-container">
+                    <div class="armazenamento-info">
+                        <span id="armazenamento-texto-usado">Usado: 0 KB</span>
+                        <span id="armazenamento-texto-disponivel">Disponível: 50 MB</span>
+                    </div>
+                    <div class="armazenamento-barra-bg">
+                        <div id="armazenamento-barra-interna" class="armazenamento-barra-progresso"></div>
+                    </div>
+                </div>
+
                 <button id="btn-excluir-todo-historico" class="btn-excluir-tudo">⚠️ Excluir Todo Histórico</button>
                 <div id="lista-historico-container" class="lista-comentarios" style="max-height: none; overflow-y: visible;"></div>
                 <button id="btn-ver-mais-historico" class="btn-ver-mais-hist" style="display: none;">Ver mais históricos 🔽</button>
@@ -826,6 +871,48 @@
                 document.getElementById('conteudo-site').style.display = 'none';
                 document.getElementById('bloco-historico-acessos').style.display = 'none';
             }
+        }
+
+        // Função interna para medir e atualizar a barra de progresso
+        function calcularArmazenamento(snapshotPosts, snapshotComentarios) {
+            let totalBytes = 0;
+            const limiteMaximoBytes = 50 * 1024 * 1024; // Simulação fofa de 50 MB
+
+            // Soma tamanho de todas as postagens
+            snapshotPosts.forEach((docSnap) => {
+                const dados = docSnap.data();
+                const stringfied = JSON.stringify(dados);
+                totalBytes += stringfied.length; // Cada caractere no JS conta aproximadamente 1 byte
+            });
+
+            // Soma tamanho de todos os comentários
+            snapshotComentarios.forEach((docSnap) => {
+                const dados = docSnap.data();
+                const stringfied = JSON.stringify(dados);
+                totalBytes += stringfied.length;
+            });
+
+            // Converte e formata o texto de exibição
+            let textoFormatado = "";
+            if (totalBytes < 1024) {
+                textoFormatado = `${totalBytes} Bytes`;
+            } else if (totalBytes < 1024 * 1024) {
+                textoFormatado = `${(totalBytes / 1024).toFixed(2)} KB`;
+            } else {
+                textoFormatado = `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`;
+            }
+
+            // Calcula porcentagem ocupada
+            let porcentagem = (totalBytes / limiteMaximoBytes) * 100;
+            if (porcentagem > 100) porcentagem = 100;
+            if (porcentagem < 0.5 && totalBytes > 0) porcentagem = 0.5; // Garante uma pontinha visível se houver dados
+
+            // Atualiza o DOM da barra
+            const textoUsado = document.getElementById("armazenamento-texto-usado");
+            const barraInterna = document.getElementById("armazenamento-barra-interna");
+            
+            if (textoUsado) textoUsado.innerText = `Usado: ${textoFormatado}`;
+            if (barraInterna) barraInterna.style.width = `${porcentagem}%`;
         }
 
         document.getElementById('btn-login-click').addEventListener('click', async function() {
@@ -1231,7 +1318,6 @@
         });
 
         window.abrirLightbox = function(src) {
-            // Se for vídeo, não abre no Lightbox padrão de imagem estática
             if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) return;
             const modal = document.getElementById('lightbox-galeria');
             const img = document.getElementById('lightbox-img-source');
@@ -1265,7 +1351,6 @@
             event.stopPropagation();
             event.preventDefault(); 
             if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) {
-                // Se for vídeo, dois cliques ou um clique simples apenas viram a polaroid se necessário, evitando quebrar a ação
                 window.virarPolaroidCard(cardId);
                 return;
             }
@@ -1281,9 +1366,16 @@
             }
         };
 
+        // Cache local para fazer a medição cruzada em tempo real
+        let ultimoSnapshotPosts = [];
+        let ultimoSnapshotComentarios = [];
+
         // Escuta atualizações do banco — ORDENAÇÃO CRONOLÓGICA (Mais antigo em cima)
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
+            ultimoSnapshotPosts = snapshot;
+            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
+
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
             document.getElementById('novos-cards-galeria').innerHTML = '';
@@ -1449,7 +1541,6 @@
                     </div>
                 ` : '';
 
-                // Lógica de Renderização de Mídia (Vídeo vs Imagem)
                 let midiaHtml = '';
                 const idYT = extrairIDYouTube(post.imagem);
 
@@ -1573,6 +1664,9 @@
 
         const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentariosCorreto, (snapshot) => {
+            ultimoSnapshotComentarios = snapshot;
+            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
+
             document.querySelectorAll('.lista-comentarios').forEach(l => {
                 if(l.id !== 'lista-historico-container') l.innerHTML = '';
             });
@@ -1619,7 +1713,7 @@
             const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
             const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
             const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
-            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
+            element.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
 
         const canvas = document.getElementById('canvas-hearts');
