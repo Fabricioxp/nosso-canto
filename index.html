@@ -400,7 +400,7 @@
         .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
         .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        /* Estilos atualizados para o efeito Flip 3D da Polaroid */
+        /* Estilos Corrigidos da Polaroid 3D (Sem saltos de tamanho) */
         .quadro-polaroid { 
             background: transparent; 
             margin: 20px auto 30px auto; 
@@ -423,9 +423,10 @@
             transform: rotateY(180deg);
         }
 
-        .polaroid-frente, .polaroid-verso {
+        .polaroid-frente {
+            position: relative;
             width: 100%;
-            height: 100%;
+            height: auto;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             background: #ffffff;
@@ -433,18 +434,27 @@
             box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
             border-radius: 4px;
             border: 1px solid rgba(0,0,0,0.03);
+            z-index: 2;
         }
 
         .polaroid-verso {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
             transform: rotateY(180deg);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            min-height: 350px;
             background: #fffcfc;
             border: 2px dashed var(--border-color);
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            z-index: 1;
+            overflow: hidden;
         }
 
         .polaroid-verso-titulo {
@@ -469,7 +479,7 @@
         .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
         .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
 
-        /* Estilos do Lightbox (Zoom e abertura da Imagem Completa) */
+        /* Estilos do Lightbox */
         .lightbox-modal {
             display: none;
             position: fixed;
@@ -584,7 +594,6 @@
         </div>
     </div>
 
-    <!-- Lightbox Modal para o Zoom das Fotos da Galeria -->
     <div id="lightbox-galeria" class="lightbox-modal">
         <span class="lightbox-fechar" onclick="fecharLightbox()">&times;</span>
         <div class="lightbox-img-wrapper">
@@ -1206,12 +1215,11 @@
             renderizarHistoricoDOM();
         });
 
-        // Funções para manipular o Lightbox de Imagens da Galeria
         window.abrirLightbox = function(src) {
             const modal = document.getElementById('lightbox-galeria');
             const img = document.getElementById('lightbox-img-source');
             img.src = src;
-            img.style.transform = 'scale(1)'; // Reseta o zoom ao abrir
+            img.style.transform = 'scale(1)'; 
             modal.classList.add('ativo');
         };
 
@@ -1235,8 +1243,24 @@
             if (card) card.classList.toggle('flipped');
         };
 
-        // Escuta as atualizações das postagens
-        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc")); // Ordem cronológica por padrão de carregamento global
+        /* Temporizador Inteligente: diferencia clique simples (Zoom) de clique duplo (Girar Card) na imagem */
+        let cliqueTimer = null;
+        window.lidarCliqueFoto = function(event, src, cardId) {
+            event.stopPropagation();
+            if (!cliqueTimer) {
+                cliqueTimer = setTimeout(() => {
+                    cliqueTimer = null;
+                    window.abrirLightbox(src);
+                }, 250); // Janela de espera para capturar o segundo clique
+            } else {
+                clearTimeout(cliqueTimer);
+                cliqueTimer = null;
+                window.virarPolaroidCard(cardId);
+            }
+        };
+
+        // Escuta atualizações do banco — ORDENAÇÃO CRONOLÓGICA (Mais antigo em cima)
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             document.getElementById('novos-cards-dela').innerHTML = '';
             document.getElementById('novos-cards-meu').innerHTML = '';
@@ -1246,7 +1270,6 @@
             
             todosHistoricos = [];
             
-            // Arrays auxiliares para organizar separadamente e manter a lógica de numeração correta
             let itensDela = [];
             let itensMeu = [];
             let itensGaleria = [];
@@ -1263,10 +1286,9 @@
                 else if (post.destino === 'playlist') { itensPlaylist.push(post); }
             });
 
-            // Reverte o histórico para que os mais recentes apareçam no topo
             todosHistoricos.reverse();
 
-            // Renderização da Playlist (Mapeando curtidas)
+            // Playlist (Música em destaque sempre fixada no topo da playlist)
             const containerPlaylist = document.getElementById('novos-cards-playlist');
             itensPlaylist.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
@@ -1304,13 +1326,10 @@
                 if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
             });
 
-            // Renderização das Apresentações (Dela e Meu) - Corrigindo a ordem visual vs numeração cronológica progressiva
-            // O loop roda do mais antigo para o mais novo, a numeração segue de 1 em diante, mas fazemos o 'prepend' para que o mais recente fique no topo da tela.
-            
+            // Apresentações Coisinhas Dela (Mais antigo no topo — appendChild)
             const containerDela = document.getElementById('novos-cards-dela');
             itensDela.forEach((post, index) => {
-                const numeroProgressivo = index + 1; // Mais antigo vira o 1
-                const curtidasArray = post.curtidas || [];
+                const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
                         <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
@@ -1340,7 +1359,7 @@
                     </div>
                     ${controleModificacao}
                 `;
-                containerDela.insertBefore(bloco, containerDela.firstChild);
+                containerDela.appendChild(bloco);
                 
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
@@ -1348,10 +1367,10 @@
                 }, 500);
             });
 
+            // Apresentações Coisas Minhas (Mais antigo no topo — appendChild)
             const containerMeu = document.getElementById('novos-cards-meu');
             itensMeu.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
-                const curtidasArray = post.curtidas || [];
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
                         <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
@@ -1381,7 +1400,7 @@
                     </div>
                     ${controleModificacao}
                 `;
-                containerMeu.insertBefore(bloco, containerMeu.firstChild);
+                containerMeu.appendChild(bloco);
                 
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
@@ -1389,9 +1408,9 @@
                 }, 500);
             });
 
-            // Renderização da Galeria de Fotos (Invertido para o mais novo aparecer em cima)
+            // Varal de Fotos da Galeria (Mais antigo no topo — appendChild)
             const containerGaleria = document.getElementById('novos-cards-galeria');
-            itensGaleria.reverse().forEach((post) => {
+            itensGaleria.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
                 const blocoFoto = document.createElement('div');
@@ -1410,13 +1429,12 @@
 
                 blocoFoto.innerHTML = `
                     <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
-                        <!-- Parte da frente da foto polaroid -->
                         <div class="polaroid-frente">
                             ${menuTresPontosHtml}
                             <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px;">
-                                <span>✨ Dê 2 cliques para virar</span>
+                                <span>✨ Dê 2 cliques na foto/quadro para girar</span>
                             </div>
-                            <img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="abrirLightbox('${post.imagem}')" onerror="this.src='https://placehold.co/400x400?text=Link+de+Imagem+Invalido'">
+                            <img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+de+Imagem+Invalido'">
                             <div class="polaroid-legenda-box">
                                 ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
                                 ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
@@ -1434,12 +1452,11 @@
                             </div>
                         </div>
                         
-                        <!-- Parte de trás da foto polaroid contendo os detalhes -->
                         <div class="polaroid-verso">
                             <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
                             <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
                             <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
-                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para ver a foto de novo ↩️</div>
+                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para voltar ↩️</div>
                         </div>
                     </div>
                 `;
@@ -1451,7 +1468,7 @@
                 }, 500);
             });
 
-            // Renderização de Cartas & Declarações
+            // Cartas & Declarações (Mais antigo no topo — appendChild)
             const containerTextos = document.getElementById('novos-cards-textos');
             itensTextos.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
@@ -1480,7 +1497,7 @@
                     <div class="declaracao-wrapper">
                         <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
                     </div>
-                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Lower / expand 📖</button>
+                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
 
                     <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
                         <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
@@ -1494,7 +1511,7 @@
                         <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                     </div>
                 `;
-                containerTextos.insertBefore(blocoTexto, containerTextos.firstChild);
+                containerTextos.appendChild(blocoTexto);
                 
                 setTimeout(() => {
                     const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
