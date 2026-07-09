@@ -393,14 +393,14 @@
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
 
-        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 20; }
+        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 25; }
         .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
-        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 25; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
         .opcoes-tres-pontos.visivel { display: block; }
         .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
         .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        /* Estilos Corrigidos da Polaroid 3D (Sem saltos de tamanho) */
+        /* Estilos da Polaroid 3D */
         .quadro-polaroid { 
             background: transparent; 
             margin: 20px auto 30px auto; 
@@ -470,8 +470,7 @@
             margin-bottom: 8px;
         }
 
-        /* CORREÇÃO AQUI: Bloqueia comportamento nativo do navegador na foto */
-        .polaroid-imagem { 
+        .polaroid-imagem, .polaroid-video { 
             width: 100%; 
             aspect-ratio: 1 / 1; 
             object-fit: cover; 
@@ -484,6 +483,7 @@
             -ms-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
+            border: none;
         }
 
         .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
@@ -721,19 +721,19 @@
             </section>
 
             <section class="painel-upload" id="painel-galeria-posts">
-                <div class="titulo-secao" id="titulo-painel-galeria" style="margin-bottom: 15px;">📸 Postar Novo Momento na Galeria</div>
+                <div class="titulo-secao" id="titulo-painel-galeria" style="margin-bottom: 15px;">📸 Postar Novo Momento na Galeria / Varal</div>
                 <input type="hidden" id="editando-galeria-id" value="">
                 
                 <input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
-                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição corta (Opcional)">
-                <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem">
+                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
+                <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem OU do Vídeo (MP4, YouTube, etc)">
                 <input type="date" id="galeria-data" class="input-custom">
                 
-                <button class="btn-postar" id="btn-salvar-galeria">Publicar na Galeria ✨</button>
+                <button class="btn-postar" id="btn-salvar-galeria">Publicar no Varal ✨</button>
             </section>
 
             <section class="bloco-separado" id="bloco-galeria-momentos">
-                <div class="titulo-secao">🖼️ Nosso Varal de Fotos</div>
+                <div class="titulo-secao">🖼️ Nosso Varal de Fotos & Vídeos</div>
                 <div id="novos-cards-galeria"></div>
             </section>
 
@@ -1060,14 +1060,14 @@
             const imagem = document.getElementById('galeria-imagem').value.trim();
             const dataInput = document.getElementById('galeria-data').value;
 
-            if (!imagem || !dataInput) { alert('A imagem e a data do momento são obrigatórias! 📸'); return; }
+            if (!imagem || !dataInput) { alert('O arquivo (imagem/vídeo) e a data do momento são obrigatórias! 📸'); return; }
             const [ano, mes, dia] = dataInput.split('-');
             const dataFormatada = `${dia}/${mes}/${ano}`;
 
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, data: dataFormatada });
-                    alert('Foto da galeria updated! 🖼️');
+                    alert('Varal atualizado! 🖼️');
                 } else {
                     await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
                     alert('Momento guardado no nosso varal! 💞');
@@ -1084,8 +1084,8 @@
             document.getElementById('galeria-imagem').value = imagem;
             const [dia, mes, ano] = data.split('/');
             document.getElementById('galeria-data').value = `${ano}-${mes}-${dia}`;
-            document.getElementById('titulo-painel-galeria').innerText = '✏️ Editar Momento da Galeria';
-            document.getElementById('btn-salvar-galeria').innerText = 'Atualizar Foto ❤️';
+            document.getElementById('titulo-painel-galeria').innerText = '✏️ Editar Momento do Varal';
+            document.getElementById('btn-salvar-galeria').innerText = 'Atualizar Mídia ❤️';
             document.getElementById('painel-galeria-posts').scrollIntoView({ behavior: 'smooth' });
         };
 
@@ -1231,6 +1231,8 @@
         });
 
         window.abrirLightbox = function(src) {
+            // Se for vídeo, não abre no Lightbox padrão de imagem estática
+            if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) return;
             const modal = document.getElementById('lightbox-galeria');
             const img = document.getElementById('lightbox-img-source');
             img.src = src;
@@ -1258,11 +1260,15 @@
             if (card) card.classList.toggle('flipped');
         };
 
-        /* CORREÇÃO AQUI: adicionado event.preventDefault() para cortar o reflexo azul e o menu nativo do celular */
         let cliqueTimer = null;
         window.lidarCliqueFoto = function(event, src, cardId) {
             event.stopPropagation();
             event.preventDefault(); 
+            if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) {
+                // Se for vídeo, dois cliques ou um clique simples apenas viram a polaroid se necessário, evitando quebrar a ação
+                window.virarPolaroidCard(cardId);
+                return;
+            }
             if (!cliqueTimer) {
                 cliqueTimer = setTimeout(() => {
                     cliqueTimer = null;
@@ -1304,7 +1310,7 @@
 
             todosHistoricos.reverse();
 
-            // Playlist (Música em destaque sempre fixada no topo da playlist)
+            // Playlist
             const containerPlaylist = document.getElementById('novos-cards-playlist');
             itensPlaylist.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
@@ -1342,7 +1348,7 @@
                 if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
             });
 
-            // Apresentações Coisinhas Dela (Mais antigo no topo — appendChild)
+            // Apresentações Coisinhas Dela
             const containerDela = document.getElementById('novos-cards-dela');
             itensDela.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
@@ -1383,7 +1389,7 @@
                 }, 500);
             });
 
-            // Apresentações Coisas Minhas (Mais antigo no topo — appendChild)
+            // Apresentações Coisas Minhas
             const containerMeu = document.getElementById('novos-cards-meu');
             itensMeu.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
@@ -1424,7 +1430,7 @@
                 }, 500);
             });
 
-            // Varal de Fotos da Galeria (Mais antigo no topo — appendChild)
+            // Varal de Fotos e Vídeos da Galeria
             const containerGaleria = document.getElementById('novos-cards-galeria');
             itensGaleria.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
@@ -1443,14 +1449,32 @@
                     </div>
                 ` : '';
 
+                // Lógica de Renderização de Mídia (Vídeo vs Imagem)
+                let midiaHtml = '';
+                const idYT = extrairIDYouTube(post.imagem);
+
+                if (idYT) {
+                    midiaHtml = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" allowfullscreen></iframe>`;
+                } else if (post.imagem.match(/\.(mp4|webm|ogg)/i)) {
+                    midiaHtml = `<video class="polaroid-video" src="${post.imagem}" controls preload="metadata"></video>`;
+                } else {
+                    midiaHtml = `<img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+Invalido'">`;
+                }
+
                 blocoFoto.innerHTML = `
                     <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
                         <div class="polaroid-frente">
                             ${menuTresPontosHtml}
-                            <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px;">
-                                <span>✨ Dê 2 cliques na foto/quadro para girar</span>
+                            <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px; font-size: 0.75rem;">
+                                <span>🗓️ Publicado: ${post.data}</span>
                             </div>
-                            <img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+de+Imagem+Invalido'">
+                            
+                            ${midiaHtml}
+                            
+                            <div class="data-card" style="align-items: center; text-align: center; margin-top:12px; margin-bottom:0;">
+                                <span style="font-size:0.75rem; font-weight:normal; color:var(--secondary);">✨ Dê 2 cliques na moldura para girar</span>
+                            </div>
+
                             <div class="polaroid-legenda-box">
                                 ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
                                 ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
@@ -1484,7 +1508,7 @@
                 }, 500);
             });
 
-            // Cartas & Declarações (Mais antigo no topo — appendChild)
+            // Cartas & Declarações
             const containerTextos = document.getElementById('novos-cards-textos');
             itensTextos.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
