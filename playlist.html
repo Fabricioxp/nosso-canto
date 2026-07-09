@@ -1,1 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossa Playlist Completa 🎧</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    <style>
+        :root {
+            --primary: #8c625d;
+            --secondary: #a68580;
+            --border-color: #e6b3a8;
+            --bg-card: #ffffff;
+            --text-color: #4a3e3d;
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font-title: Georgia, Cambria, 'Times New Roman', Times, serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #fff3f2; 
+            color: var(--text-color);
+            font-family: var(--font-main);
+            padding-bottom: 50px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px 20px 20px;
+        }
+
+        header h1 {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p { 
+            font-size: 0.95rem; 
+            color: var(--secondary); 
+        }
+
+        .container-voltar {
+            max-width: 450px;
+            margin: 20px auto 0 auto;
+            padding: 0 15px;
+        }
+
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            background-color: white;
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.1);
+            border: 1px solid rgba(230, 179, 168, 0.5);
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-voltar:hover {
+            background-color: #fff0ee;
+            transform: translateY(-2px);
+        }
+
+        .container-blocos {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .bloco-separado {
+            background-color: #fff5f0;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
+        }
+
+        .titulo-secao {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .card-musica {
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            padding: 16px; 
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            margin-bottom: 20px;
+            position: relative;
+            border: 1px solid rgba(230, 179, 168, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .card-musica.destaque {
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
+            background: #fffbfb;
+        }
+
+        .musica-layout {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .musica-capa {
+            width: 85px;
+            height: 85px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            background-color: #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .musica-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .musica-titulo {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .musica-dedicatoria {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .musica-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .musica-link-btn:hover {
+            background: var(--primary);
+        }
+
+        .barra-reacoes-polaroid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #f5e4e1;
+        }
+
+        .btn-coracao-minimalista {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .contagem-likes {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .carregando {
+            text-align: center;
+            color: var(--secondary);
+            font-style: italic;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-voltar">
+        <a href="index.html" class="btn-voltar">⬅️ Voltar ao Início</a>
+    </div>
+
+    <header>
+        <h1>Todas as Nossas Músicas</h1>
+        <p>A trilha sonora completa da nossa história. 🤍</p>
+    </header>
+
+    <div class="container-blocos">
+        <section class="bloco-separado">
+            <div class="titulo-secao">🎧 Playlist Completa</div>
+            <div id="lista-todas-musicas">
+                <div class="carregando">Buscando nossa playlist no coração... ✨</div>
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, getDoc, updateDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Mesma configuração do seu banco original
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
+            authDomain: "nosso-canto-5d714.firebaseapp.com",
+            projectId: "nosso-canto-5d714",
+            storageBucket: "nosso-canto-5d714.firebasestorage.app",
+            messagingSenderId: "1042257316625",
+            appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Mantém a identificação do usuário logado vinda da página principal
+        let usuarioLogado = sessionStorage.getItem('user_canto') || "Alguém";
+
+        window.alternarCurtidaItem = async function(id) {
+            try {
+                const docRef = doc(db, "posts", id);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    let listaLikes = docSnap.data().curtidas || [];
+                    if (!Array.isArray(listaLikes)) listaLikes = [];
+                    
+                    const index = listaLikes.indexOf(usuarioLogado);
+
+                    if (index > -1) { 
+                        listaLikes.splice(index, 1); 
+                    } else { 
+                        listaLikes.push(usuarioLogado); 
+                    }
+
+                    await updateDoc(docRef, { curtidas: listaLikes });
+                }
+            } catch (error) { console.error("Erro ao curtir:", error); }
+        };
+
+        // Escuta TODAS as músicas sem impor limite de quantidade
+        const qPlaylist = query(collection(db, "posts"), where("destino", "==", "playlist"), orderBy("criadoEm", "asc"));
+        
+        onSnapshot(qPlaylist, (snapshot) => {
+            const container = document.getElementById('lista-todas-musicas');
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            if (snapshot.empty) {
+                container.innerHTML = '<div class="carregando">Nenhuma música adicionada ainda... 🥺</div>';
+                return;
+            }
+
+            snapshot.forEach((docSnap) => {
+                const post = { id: docSnap.id, ...docSnap.data() };
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+                
+                const blocoMusica = document.createElement('div');
+                let classesCartao = 'card-musica';
+                if (post.destaque) { classesCartao += ' destaque'; }
+
+                blocoMusica.className = classesCartao;
+                blocoMusica.innerHTML = `
+                    <div class="musica-layout">
+                        <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
+                        <div class="musica-info">
+                            <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
+                            <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
+                            <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
+                        </div>
+                    </div>
+                    <div class="barra-reacoes-polaroid">
+                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                        <span class="contagem-likes">${curtidasArray.length} amaram</span>
+                    </div>
+                `;
+
+                // Coloca as em destaque no topo da página
+                if (post.destaque) { 
+                    container.prepend(blocoMusica); 
+                } else { 
+                    container.appendChild(blocoMusica); 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
