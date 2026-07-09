@@ -29,66 +29,93 @@
             background-color: #fff3f2; 
             color: var(--text-color);
             font-family: var(--font-main);
-            padding-bottom: 50px;
+            padding-bottom: 90px;
+            overflow-x: hidden;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
 
+        button, input, select, textarea, a {
+            touch-action: manipulation;
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        .header-status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55px;
+            z-index: 9999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0 20px;
+            box-shadow: 0 2px 15px rgba(140, 98, 93, 0.08);
+            border-bottom: 1px solid rgba(230, 179, 168, 0.25);
+        }
+
+        .status-usuario-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-nome-parceiro {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .btn-voltar {
+            background: none; 
+            border: 1px solid var(--border-color);
+            padding: 5px 10px; 
+            border-radius: 10px;
+            font-size: 0.8rem; 
+            font-family: var(--font-main);
+            color: var(--secondary); 
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-voltar:hover { background: rgba(230, 179, 168, 0.15); }
+
         header {
             text-align: center;
-            padding: 40px 20px 20px 20px;
+            padding: 90px 20px 35px 20px;
+            position: relative;
         }
 
         header h1 {
             font-family: var(--font-title);
-            font-size: 2rem;
+            font-size: 2.3rem;
             color: var(--primary);
             margin-bottom: 10px;
         }
 
-        header p { 
-            font-size: 0.95rem; 
-            color: var(--secondary); 
-        }
-
-        .container-voltar {
-            max-width: 450px;
-            margin: 20px auto 0 auto;
-            padding: 0 15px;
-        }
-
-        .btn-voltar {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            background-color: white;
-            color: var(--primary);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.1);
-            border: 1px solid rgba(230, 179, 168, 0.5);
-            transition: background 0.2s, transform 0.2s;
-        }
-
-        .btn-voltar:hover {
-            background-color: #fff0ee;
-            transform: translateY(-2px);
-        }
+        header p { font-size: 1rem; color: var(--secondary); }
 
         .container-blocos {
             max-width: 450px;
             margin: 0 auto;
-            padding: 20px 15px;
+            padding: 0 15px;
+            position: relative;
+            z-index: 5;
         }
 
         .bloco-separado {
-            background-color: #fff5f0;
+            background-color: var(--bg-card);
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
+            margin-bottom: 25px;
+            position: relative;
+            height: auto;
         }
 
         .titulo-secao {
@@ -96,31 +123,51 @@
             font-weight: bold;
             text-align: center;
             color: var(--primary);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 10px;
         }
+
+        #bloco-playlist { background-color: #fff5f0; } 
+
+        .painel-upload {
+            background-color: #ffffff;
+            border: 1px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
+            position: relative;
+            z-index: 6;
+            height: auto;
+        }
+
+        .input-custom {
+            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
+            border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
+            margin-bottom: 12px; outline: none; background: #fffbfb;
+            color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-custom:focus {
+            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+        }
+
+        .btn-postar {
+            width: 100%; background-color: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: 15px; font-family: var(--font-main);
+            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-postar:hover { background-color: #734f4b; }
 
         .card-musica {
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-            padding: 16px; 
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
-            margin-bottom: 20px;
-            position: relative;
-            border: 1px solid rgba(230, 179, 168, 0.3);
-            transition: transform 0.2s;
+            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
+            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
+            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
         }
-
         .card-musica.destaque {
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
-            background: #fffbfb;
-            animation: pulsarDestaqueMusica 3s infinite ease-in-out;
+            border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
+            background: #fffbfb; animation: pulsarDestaqueMusica 3s infinite ease-in-out;
         }
 
         @keyframes pulsarDestaqueMusica {
@@ -129,143 +176,73 @@
             100% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); border-color: var(--primary); }
         }
 
-        .musica-layout {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-top: 5px;
-            width: 100%;
-        }
+        .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; width: 100%; }
+        .musica-capa { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; flex-shrink: 0; }
+        .musica-info { flex: 1; min-width: 0; }
+        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; }
+        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; white-space: nowrap; }
+        .musica-link-btn:hover { background: var(--primary); }
 
-        .musica-capa {
-            width: 85px;
-            height: 85px;
-            border-radius: 12px;
-            object-fit: cover;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-            background-color: #f0f0f0;
-            flex-shrink: 0;
-        }
+        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 25; }
+        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
+        .opcoes-tres-pontos.visivel { display: block; }
+        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
+        .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
-        .musica-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
+        .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
+        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
 
-        .musica-titulo {
-            font-size: 1.15rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 5px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .musica-dedicatoria {
-            font-size: 0.8rem;
-            color: var(--secondary);
-            margin-bottom: 8px;
-        }
-
-        .acoes-container {
-            display: flex;
-            gap: 8px;
-            margin-top: 4px;
-        }
-
-        .musica-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 12px;
-            background: var(--secondary);
-            color: white;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .musica-link-btn:hover {
-            background: var(--primary);
-        }
-
-        .btn-acao-adm {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            color: var(--primary);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-acao-adm:hover {
-            background: #fff0ee;
-        }
-
-        .btn-acao-adm.excluir:hover {
-            background: #ffebeb;
-            color: #c94a4a;
-            border-color: #ffcccc;
-        }
-
-        .barra-reacoes-polaroid {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #f5e4e1;
-        }
-
-        .btn-coracao-minimalista {
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-        }
-
-        .contagem-likes {
-            font-size: 0.85rem;
-            color: var(--secondary);
-            font-weight: bold;
-        }
-
-        .carregando {
-            text-align: center;
-            color: var(--secondary);
-            font-style: italic;
-            padding: 20px 0;
-        }
+        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
     </style>
 </head>
 <body>
 
-    <div class="container-voltar">
-        <a href="index.html" class="btn-voltar">⬅️ Voltar ao Início</a>
+    <div class="header-status-bar">
+        <div class="status-usuario-container">
+            <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
+        </div>
+        <a href="index.html" class="btn-voltar">⬅ Voltar ao Canto</a>
     </div>
 
+    <canvas id="canvas-hearts"></canvas>
+
     <header>
-        <h1>Todas as Nossas Músicas</h1>
-        <p>A trilha sonora completa da nossa história. 🤍</p>
+        <h1>Nossa Playlist Completa</h1>
+        <p>Onde todas as nossas melodias e momentos musicais ficam guardados sem limites. ✨</p>
     </header>
 
     <div class="container-blocos">
-        <section class="bloco-separado">
-            <div class="titulo-secao">🎧 Playlist Completa</div>
-            <div id="lista-todas-musicas">
-                <div class="carregando">Buscando nossa playlist no coração... ✨</div>
+        
+        <section class="painel-upload" id="painel-playlist-posts">
+            <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
+            <input type="hidden" id="editando-playlist-id" value="">
+            
+            <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
+            <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
+            <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
+            
+            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
+                <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
+                <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
             </div>
+            
+            <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
         </section>
+
+        <section class="bloco-separado" id="bloco-playlist">
+            <div class="titulo-secao">🎶 Todas as Músicas da Playlist</div>
+            <div id="novos-cards-playlist"></div>
+        </section>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -278,10 +255,94 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        let usuarioLogado = sessionStorage.getItem('user_canto') || "Alguém";
 
-        // Função para Curtir/Descurtir
+        let usuarioLogado = sessionStorage.getItem('user_canto') || 'Anônimo';
+        document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
+
+        function verificarPinSeguranca() {
+            const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
+            if (pinDigitado === "1566") {
+                return true;
+            } else if (pinDigitado !== null) {
+                alert("PIN incorreto! Ação cancelada. 🔐");
+            }
+            return false;
+        }
+
+        window.alternarMenuTresPontos = function(id) {
+            const menu = document.getElementById(`opcoes-${id}`);
+            if (menu) menu.classList.toggle('visivel');
+        };
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('btn-tres-pontos')) {
+                document.querySelectorAll('.opcoes-tres-pontos').forEach(m => m.classList.remove('visivel'));
+            }
+        });
+
+        function extrairIDYouTube(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function resetarFormularioPlaylist() {
+            document.getElementById('editando-playlist-id').value = '';
+            document.getElementById('playlist-nome').value = '';
+            document.getElementById('playlist-link').value = '';
+            document.getElementById('playlist-capa').value = '';
+            document.getElementById('playlist-destaque').checked = false;
+            document.getElementById('titulo-painel-playlist').innerText = '🎧 Dedicar uma Música';
+            document.getElementById('btn-salvar-playlist').innerText = 'Adicionar à Playlist 🎶';
+        }
+
+        window.salvarMusicaFirebase = async function() {
+            const idEditando = document.getElementById('editando-playlist-id').value;
+            const titulo = document.getElementById('playlist-nome').value.trim();
+            const link = document.getElementById('playlist-link').value.trim();
+            let imagem = document.getElementById('playlist-capa').value.trim();
+            const destaque = document.getElementById('playlist-destaque').checked;
+
+            if (!titulo || !link) { alert('Por favor, digite o nome e cole o link da música! 🎧'); return; }
+            if (!imagem) {
+                const idYT = extrairIDYouTube(link);
+                imagem = idYT ? `https://img.youtube.com/vi/${idYT}/hqdefault.jpg` : 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa';
+            }
+
+            try {
+                if (idEditando) {
+                    await updateDoc(doc(db, "posts", idEditando), { titulo, link, imagem, destaque });
+                    alert('Música atualizada! 🎶');
+                } else {
+                    await addDoc(collection(db, "posts"), {
+                        destino: 'playlist', titulo, link, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                    });
+                    alert('Música dedicada com sucesso! ❤️');
+                }
+                resetarFormularioPlaylist();
+            } catch (error) { console.error(error); }
+        };
+        document.getElementById('btn-salvar-playlist').addEventListener('click', window.salvarMusicaFirebase);
+
+        window.prepararEdicaoPlaylist = function(id, titulo, link, imagem, destaque) {
+            document.getElementById('editando-playlist-id').value = id;
+            document.getElementById('playlist-nome').value = titulo;
+            document.getElementById('playlist-link').value = link;
+            document.getElementById('playlist-capa').value = imagem;
+            document.getElementById('playlist-destaque').checked = (destaque === 'true' || destaque === true);
+            document.getElementById('titulo-painel-playlist').innerText = '✏️ Editar Música Dedicada';
+            document.getElementById('btn-salvar-playlist').innerText = 'Atualizar Música 🎧';
+            document.getElementById('painel-playlist-posts').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.removerPostagemFirebase = async function(id) {
+            if (verificarPinSeguranca()) {
+                await deleteDoc(doc(db, "posts", id));
+                resetarFormularioPlaylist();
+                alert("Lembrança apagada com sucesso! 👍");
+            }
+        };
+
         window.alternarCurtidaItem = async function(id) {
             try {
                 const docRef = doc(db, "posts", id);
@@ -293,116 +354,94 @@
                     
                     const index = listaLikes.indexOf(usuarioLogado);
 
-                    if (index > -1) { 
-                        listaLikes.splice(index, 1); 
-                    } else { 
-                        listaLikes.push(usuarioLogado); 
-                    }
+                    if (index > -1) { listaLikes.splice(index, 1); } 
+                    else { listaLikes.push(usuarioLogado); }
 
                     await updateDoc(docRef, { curtidas: listaLikes });
                 }
-            } catch (error) { console.error("Erro ao curtir:", error); }
+            } catch (error) { console.error(error); }
         };
 
-        // Função para Excluir Música
-        window.excluirMusica = async function(id) {
-            if (confirm("Tem certeza que deseja apagar essa música da nossa playlist? 🥺")) {
-                try {
-                    await deleteDoc(doc(db, "posts", id));
-                    alert("Música removida com sucesso!");
-                } catch (error) {
-                    console.error("Erro ao excluir:", error);
-                    alert("Ops! Ocorreu um erro ao excluir.");
-                }
-            }
-        };
-
-        // Função para Editar Música
-        window.editarMusica = async function(id) {
-            try {
-                const docRef = doc(db, "posts", id);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const dadosAtuais = docSnap.data();
-
-                    const novoTitulo = prompt("Editar nome da música / artista:", dadosAtuais.titulo);
-                    if (novoTitulo === null) return; // cancelou
-
-                    const novoLink = prompt("Editar link da música (YouTube/Spotify):", dadosAtuais.link);
-                    if (novoLink === null) return;
-
-                    const novaImagem = prompt("Editar URL da imagem de capa (opcional):", dadosAtuais.imagem);
-                    if (novaImagem === null) return;
-
-                    await updateDoc(docRef, {
-                        titulo: novoTitulo,
-                        link: novoLink,
-                        imagem: novaImagem || dadosAtuais.imagem
-                    });
-
-                    alert("Música atualizada com sucesso! ✨");
-                }
-            } catch (error) {
-                console.error("Erro ao editar:", error);
-                alert("Não foi possível editar a música.");
-            }
-        };
-
-        // Busca e escuta as atualizações em tempo real
+        const containerPlaylist = document.getElementById('novos-cards-playlist');
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         
         onSnapshot(qCards, (snapshot) => {
-            const container = document.getElementById('lista-todas-musicas');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            let temMusica = false;
+            containerPlaylist.innerHTML = '';
+            let itensPlaylist = [];
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
-                
-                if (post.destino === 'playlist') {
-                    temMusica = true;
-                    const curtidasArray = post.curtidas || [];
-                    const jaCurtido = curtidasArray.includes(usuarioLogado);
-                    
-                    const blocoMusica = document.createElement('div');
-                    let classesCartao = 'card-musica';
-                    if (post.destaque) { classesCartao += ' destaque'; }
-
-                    blocoMusica.className = classesCartao;
-                    blocoMusica.innerHTML = `
-                        <div class="musica-layout">
-                            <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
-                            <div class="musica-info">
-                                <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
-                                <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
-                                <div class="acoes-container">
-                                    <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir</a>
-                                    <button class="btn-acao-adm" onclick="editarMusica('${post.id}')">✏️ Editar</button>
-                                    <button class="btn-acao-adm excluir" onclick="excluirMusica('${post.id}')">🗑️ Excluir</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="barra-reacoes-polaroid">
-                            <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                            <span class="contagem-likes">${curtidasArray.length} amaram</span>
-                        </div>
-                    `;
-
-                    if (post.destaque) { 
-                        container.prepend(blocoMusica); 
-                    } else { 
-                        container.appendChild(blocoMusica); 
-                    }
-                }
+                if (post.destino === 'playlist') { itensPlaylist.push(post); }
             });
 
-            if (!temMusica) {
-                container.innerHTML = '<div class="carregando">Nenhuma música adicionada ainda... 🥺</div>';
-            }
+            // Mostra todas as músicas sem usar slice(0, 5)
+            itensPlaylist.forEach((post) => {
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoMusica = document.createElement('div');
+                let classesCartao = 'card-musica';
+                if (post.destaque) { classesCartao += ' destaque'; }
+
+                const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick="prepararEdicaoPlaylist('${post.id}', '${post.titulo}', '${post.link}', '${post.imagem}', ${post.destaque})">Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
+                    </div>
+                ` : '';
+
+                blocoMusica.className = classesCartao;
+                blocoMusica.innerHTML = `
+                    ${menuTresPontosPlaylist}
+                    <div class="musica-layout">
+                        <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
+                        <div class="musica-info">
+                            <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
+                            <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
+                            <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
+                        </div>
+                    </div>
+                    <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
+                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                        <span class="contagem-likes">${curtidasArray.length} amaram</span>
+                    </div>
+                `;
+                if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
+            });
         });
+    </script>
+
+    <script>
+        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
+        let listaCoracoes = [];
+
+        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
+
+        class Coracao {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
+                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
+                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
+            }
+            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
+            desenhar() {
+                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
+                ctx.beginPath(); ctx.moveTo(this.x, this.y);
+                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
+                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
+                ctx.fill(); ctx.restore();
+            }
+        }
+
+        function animarLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
+            requestAnimationFrame(animarLoop);
+        }
+        document.addEventListener('DOMContentLoaded', () => { animarLoop(); });
     </script>
 </body>
 </html>
