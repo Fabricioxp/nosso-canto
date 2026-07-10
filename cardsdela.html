@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cards Dela 💖</title>
+    <title>Coisinhas Dela 🤍</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,10 +35,17 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        button, input, select, textarea, a {
+        button, input, a {
             touch-action: manipulation;
             transform: translateZ(0);
             will-change: transform;
+        }
+
+        #conteudo-site { 
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
+            padding-top: 60px;
         }
 
         .header-status-bar {
@@ -74,20 +81,21 @@
         .btn-voltar {
             background: none; 
             border: 1px solid var(--border-color);
-            padding: 5px 10px; 
+            padding: 5px 12px; 
             border-radius: 10px;
-            font-size: 0.8rem; 
+            font-size: 0.85rem; 
             font-family: var(--font-main);
-            color: var(--secondary); 
+            color: var(--primary); 
             cursor: pointer;
             text-decoration: none;
+            font-weight: bold;
             transition: background 0.2s;
         }
         .btn-voltar:hover { background: rgba(230, 179, 168, 0.15); }
 
         header {
             text-align: center;
-            padding: 90px 20px 35px 20px;
+            padding: 30px 20px 35px 20px;
             position: relative;
         }
 
@@ -109,7 +117,7 @@
         }
 
         .bloco-separado {
-            background-color: var(--bg-card);
+            background-color: #fff0f5; /* Cor de fundo específica do bloco dela */
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
@@ -118,135 +126,155 @@
             height: auto;
         }
 
-        .titulo-secao {
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-align: center;
-            color: var(--primary);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #bloco-cardsdela { background-color: #fff5f0; } 
-
-        .painel-upload {
-            background-color: #ffffff;
-            border: 1px dashed var(--border-color);
-            border-radius: 20px;
-            padding: 22px;
+        .card-separador-interno {
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
             margin-bottom: 25px;
-            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
+            box-shadow: 0 5px 15px rgba(140, 98, 93, 0.05);
             position: relative;
-            z-index: 6;
             height: auto;
         }
 
-        .input-custom {
-            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
-            border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
-            margin-bottom: 12px; outline: none; background: #fffbfb;
-            color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .input-custom:focus {
-            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
-        }
-
-        .btn-postar {
-            width: 100%; background-color: var(--primary); color: white; border: none;
-            padding: 14px; border-radius: 15px; font-family: var(--font-main);
-            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
-        }
-        .btn-postar:hover { background-color: #734f4b; }
-
-        /* Estilo Polaroid Adaptado para as Variáveis da Página Principal */
-        .card-dela-item {
-            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
-            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
-            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
-            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
+        .titulo-secao {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .card-layout { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; width: 100%; }
-        .card-foto { width: 100%; height: auto; max-height: 350px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; }
-        .card-info { width: 100%; }
-        .card-titulo { font-size: 1.2rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; word-wrap: break-word; overflow-wrap: break-word; }
-        .card-descricao { font-size: 0.9rem; color: var(--text-color); margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; white-space: pre-line; }
-        .card-autor { font-size: 0.75rem; color: var(--secondary); display: flex; justify-content: space-between; }
+        .data-card {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
 
-        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 25; }
-        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
-        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
-        .opcoes-tres-pontos.visivel { display: block; }
-        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
-        .opcoes-tres-pontos button:hover { background: #fff0ee; }
+        .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
 
-        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
-        .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
-        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
+        .pdf-link { text-decoration: none; display: block; position: relative; z-index: 2; }
+        .pdf-bloco { text-align: center; cursor: pointer; }
+        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
 
-        /* --- Estilos da Seção de Comentários (Mesma classe base) --- */
-        .secao-comentarios-card { margin-top: 15px; border-top: 1px solid rgba(230, 179, 168, 0.2); padding-top: 12px; }
-        .lista-comentarios-container { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; margin-bottom: 10px; padding-right: 5px; }
-        .comentario-item { background: #fffaf9; border: 1px solid rgba(230, 179, 168, 0.15); padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; position: relative; display: flex; flex-direction: column; gap: 2px; }
-        .comentario-item strong { color: var(--primary); }
-        .btn-deletar-comentario { position: absolute; top: 6px; right: 8px; background: none; border: none; color: #d9534f; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-        .btn-deletar-comentario:hover { opacity: 1; }
-        .form-comentario-card { display: flex; gap: 8px; margin-top: 5px; }
-        .input-comentario-card { flex: 1; padding: 8px 12px; border: 1px solid rgba(230, 179, 168, 0.4); border-radius: 10px; font-size: 0.82rem; outline: none; font-family: var(--font-main); transition: border-color 0.2s; }
-        .input-comentario-card:focus { border-color: var(--primary); }
-        .btn-comentar-card { background: var(--primary); border: none; color: white; padding: 0 14px; border-radius: 10px; font-size: 0.82rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-comentar-card:hover { background: #734f4b; }
+        .numero-card {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border: 1.5px solid var(--secondary);
+            border-radius: 50%; font-size: 0.85rem; font-weight: bold;
+            color: var(--secondary); margin-bottom: 15px; 
+        }
+
+        .moldura-imagem {
+            width: 100%; max-width: 250px; aspect-ratio: 16 / 9; 
+            margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.5);
+            display: block;
+            content-visibility: auto;
+        }
+        .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
+
+        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+
+        .secao-comentarios { 
+            margin-top: 25px; 
+            padding-top: 20px; 
+            border-top: 1px dashed var(--border-color); 
+            position: relative; 
+            z-index: 5;
+            height: auto;
+        }
+        
+        .form-comentario { 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            margin-bottom: 15px; 
+            width: 100%;
+        }
+        
+        .input-comentario {
+            flex: 1; 
+            min-width: 0;
+            padding: 10px 14px; 
+            border: 1px solid var(--border-color);
+            border-radius: 20px; 
+            font-family: var(--font-main); 
+            font-size: 0.9rem;
+            outline: none; 
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .btn-comentar { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 10px 16px; 
+            border-radius: 20px; 
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; text-align: left; }
+        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; }
+        .autor-comentario { font-weight: bold; color: var(--primary); }
+        .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; }
+
+        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
+        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
+        .btn-editar { color: #428bca; display: none; } /* Oculto aqui pois a edição ocorre no index */
+        .btn-excluir { color: #d9534f; }
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
     </style>
 </head>
 <body>
 
-    <div class="header-status-bar">
-        <div class="status-usuario-container">
-            <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
+    <div id="conteudo-site">
+        <div class="header-status-bar">
+            <div class="status-usuario-container">
+                <span id="label-parceiro" class="status-nome-parceiro">Conectado...</span>
+            </div>
+            <a href="index.html" class="btn-voltar">⬅ Voltar</a>
         </div>
-        <a href="index.html" class="btn-voltar">⬅ Voltar ao Canto</a>
-    </div>
 
-    <canvas id="canvas-hearts"></canvas>
+        <canvas id="canvas-hearts"></canvas>
 
-    <header>
-        <h1>Cards Dela</h1>
-        <p>Um espaço especial reservado para todas as suas fotos, memórias e momentos únicos. ✨</p>
-    </header>
+        <header>
+            <h1>Coisinhas Dela</h1>
+            <p>Todos os cards e apresentações especiais criados por ela. ✨</p>
+        </header>
 
-    <div class="container-blocos">
-        
-        <section class="painel-upload" id="painel-cardsdela-posts">
-            <div class="titulo-secao" id="titulo-painel-cardsdela" style="margin-bottom: 15px;">📸 Adicionar Novo Card</div>
-            <input type="hidden" id="editando-card-id" value="">
-            
-            <input type="text" id="card-nome" class="input-custom" placeholder="Título da Lembrança (Obrigatório)">
-            <textarea id="card-desc" class="input-custom" rows="3" placeholder="Escreva sobre este momento... (Obrigatório)" style="resize: none;"></textarea>
-            <input type="text" id="card-foto-url" class="input-custom" placeholder="Link da Foto/Imagem (Obrigatório)">
-            <input type="text" id="card-link-externo" class="input-custom" placeholder="Link Alternativo / Pasta Drive (Opcional)">
-            
-            <button class="btn-postar" id="btn-salvar-card">Publicar Lembrança 💖</button>
-        </section>
-
-        <section class="bloco-separado" id="bloco-cardsdela">
-            <div class="titulo-secao">💝 Momentos Guardados</div>
-            <div id="novos-cards-dela"></div>
-        </section>
-
+        <div class="container-blocos">
+            <section class="bloco-separado">
+                <div class="titulo-secao">✨ Todas as Apresentações</div>
+                <div id="todos-cards-dela"></div>
+            </section>
+        </div>
     </div>
 
     <script type="module">
-        let usuarioLogado = sessionStorage.getItem('user_canto');
-        if (!usuarioLogado) {
-            window.location.href = "index.html";
-        }
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, deleteDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -260,237 +288,127 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        let usuarioLogado = sessionStorage.getItem('user_canto') || "Visitante";
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
-        function obterDataFormatada() {
-            const d = new Date();
-            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
+        function sanitizarHTML(str) { 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
 
         function verificarPinSeguranca() {
             const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
-            if (pinDigitado === "1566") return true;
-            if (pinDigitado !== null) alert("PIN incorreto! Ação cancelada. 🔐");
-            return false;
+            return pinDigitado === "1566";
         }
-
-        window.alternarMenuTresPontos = function(id) {
-            const menu = document.getElementById(`opcoes-${id}`);
-            if (menu) menu.classList.toggle('visivel');
-        };
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.classList.contains('btn-tres-pontos')) {
-                document.querySelectorAll('.opcoes-tres-pontos').forEach(m => m.classList.remove('visivel'));
-            }
-        });
-
-        function resetarFormularioCard() {
-            document.getElementById('editando-card-id').value = '';
-            document.getElementById('card-nome').value = '';
-            document.getElementById('card-desc').value = '';
-            document.getElementById('card-foto-url').value = '';
-            document.getElementById('card-link-externo').value = '';
-            document.getElementById('titulo-painel-cardsdela').innerText = '📸 Adicionar Novo Card';
-            document.getElementById('btn-salvar-card').innerText = 'Publicar Lembrança 💖';
-        }
-
-        // AGORA SALVA EXATAMENTE COM AS CHAVES DA PÁGINA PRINCIPAL
-        window.salvarCardFirebase = async function() {
-            const idEditando = document.getElementById('editando-card-id').value;
-            const titulo = document.getElementById('card-nome').value.trim();
-            const subtitulo = document.getElementById('card-desc').value.trim(); 
-            const imagem = document.getElementById('card-foto-url').value.trim();
-            const link = document.getElementById('card-link-externo').value.trim() || "#";
-
-            if (!titulo || !subtitulo || !imagem) { alert('Por favor, preencha todos os campos obrigatórios! 📸'); return; }
-
-            try {
-                if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, link });
-                    alert('Card atualizado com sucesso! ✨');
-                } else {
-                    await addDoc(collection(db, "posts"), {
-                        destino: 'dela', titulo, subtitulo, imagem, link, autor: usuarioLogado, data: obterDataFormatada(), criadoEm: Date.now(), curtidas: []
-                    });
-                    alert('Lembrança adicionada aos Cards Dela! ❤️');
-                }
-                resetarFormularioCard();
-            } catch (error) { console.error(error); }
-        };
-        document.getElementById('btn-salvar-card').addEventListener('click', window.salvarCardFirebase);
-
-        window.prepararEdicaoCard = function(id, titulo, subtitulo, imagem, link) {
-            document.getElementById('editando-card-id').value = id;
-            document.getElementById('card-nome').value = titulo;
-            document.getElementById('card-desc').value = subtitulo;
-            document.getElementById('card-foto-url').value = imagem;
-            document.getElementById('card-link-externo').value = (link === '#') ? '' : link;
-            document.getElementById('titulo-painel-cardsdela').innerText = '✏️ Editar Card';
-            document.getElementById('btn-salvar-card').innerText = 'Atualizar Card ✨';
-            document.getElementById('painel-cardsdela-posts').scrollIntoView({ behavior: 'smooth' });
-        };
 
         window.removerPostagemFirebase = async function(id) {
             if (verificarPinSeguranca()) {
                 await deleteDoc(doc(db, "posts", id));
-                resetarFormularioCard();
                 alert("Lembrança apagada com sucesso! 👍");
+            } else {
+                alert("PIN incorreto! Ação cancelada. 🔐");
             }
         };
 
-        window.alternarCurtidaItem = async function(id) {
+        window.adicionarComentarioFirebase = async function(secaoId) {
+            const input = document.getElementById(`input-${secaoId}`);
+            const texto = input?.value.trim();
+            if (!texto) return;
             try {
-                const docRef = doc(db, "posts", id);
-                const docSnap = await getDoc(docRef);
+                const agora = new Date();
+                const dataHoraStr = `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
                 
-                if (docSnap.exists()) {
-                    let listaLikes = docSnap.data().curtidas || [];
-                    if (!Array.isArray(listaLikes)) listaLikes = [];
-                    
-                    const index = listaLikes.indexOf(usuarioLogado);
-                    if (index > -1) { listaLikes.splice(index, 1); } 
-                    else { listaLikes.push(usuarioLogado); }
-
-                    await updateDoc(docRef, { curtidas: listaLikes });
-                }
+                await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(async (firestore) => {
+                    await firestore.addDoc(firestore.collection(db, "comentarios"), { 
+                        secaoId, texto, autor: usuarioLogado, dataHora: dataHoraStr, criadoEm: Date.now() 
+                    });
+                });
+                if (input) input.value = '';
             } catch (error) { console.error(error); }
         };
 
-        window.enviarComentarioCard = async function(idPost) {
-            const input = document.getElementById(`input-coment-${idPost}`);
-            const texto = input.value.trim();
-            if(!texto) return;
-
-            try {
-                await addDoc(collection(db, "posts", idPost, "comentarios"), {
-                    autor: usuarioLogado,
-                    texto: texto,
-                    criadoEm: Date.now()
-                });
-                input.value = '';
-            } catch(e) { console.error(e); }
-        };
-
-        window.apagarComentarioCard = async function(idPost, idComent) {
-            if(verificarPinSeguranca()) {
-                try {
-                    await deleteDoc(doc(db, "posts", idPost, "comentarios", idComent));
-                } catch(e) { console.error(e); }
+        window.excluirComentarioFirebase = async function(id) { 
+            if (verificarPinSeguranca()) { 
+                await deleteDoc(doc(db, "comentarios", id)); 
+                alert("Comentário removido! 👍"); 
+            } else {
+                alert("PIN incorreto! Ação cancelada. 🔐");
             }
         };
 
-        window.verificarEnterComentario = function(e, idPost) {
-            if(e.key === 'Enter') { window.enviarComentarioCard(idPost); }
+        window.verificarEnter = function(event, id) {
+            if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        const containerCards = document.getElementById('novos-cards-dela');
-        
-        // PUXA EXATAMENTE IGUAL A PAGINA PRINCIPAL (destino == dela)
-        const qCards = query(collection(db, "posts"), where("destino", "==", "dela"));
-        
+        // Snapshot dinâmico para buscar todos os itens que pertencem ao destino "dela"
+        const qCards = query(collection(db, "posts"), where("destino", "==", "dela"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
-            containerCards.innerHTML = '';
-            let itensCards = [];
+            const container = document.getElementById('todos-cards-dela');
+            if(container) container.innerHTML = '';
 
-            snapshot.forEach((docSnap) => {
-                itensCards.push({ id: docSnap.id, ...docSnap.data() });
-            });
-
-            // Ordena os cards por data igual na home
-            itensCards.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
-
-            itensCards.forEach((post, index) => {
-                const curtidasArray = post.curtidas || [];
-                const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoCard = document.createElement('div');
-                blocoCard.className = 'card-dela-item';
-
-                const menuTresPontosCard = (post.autor === usuarioLogado) ? `
-                    <div class="menu-acoes-container">
-                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoCard('${post.id}', '${post.titulo.replace(/'/g, "\\'")}', \`${post.subtitulo.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`, '${post.imagem}', '${post.link}')">Editar ✏️</button>
-                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                        </div>
+            snapshot.forEach((docSnap, index) => {
+                const post = { id: docSnap.id, ...docSnap.data() };
+                const numeroProgressivo = index + 1;
+                
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                     </div>
                 ` : '';
 
-                // Link opcional na imagem e no título igual na principal
-                const htmlConteudoCard = `
-                    <a href="${post.link || '#'}" target="${post.link && post.link !== '#' ? '_blank' : '_self'}" style="text-decoration:none; color:inherit;">
-                        <div class="card-layout">
-                            <img src="${post.imagem}" class="card-foto" alt="Foto" loading="lazy">
-                            <div class="card-info">
-                                <div class="card-titulo">#${index + 1} - ${post.titulo}</div>
-                                <div class="card-descricao">${post.subtitulo}</div>
-                            </div>
+                const bloco = document.createElement('div');
+                bloco.className = 'card-separador-interno';
+                bloco.innerHTML = `
+                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <a href="${post.link}" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">${numeroProgressivo}</div>
+                            <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                            <div class="contador-titulo">${post.titulo}</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">${post.subtitulo}</div>
                         </div>
                     </a>
-                `;
-
-                blocoCard.innerHTML = `
-                    ${menuTresPontosCard}
-                    ${htmlConteudoCard}
-                    <div class="card-autor">
-                        <span>🗓️ ${post.data || ''}</span>
-                        <span>Enviado por: <strong>${post.autor}</strong></span>
-                    </div>
-                    <div class="barra-reacoes-polaroid">
-                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                        <span class="contagem-likes">${curtidasArray.length} amaram</span>
-                    </div>
-                    
-                    <div class="secao-comentarios-card">
-                        <div class="lista-comentarios-container" id="lista-coment-${post.id}"></div>
-                        <div class="form-comentario-card">
-                            <input type="text" id="input-coment-${post.id}" class="input-comentario-card" placeholder="Escreva um comentário...">
-                            <button class="btn-comentar-card" onclick="enviarComentarioCard('${post.id}')">Enviar</button>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
                         </div>
+                        <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
+                    ${controleModificacao}
                 `;
-                
-                containerCards.appendChild(blocoCard);
+                container.appendChild(bloco);
 
-                // Vincula o evento de apertar Enter para enviar comentário
                 setTimeout(() => {
-                    const inputComentario = document.getElementById(`input-coment-${post.id}`);
-                    if (inputComentario) {
-                        inputComentario.addEventListener('keypress', function(e) {
-                            window.verificarEnterComentario(e, post.id);
-                        });
-                    }
-                }, 100);
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 200);
+            });
+        });
 
-                // ESCUTA OS COMENTÁRIOS EXATOS DE CADA POST DA PAGINA PRINCIPAL
-                const qComents = query(collection(db, "posts", post.id, "comentarios"), orderBy("criadoEm", "asc"));
-                onSnapshot(qComents, (comentSnap) => {
-                    const boxComentarios = document.getElementById(`lista-coment-${post.id}`);
-                    if(!boxComentarios) return;
-                    boxComentarios.innerHTML = '';
+        // Snapshot para escutar comentários em tempo real nos cards exibidos
+        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentarios, (snapshot) => {
+            document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
+            snapshot.forEach((docSnap) => {
+                const com = { id: docSnap.id, ...docSnap.data() };
+                const containerLista = document.getElementById(`lista-${com.secaoId}`);
+                if (!containerLista) return;
 
-                    comentSnap.forEach((cDoc) => {
-                        const coment = cDoc.data();
-                        const idComent = cDoc.id;
-                        const divC = document.createElement('div');
-                        divC.className = 'comentario-item';
-
-                        const botaoApagar = (coment.autor === usuarioLogado) ? 
-                            `<button class="btn-deletar-comentario" onclick="apagarComentarioCard('${post.id}', '${idComent}')">🗑️</button>` : '';
-
-                        divC.innerHTML = `
-                            <span><strong>${coment.autor}:</strong> ${coment.texto}</span>
-                            ${botaoApagar}
-                        `;
-                        boxComentarios.appendChild(divC);
-                    });
-                    boxComentarios.scrollTop = boxComentarios.scrollHeight;
-                });
+                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+                const item = document.createElement('div');
+                item.className = 'item-comentario';
+                item.innerHTML = `
+                    <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
+                    <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
+                `;
+                containerLista.appendChild(item);
             });
         });
     </script>
 
     <script>
+        // Efeito visual flutuante de corações ao fundo idêntico ao da página principal
         const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
 
@@ -515,10 +433,11 @@
 
         function animarLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if(listaCoracoes.length < 35 && Math.random() < 0.08) { listaCoracoes.push(new Coracao()); }
             listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
             requestAnimationFrame(animarLoop);
         }
-        document.addEventListener('DOMContentLoaded', () => { animarLoop(); });
+        document.addEventListener('DOMContentLoaded', animarLoop);
     </script>
 </body>
 </html>
