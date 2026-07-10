@@ -1142,7 +1142,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, data: dataFormatada });
-                    alert('Varal updated! 🖼️');
+                    alert('Varal atualizado! 🖼️');
                 } else {
                     await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
                     alert('Momento guardado no nosso varal! 💞');
@@ -1624,13 +1624,80 @@
             });
         }
 
-        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "desc"));
         onSnapshot(qComentarios, (snapshot) => {
             ultimoSnapshotComentarios = snapshot;
             calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
             renderizarComentariosDOM(snapshot);
         });
 
+        window.celebrarAmor = function() {
+            const canvas = document.getElementById("canvas-hearts");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const hearts = [];
+            for (let i = 0; i < 35; i++) {
+                hearts.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height + Math.random() * 100,
+                    size: Math.random() * 15 + 10,
+                    speed: Math.random() * 3 + 2,
+                    opacity: Math.random() * 0.6 + 0.4
+                });
+            }
+
+            function drawHeart(x, y, size, opacity) {
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
+                ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
+                ctx.fillStyle = "#ff4d4d";
+                ctx.fill();
+                ctx.restore();
+            }
+
+            let animationFrameId;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                hearts.forEach(h => {
+                    h.y -= h.speed;
+                    if (h.y > -50) alive = true;
+                    drawHeart(h.x, h.y, h.size, h.opacity);
+                });
+                if (alive) { animationFrameId = requestAnimationFrame(animate); } 
+                else { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+            }
+            animate();
+        };
+
+        function atualizarRelogios() {
+            const dataAmor = new Date("2026-03-24T00:00:00");
+            const dataNamoro = new Date("2026-04-12T00:00:00");
+            const agora = new Date();
+
+            function diferencaTexto(dataBase) {
+                let diff = agora - dataBase;
+                if (diff < 0) return "Chegando o momento...";
+                let dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+                let horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                let segundos = Math.floor((diff % (1000 * 60)) / 1000);
+                return `${dias}d ${horas}h ${minutos}m <span style="font-size:1.1rem; color: #ff4d4d;">${segundos}s</span>`;
+            }
+
+            const amorEl = document.getElementById("contador-amor");
+            const namoroEl = document.getElementById("contador-namoro");
+            if(amorEl) { amorEl.innerHTML = diferencaTexto(dataAmor); amorEl.classList.add('ativo'); }
+            if(namoroEl) { namoroEl.innerHTML = diferencaTexto(dataNamoro); namoroEl.classList.add('ativo'); }
+        }
+
+        setInterval(atualizarRelogios, 1000);
+        atualizarRelogios();
         verificarSessao();
     </script>
 </body>
