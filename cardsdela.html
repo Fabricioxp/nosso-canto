@@ -319,7 +319,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, descricao, imagem, destaque });
-                    alert('Card updated! ✨');
+                    alert('Card atualizado! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino: 'cardsdela', titulo, descricao, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
@@ -369,7 +369,6 @@
             } catch (error) { console.error(error); }
         };
 
-        // --- Mecanismo de Enviar Comentários ---
         window.enviarComentarioCard = async function(idPost) {
             const input = document.getElementById(`input-coment-${idPost}`);
             const texto = input.value.trim();
@@ -385,7 +384,6 @@
             } catch(e) { console.error(e); }
         };
 
-        // --- Mecanismo de Apagar Comentários ---
         window.apagarComentarioCard = async function(idPost, idComent) {
             if(verificarPinSeguranca()) {
                 try {
@@ -396,8 +394,8 @@
         };
 
         const containerCards = document.getElementById('novos-cards-dela');
-        // Filtro correto direto no Firestore para evitar que falhe
-        const qCards = query(collection(db, "posts"), where("destino", "==", "cardsdela"), orderBy("criadoEm", "asc"));
+        // Removido o orderBy do Firestore para evitar erros de índice composto e tratado via JS
+        const qCards = query(collection(db, "posts"), where("destino", "==", "cardsdela"));
         
         onSnapshot(qCards, (snapshot) => {
             containerCards.innerHTML = '';
@@ -406,6 +404,9 @@
             snapshot.forEach((docSnap) => {
                 itensCards.push({ id: docSnap.id, ...docSnap.data() });
             });
+
+            // Ordenação manual via JS por data (criadoEm) de forma ascendente
+            itensCards.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
 
             itensCards.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
@@ -451,7 +452,6 @@
                 
                 if (post.destaque) { containerCards.prepend(blocoCard); } else { containerCards.appendChild(blocoCard); }
 
-                // Carrega em tempo real os comentários específicos deste post
                 const qComents = query(collection(db, "posts", post.id, "comentarios"), orderBy("criadoEm", "asc"));
                 onSnapshot(qComents, (comentSnap) => {
                     const boxComentarios = document.getElementById(`lista-coment-${post.id}`);
