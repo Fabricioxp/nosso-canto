@@ -35,16 +35,9 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        button, input, a {
-            touch-action: manipulation;
-            transform: translateZ(0);
-            will-change: transform;
-        }
-
         #conteudo-site { 
             position: relative;
             z-index: 2;
-            pointer-events: auto;
             padding-top: 60px;
         }
 
@@ -96,7 +89,6 @@
         header {
             text-align: center;
             padding: 30px 20px 35px 20px;
-            position: relative;
         }
 
         header h1 {
@@ -112,18 +104,14 @@
             max-width: 450px;
             margin: 0 auto;
             padding: 0 15px;
-            position: relative;
-            z-index: 5;
         }
 
         .bloco-separado {
-            background-color: #fff0f5; /* Cor de fundo específica do bloco dela */
+            background-color: #fff0f5; 
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
             margin-bottom: 25px;
-            position: relative;
-            height: auto;
         }
 
         .card-separador-interno {
@@ -132,8 +120,6 @@
             border-radius: 16px;
             margin-bottom: 25px;
             box-shadow: 0 5px 15px rgba(140, 98, 93, 0.05);
-            position: relative;
-            height: auto;
         }
 
         .titulo-secao {
@@ -144,10 +130,6 @@
             margin-bottom: 25px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
         .data-card {
@@ -163,9 +145,9 @@
 
         .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
 
-        .pdf-link { text-decoration: none; display: block; position: relative; z-index: 2; }
+        .pdf-link { text-decoration: none; display: block; }
         .pdf-bloco { text-align: center; cursor: pointer; }
-        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; }
 
         .numero-card {
             display: inline-flex; align-items: center; justify-content: center;
@@ -178,21 +160,16 @@
             width: 100%; max-width: 250px; aspect-ratio: 16 / 9; 
             margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.5);
-            display: block;
-            content-visibility: auto;
         }
         .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
-        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; }
         .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
 
         .secao-comentarios { 
             margin-top: 25px; 
             padding-top: 20px; 
             border-top: 1px dashed var(--border-color); 
-            position: relative; 
-            z-index: 5;
-            height: auto;
         }
         
         .form-comentario { 
@@ -200,16 +177,13 @@
             align-items: center;
             gap: 10px; 
             margin-bottom: 15px; 
-            width: 100%;
         }
         
         .input-comentario {
             flex: 1; 
-            min-width: 0;
             padding: 10px 14px; 
             border: 1px solid var(--border-color);
             border-radius: 20px; 
-            font-family: var(--font-main); 
             font-size: 0.9rem;
             outline: none; 
             background-color: rgba(255, 255, 255, 0.6);
@@ -224,27 +198,20 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 0.9rem;
-            white-space: nowrap;
-            flex-shrink: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; text-align: left; }
-        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; text-align: left; }
+        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; }
         .autor-comentario { font-weight: bold; color: var(--primary); }
         .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
-        .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; }
+        .texto-comentario { flex: 1; word-wrap: break-word; overflow-wrap: break-word; }
+        .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; }
 
-        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
-        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
-        .btn-editar { color: #428bca; display: none; } /* Oculto aqui pois a edição ocorre no index */
-        .btn-excluir { color: #d9534f; }
+        .acoes-card-custom { display: flex; justify-content: center; margin-top: 15px; }
+        .btn-excluir { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
 
-        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
+        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     </style>
 </head>
 <body>
@@ -274,7 +241,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, deleteDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, deleteDoc, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -317,10 +284,8 @@
                 const agora = new Date();
                 const dataHoraStr = `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
                 
-                await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(async (firestore) => {
-                    await firestore.addDoc(firestore.collection(db, "comentarios"), { 
-                        secaoId, texto, autor: usuarioLogado, dataHora: dataHoraStr, criadoEm: Date.now() 
-                    });
+                await addDoc(collection(db, "comentarios"), { 
+                    secaoId, texto, autor: usuarioLogado, dataHora: dataHoraStr, criadoEm: Date.now() 
                 });
                 if (input) input.value = '';
             } catch (error) { console.error(error); }
@@ -339,8 +304,8 @@
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        // Snapshot dinâmico para buscar todos os itens que pertencem ao destino "dela"
-        const qCards = query(collection(db, "posts"), where("destino", "==", "dela"), orderBy("criadoEm", "asc"));
+        // EXATAMENTE IGUAL À PÁGINA PRINCIPAL: Sem filtros restritivos no banco de dados.
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             const container = document.getElementById('todos-cards-dela');
             if(container) container.innerHTML = '';
@@ -351,7 +316,7 @@
                 
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        <button class="btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                     </div>
                 ` : '';
 
@@ -365,7 +330,7 @@
                             <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
                             <div class="contador-titulo">${post.titulo}</div>
                             <div class="contador-tempo">Clique para abrir 📂</div>
-                            <div class="pdf-subtitulo">${post.subtitulo}</div>
+                            <div class="pdf-subtitulo">${post.subtitulo || ''}</div>
                         </div>
                     </a>
                     <div class="secao-comentarios">
@@ -386,7 +351,6 @@
             });
         });
 
-        // Snapshot para escutar comentários em tempo real nos cards exibidos
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
             document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
@@ -408,7 +372,6 @@
     </script>
 
     <script>
-        // Efeito visual flutuante de corações ao fundo idêntico ao da página principal
         const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
         let listaCoracoes = [];
 
