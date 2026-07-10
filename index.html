@@ -238,6 +238,23 @@
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .link-titulo-atalho {
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .link-titulo-atalho:hover {
+            opacity: 1;
+            transform: scale(1.1);
         }
 
         #bloco-dias-amando { background-color: #ffebeb; }
@@ -535,7 +552,7 @@
 
         .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
-        .declaracao-titulo-render font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         
         .declaracao-wrapper {
             position: relative;
@@ -733,7 +750,10 @@
             </section>
 
             <section class="bloco-separado" id="bloco-playlist">
-                <div class="titulo-secao">🎶 Nossa Playlist</div>
+                <div class="titulo-secao">
+                    <span>🎶 Nossa Playlist</span>
+                    <a href="playlist.html" class="link-titulo-atalho" title="Ver Página da Playlist">🔗</a>
+                </div>
                 <div id="novos-cards-playlist"></div>
                 <a href="playlist.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-playlist">Ver o restante da playlist 🔽</a>
             </section>
@@ -756,8 +776,12 @@
             </section>
 
             <section class="bloco-separado" id="bloco-coisinhas-dela">
-                <div class="titulo-secao">✨ coisinhas dela</div>
+                <div class="titulo-secao">
+                    <span>✨ coisinhas dela</span>
+                    <a href="cardsdela.html" class="link-titulo-atalho" title="Ver Página Completa">🔗</a>
+                </div>
                 <div id="novos-cards-dela"></div>
+                <a href="cardsdela.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-dela">Ver todos os Cards Dela ➡️</a>
             </section>
 
             <section class="bloco-separado" id="bloco-coisas-minhas">
@@ -1363,8 +1387,13 @@
                 if (post.destaque) { containers.playlist.prepend(blocoMusica); } else { containers.playlist.appendChild(blocoMusica); }
             });
 
-            // Apresentações Coisinhas Dela
-            itensDela.forEach((post, index) => {
+            // Apresentações Coisinhas Dela - Lógica de Limite (Apenas as 5 primeiras)
+            const delaExibida = itensDela.slice(0, 5);
+            const btnDelaRestante = document.getElementById('btn-ver-restante-dela');
+            if(itensDela.length > 5 && btnDelaRestante) { btnDelaRestante.style.display = 'block'; } 
+            else if(btnDelaRestante) { btnDelaRestante.style.display = 'none'; }
+
+            delaExibida.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
