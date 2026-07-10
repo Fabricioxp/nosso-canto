@@ -254,7 +254,7 @@
             <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
         </section>
 
-        <section class="bloco-separado">
+        <section class="bloco-separate">
             <div class="titulo-secao">💝 Histórico Completo</div>
             <div id="lista-completa-dela">Carregando todas as coisinhas...</div>
         </section>
@@ -316,7 +316,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card updated with success! ✨');
+                    alert('Card atualizado com sucesso! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
                     alert('Card publicado com sucesso! ❤️');
@@ -371,7 +371,6 @@
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        // CORREÇÃO DOS CARDS SUMIDOS: Removemos temporariamente o orderBy para ignorar a necessidade de criar índices manuais complexos no painel do Firebase. A ordenação agora é feita localmente no JavaScript.
         const qCards = query(collection(db, "posts"), where("destino", "==", "dela"));
         onSnapshot(qCards, (snapshot) => {
             const container = document.getElementById('lista-completa-dela');
@@ -389,6 +388,11 @@
             let contadorGlobalDela = 0;
 
             docsOrdenados.forEach((post) => {
+                // REGRA MODIFICADA: Se não for a Maria que estiver logada, só mostra se o autor do post for estritamente a "Maria"
+                if (usuarioLogado !== "Maria" && post.autor !== "Maria") {
+                    return; // Ignora e passa para o próximo post da lista
+                }
+
                 contadorGlobalDela++; 
                 
                 const controleModificacao = (post.autor === usuarioLogado) ? `
