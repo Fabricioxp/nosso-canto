@@ -133,6 +133,40 @@
             letter-spacing: 1px;
         }
 
+        /* Estilos do Formulário de Publicação (Igual à Principal) */
+        #container-publicacao-maria {
+            display: none; /* Ativado via JS apenas para a Maria */
+        }
+        .form-publicacao {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .input-form-custom {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 0.9rem;
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.8);
+            font-family: var(--font-main);
+        }
+        .btn-publicar-novo {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .btn-publicar-novo:hover {
+            background-color: #734e4a;
+        }
+
         .data-card {
             font-size: 0.8rem;
             font-weight: bold;
@@ -142,7 +176,7 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
-            padding-right: 25px; /* Espaço para não bater nos 3 pontinhos se houver */
+            padding-right: 25px;
         }
 
         .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
@@ -168,7 +202,6 @@
         .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; }
         .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
 
-        /* Ajustado para não vazar nada */
         .secao-comentarios { 
             margin-top: 25px; 
             padding-top: 20px; 
@@ -186,7 +219,7 @@
         
         .input-comentario {
             flex: 1; 
-            min-width: 0; /* Evita que o input empurre as coisas para fora */
+            min-width: 0;
             padding: 10px 14px; 
             border: 1px solid var(--border-color);
             border-radius: 20px; 
@@ -204,7 +237,7 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 0.85rem;
-            white-space: nowrap; /* Garante que o texto do botão não quebre */
+            white-space: nowrap;
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -280,6 +313,18 @@
         </header>
 
         <div class="container-blocos">
+            
+            <section id="container-publicacao-maria" class="bloco-separado">
+                <div class="titulo-secao">✍️ Publicar Nova Lembrança</div>
+                <div class="form-publicacao">
+                    <input type="text" id="post-titulo" class="input-form-custom" placeholder="Título da Apresentação...">
+                    <input type="text" id="post-subtitulo" class="input-form-custom" placeholder="Subtítulo opcional...">
+                    <input type="text" id="post-imagem" class="input-form-custom" placeholder="URL da Imagem de Capa...">
+                    <input type="text" id="post-link" class="input-form-custom" placeholder="URL do Link / Conteúdo...">
+                    <button class="btn-publicar-novo" onclick="publicarNovoCardFirebase()">💖 Publicar no Espaço Dela</button>
+                </div>
+            </section>
+
             <section class="bloco-separado">
                 <div class="titulo-secao">✨ Todas as Apresentações</div>
                 <div id="todos-cards-dela"></div>
@@ -306,6 +351,12 @@
         let usuarioLogado = sessionStorage.getItem('user_canto') || "Visitante";
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
+        // Ativa o formulário de postagem no topo se for a Maria
+        if (usuarioLogado === "Maria") {
+            const caixaPublicacao = document.getElementById('container-publicacao-maria');
+            if (caixaPublicacao) caixaPublicacao.style.display = 'block';
+        }
+
         function sanitizarHTML(str) { 
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
@@ -324,12 +375,49 @@
             }
         };
 
-        // Fecha menus ao clicar fora
         document.addEventListener('click', function(e) {
             if (!e.target.classList.contains('btn-3pontinhos')) {
                 document.querySelectorAll('.dropdown-menu-opcoes').forEach(m => m.style.display = 'none');
             }
         });
+
+        // FUNCIONALIDADE DE PUBLICAR (Força o destino como "dela")
+        window.publicarNovoCardFirebase = async function() {
+            const t = document.getElementById('post-titulo').value.trim();
+            const s = document.getElementById('post-subtitulo').value.trim();
+            const img = document.getElementById('post-imagem').value.trim();
+            const lnk = document.getElementById('post-link').value.trim();
+
+            if (!t || !img || !lnk) {
+                alert("Por favor, preencha pelo menos o Título, Imagem e Link! ⚠️");
+                return;
+            }
+
+            try {
+                const agora = new Date();
+                const dataFormatada = agora.toLocaleDateString('pt-BR');
+
+                await addDoc(collection(db, "posts"), {
+                    titulo: t,
+                    subtitulo: s,
+                    imagem: img,
+                    link: lnk,
+                    destino: "dela", // Garante o filtro correto automático
+                    autor: "Maria",
+                    data: dataFormatada,
+                    criadoEm: Date.now()
+                });
+
+                alert("Card publicado com sucesso! 🎉");
+                document.getElementById('post-titulo').value = '';
+                document.getElementById('post-subtitulo').value = '';
+                document.getElementById('post-imagem').value = '';
+                document.getElementById('post-link').value = '';
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao publicar card.");
+            }
+        };
 
         window.removerPostagemFirebase = async function(id) {
             if (verificarPinSeguranca()) {
@@ -381,7 +469,6 @@
                 
                 if (post.destino === "dela") {
                     
-                    // TRAVA DA MARIA: Menu de 3 pontinhos e ações só aparecem se logado como "Maria"
                     const controleModificacao = (usuarioLogado === "Maria") ? `
                         <div class="menu-opcoes-container">
                             <button class="btn-3pontinhos" onclick="event.stopPropagation(); toggleMenuOpcoes('${post.id}')">⋮</button>
@@ -432,7 +519,6 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
-                // Excluir comentário permitido se for o dono do comentário OU se for a Maria administrando
                 const botaoExcluir = (com.autor === usuarioLogado || usuarioLogado === "Maria") ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
@@ -470,7 +556,6 @@
 
         function animarLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Trava de segurança: impede geração desenfreada de partículas em abas em segundo plano
             if(listaCoracoes.length < 25 && Math.random() < 0.04) { listaCoracoes.push(new Coracao()); }
             listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
             requestAnimationFrame(animarLoop);
