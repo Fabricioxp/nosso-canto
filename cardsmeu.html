@@ -129,6 +129,19 @@
 
         .pdf-link { text-decoration: none; display: block; }
         .pdf-bloco { text-align: center; cursor: pointer; }
+        
+        /* CORREÇÃO DO AZUL AQUI */
+        .contador-titulo { 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            color: var(--primary); 
+            margin-top: 8px; 
+        }
+        .contador-tempo { 
+            font-size: 0.85rem; 
+            color: var(--secondary); 
+            margin-top: 2px; 
+        }
         .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; }
 
         .numero-card {
@@ -218,7 +231,6 @@
         .btn-excluir { color: #d9534f; }
     </style>
 
-    <!-- BLOQUEIO DE SEGURANÇA INSTANTÂNEO -->
     <script>
         const checarUsuario = sessionStorage.getItem('user_canto');
         if (!checarUsuario) {
@@ -238,7 +250,6 @@
     </header>
 
     <div class="container-blocos">
-        <!-- O painel inicia visível, mas o Script ocultará caso não seja o Fabricio logado -->
         <section class="painel-upload" id="painel-de-postagem">
             <div class="titulo-secao" id="painel-titulo-acao">✨ Adicionar Novo Card (Coisinhas Minhas)</div>
             <input type="hidden" id="editando-id" value="">
