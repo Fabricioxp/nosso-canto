@@ -133,9 +133,8 @@
             letter-spacing: 1px;
         }
 
-        /* Estilos do Formulário de Publicação (Igual à Principal) */
         #container-publicacao-maria {
-            display: none; /* Ativado via JS apenas para a Maria */
+            display: none; 
         }
         .form-publicacao {
             display: flex;
@@ -292,7 +291,36 @@
             color: #d9534f;
         }
 
-        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        /* Container de Edição Inline */
+        .form-edicao-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            background: #fffafa;
+        }
+        .btn-salvar-edicao {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-cancelar-edicao {
+            background-color: #777;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -304,8 +332,6 @@
             </div>
             <a href="index.html" class="btn-voltar">⬅ Voltar</a>
         </div>
-
-        <canvas id="canvas-hearts"></canvas>
 
         <header>
             <h1>Coisinhas Dela</h1>
@@ -334,7 +360,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, deleteDoc, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, deleteDoc, onSnapshot, query, orderBy, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -351,7 +377,6 @@
         let usuarioLogado = sessionStorage.getItem('user_canto') || "Visitante";
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
-        // Ativa o formulário de postagem no topo se for a Maria
         if (usuarioLogado === "Maria") {
             const caixaPublicacao = document.getElementById('container-publicacao-maria');
             if (caixaPublicacao) caixaPublicacao.style.display = 'block';
@@ -381,7 +406,61 @@
             }
         });
 
-        // FUNCIONALIDADE DE PUBLICAR (Força o destino como "dela")
+        // FUNCIONALIDADE DO BOTÃO EDITAR (Transforma a exibição em campos editáveis)
+        window.ativarModoEdicao = function(id, tituloAtual, subtituloAtual, imagemAtual, linkAtual) {
+            const areaCard = document.getElementById(`bloco-conteudo-${id}`);
+            if (!areaCard) return;
+
+            areaCard.innerHTML = `
+                <div class="form-edicao-inline" onclick="event.stopPropagation()">
+                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar Título:</label>
+                    <input type="text" id="edit-t-${id}" class="input-form-custom" value="${tituloAtual}">
+                    
+                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar Subtítulo:</label>
+                    <input type="text" id="edit-s-${id}" class="input-form-custom" value="${subtituloAtual}">
+                    
+                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar URL da Imagem:</label>
+                    <input type="text" id="edit-img-${id}" class="input-form-custom" value="${imagemAtual}">
+                    
+                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar URL do Link:</label>
+                    <input type="text" id="edit-lnk-${id}" class="input-form-custom" value="${linkAtual}">
+                    
+                    <button class="btn-salvar-edicao" onclick="salvarEdicaoCardFirebase('${id}')">Salvar Alterações ✔️</button>
+                    <button class="btn-cancelar-edicao" onclick="window.location.reload()">Cancelar ❌</button>
+                </div>
+            `;
+        };
+
+        // SALVA AS ALTERAÇÕES NO FIREBASE
+        window.salvarEdicaoCardFirebase = async function(id) {
+            const novoT = document.getElementById(`edit-t-${id}`).value.trim();
+            const novoS = document.getElementById(`edit-s-${id}`).value.trim();
+            const novoImg = document.getElementById(`edit-img-${id}`).value.trim();
+            const novoLnk = document.getElementById(`edit-lnk-${id}`).value.trim();
+
+            if (!novoT || !novoImg || !novoLnk) {
+                alert("Campos obrigatórios não podem ficar vazios!");
+                return;
+            }
+
+            if (verificarPinSeguranca()) {
+                try {
+                    await updateDoc(doc(db, "posts", id), {
+                        titulo: novoT,
+                        subtitulo: novoS,
+                        imagem: novoImg,
+                        link: novoLnk
+                    });
+                    alert("Card atualizado com sucesso! 📝");
+                } catch (error) {
+                    console.error(error);
+                    alert("Erro ao salvar alterações.");
+                }
+            } else {
+                alert("PIN incorreto! Ação cancelada.");
+            }
+        };
+
         window.publicarNovoCardFirebase = async function() {
             const t = document.getElementById('post-titulo').value.trim();
             const s = document.getElementById('post-subtitulo').value.trim();
@@ -402,7 +481,7 @@
                     subtitulo: s,
                     imagem: img,
                     link: lnk,
-                    destino: "dela", // Garante o filtro correto automático
+                    destino: "dela", 
                     autor: "Maria",
                     data: dataFormatada,
                     criadoEm: Date.now()
@@ -415,7 +494,6 @@
                 document.getElementById('post-link').value = '';
             } catch (error) {
                 console.error(error);
-                alert("Erro ao publicar card.");
             }
         };
 
@@ -469,11 +547,16 @@
                 
                 if (post.destino === "dela") {
                     
+                    const tS = post.titulo ? post.titulo.replace(/'/g, "\\'") : '';
+                    const sS = post.subtitulo ? post.subtitulo.replace(/'/g, "\\'") : '';
+                    const iS = post.imagem ? post.imagem.replace(/'/g, "\\'") : '';
+                    const lS = post.link ? post.link.replace(/'/g, "\\'") : '';
+
                     const controleModificacao = (usuarioLogado === "Maria") ? `
                         <div class="menu-opcoes-container">
                             <button class="btn-3pontinhos" onclick="event.stopPropagation(); toggleMenuOpcoes('${post.id}')">⋮</button>
                             <div id="dropdown-${post.id}" class="dropdown-menu-opcoes">
-                                <button onclick="alert('Funcionalidade de editar em desenvolvimento!')">Editar ✏️</button>
+                                <button onclick="event.stopPropagation(); ativarModoEdicao('${post.id}', '${tS}', '${sS}', '${iS}', '${lS}')">Editar ✏️</button>
                                 <button class="btn-menu-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                             </div>
                         </div>
@@ -483,16 +566,18 @@
                     bloco.className = 'card-separador-interno';
                     bloco.innerHTML = `
                         ${controleModificacao}
-                        <div class="data-card"><span>🗓️ ${post.data || ''}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
-                        <a href="${post.link}" target="_blank" class="pdf-link">
-                            <div class="pdf-bloco">
-                                <div class="numero-card">${contadorDela++}</div>
-                                <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
-                                <div class="contador-titulo">${post.titulo || 'Sem título'}</div>
-                                <div class="contador-tempo">Clique para abrir 📂</div>
-                                <div class="pdf-subtitulo">${post.subtitulo || ''}</div>
-                            </div>
-                        </a>
+                        <div id="bloco-conteudo-${post.id}">
+                            <div class="data-card"><span>🗓️ ${post.data || ''}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                            <a href="${post.link}" target="_blank" class="pdf-link">
+                                <div class="pdf-bloco">
+                                    <div class="numero-card">${contadorDela++}</div>
+                                    <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                                    <div class="contador-titulo">${post.titulo || 'Sem título'}</div>
+                                    <div class="contador-tempo">Clique para abrir 📂</div>
+                                    <div class="pdf-subtitulo">${post.subtitulo || ''}</div>
+                                </div>
+                            </a>
+                        </div>
                         <div class="secao-comentarios">
                             <div class="form-comentario">
                                 <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
@@ -529,38 +614,6 @@
                 containerLista.appendChild(item);
             });
         });
-    </script>
-
-    <script>
-        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
-        let listaCoracoes = [];
-
-        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
-
-        class Coracao {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.2 + 0.8; 
-                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
-            }
-            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.004; }
-            desenhar() {
-                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
-                ctx.beginPath(); ctx.moveTo(this.x, this.y);
-                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
-                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
-                ctx.fill(); ctx.restore();
-            }
-        }
-
-        function animarLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if(listaCoracoes.length < 25 && Math.random() < 0.04) { listaCoracoes.push(new Coracao()); }
-            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
-            requestAnimationFrame(animarLoop);
-        }
-        document.addEventListener('DOMContentLoaded', animarLoop);
     </script>
 </body>
 </html>
