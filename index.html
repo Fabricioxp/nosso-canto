@@ -858,7 +858,7 @@
             const postsRef = collection(db, "posts");
             const cardsOriginais = [
                 { identificadorUnico: "original_maria_1", destino: "dela", titulo: "A fofura que ela fez para mim 🥰", subtitulo: "Ver apresentação", imagem: "https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk", data: "17/05/2026", autor: "Maria", criadoEm: 1715918400000 },
-                { identificadorUnico: "original_fabricio_1", destino: "meu", titulo: "meu objetivo de amoor", subtitulo: "Ver apresentação", imagem: "https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk", data: "18/05/2026", autor: "Fabricio", criadoEm: 1716004800000 },
+                { identificadorUnico: "original_fabricio_1", destino: "meu", titulo: "meu objective de amoor", subtitulo: "Ver apresentação", imagem: "https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk", data: "18/05/2026", autor: "Fabricio", criadoEm: 1716004800000 },
                 { identificadorUnico: "original_fabricio_2", destino: "meu", titulo: "para o amor da minha vida", subtitulo: "ver declaration", imagem: "https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1", data: "25/05/2026", autor: "Fabricio", criadoEm: 1716609600000 }
             ];
 
@@ -1633,72 +1633,68 @@
 
         window.celebrarAmor = function() {
             const canvas = document.getElementById('canvas-hearts');
+            if(!canvas) return;
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            
-            let hearts = [];
-            for (let i = 0; i < 40; i++) {
-                hearts.push({
+
+            const coracoes = [];
+            for (let i = 0; i < 35; i++) {
+                coracoes.push({
                     x: Math.random() * canvas.width,
                     y: canvas.height + Math.random() * 100,
                     size: Math.random() * 15 + 10,
                     speed: Math.random() * 3 + 2,
-                    opacity: Math.random() * 0.5 + 0.5
+                    opacity: Math.random() * 0.6 + 0.4
                 });
             }
 
-            function drawHeart(x, y, size, opacity) {
+            function desenharCoracao(x, y, size, opacity) {
                 ctx.save();
                 ctx.globalAlpha = opacity;
                 ctx.beginPath();
                 ctx.moveTo(x, y);
-                ctx.bezierCurveTo(x - size/2, y - size/2, x - size, y + size/3, x, y + size * 0.85);
-                ctx.bezierCurveTo(x + size, y + size/3, x + size/2, y - size/2, x, y);
+                ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
+                ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
                 ctx.fillStyle = '#ff4d6d';
                 ctx.fill();
                 ctx.restore();
             }
 
-            let animationFrame;
-            function animate() {
+            let animId;
+            function animar() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let alive = false;
-                hearts.forEach(h => {
-                    h.y -= h.speed;
-                    if (h.y > -20) alive = true;
-                    drawHeart(h.x, h.y, h.size, h.opacity);
+                let ativos = 0;
+                coracoes.forEach(c => {
+                    c.y -= c.speed;
+                    if (c.y > -50) ativos++;
+                    desenharCoracao(c.x, c.y, c.size, c.opacity);
                 });
-                if (alive) { animationFrame = requestAnimationFrame(animate); }
-                else { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+                if (ativos > 0) { animId = requestAnimationFrame(animar); } 
+                else { ctx.clearRect(0, 0, canvas.width, canvas.height); cancelAnimationFrame(animId); }
             }
-            animate();
-            setTimeout(() => { cancelAnimationFrame(animationFrame); ctx.clearRect(0,0,canvas.width,canvas.height); }, 6000);
+            animar();
         };
 
         function atualizarContadores() {
-            const dataInicioAmor = new Date("2024-04-18T00:00:00");
-            const dataInicioNamoro = new Date("2024-06-12T00:00:00");
+            const dataAmor = new Date("2024-05-12T00:00:00");
+            const dataNamoro = new Date("2024-06-12T00:00:00");
             const agora = new Date();
 
-            const diffAmor = agora - dataInicioAmor;
-            const diasAmor = Math.floor(diffAmor / (1000 * 60 * 60 * 24));
+            function diferencaDias(dataPassada, dataAtual) {
+                const diffTime = Math.abs(dataAtual - dataPassada);
+                return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            }
 
-            const diffNamoro = agora - dataInicioNamoro;
-            const diasNamoro = Math.floor(diffNamoro / (1000 * 60 * 60 * 24));
+            const elementoAmor = document.getElementById('contador-amor');
+            const elementoNamoro = document.getElementById('contador-namoro');
 
-            const contAmor = document.getElementById('contador-amor');
-            const contNamoro = document.getElementById('contador-namoro');
-
-            if(contAmor) contAmor.innerHTML = `<span>${diasAmor}</span> dias`;
-            if(contNamoro) contNamoro.innerHTML = `<span>${diasNamoro}</span> dias`;
-            
-            if(contAmor && !contAmor.classList.contains('ativo')) contAmor.classList.add('ativo');
-            if(contNamoro && !contNamoro.classList.contains('ativo')) contNamoro.classList.add('ativo');
+            if(elementoAmor) elementoAmor.innerHTML = `<span>${diferencaDias(dataAmor, agora)}</span> dias`;
+            if(elementoNamoro) elementoNamoro.innerHTML = `<span>${diferencaDias(dataNamoro, agora)}</span> dias`;
         }
-
-        setInterval(atualizarContadores, 60000);
+        
         atualizarContadores();
+        setInterval(atualizarContadores, 60000);
         verificarSessao();
     </script>
 </body>
