@@ -785,8 +785,12 @@
             </section>
 
             <section class="bloco-separado" id="bloco-coisas-minhas">
-                <div class="titulo-secao">✨ coisinhas minhas</div>
+                <div class="titulo-secao">
+                    <span>✨ coisinhas minhas</span>
+                    <a href="cardsmeu.html" class="link-titulo-atalho" title="Ver Página Completa">🔗</a>
+                </div>
                 <div id="novos-cards-meu"></div>
+                <a href="cardsmeu.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-meu">Ver todos os Cards Meus ➡️</a>
             </section>
 
             <section class="painel-upload" id="painel-galeria-posts">
@@ -1431,8 +1435,13 @@
                 }, 500);
             });
 
-            // Apresentações Coisas Minhas
-            itensMeu.forEach((post, index) => {
+            // Apresentações Coisas Minhas - Lógica de Limite (Apenas as 5 primeiras)
+            const meuExibido = itensMeu.slice(0, 5);
+            const btnMeuRestante = document.getElementById('btn-ver-restante-meu');
+            if(itensMeu.length > 5 && btnMeuRestante) { btnMeuRestante.style.display = 'block'; } 
+            else if(btnMeuRestante) { btnMeuRestante.style.display = 'none'; }
+
+            meuExibido.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
