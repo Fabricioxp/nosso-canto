@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coisinhas Dela 🤍</title>
+    <title>Cards Dela - Nosso Canto 🤍</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,39 +30,22 @@
             color: var(--text-color);
             font-family: var(--font-main);
             padding-bottom: 90px;
-            overflow-x: hidden;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
 
-        #conteudo-site { 
-            position: relative;
-            z-index: 2;
-            padding-top: 60px;
-        }
-
         .header-status-bar {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 55px;
+            top: 0; left: 0; width: 100%; height: 55px;
             z-index: 9999;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             padding: 0 20px;
             box-shadow: 0 2px 15px rgba(140, 98, 93, 0.08);
             border-bottom: 1px solid rgba(230, 179, 168, 0.25);
-        }
-
-        .status-usuario-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .status-nome-parceiro {
@@ -77,28 +60,23 @@
             padding: 5px 12px; 
             border-radius: 10px;
             font-size: 0.85rem; 
-            font-family: var(--font-main);
             color: var(--primary); 
             cursor: pointer;
             text-decoration: none;
             font-weight: bold;
-            transition: background 0.2s;
         }
-        .btn-voltar:hover { background: rgba(230, 179, 168, 0.15); }
 
         header {
             text-align: center;
-            padding: 30px 20px 35px 20px;
+            padding: 90px 20px 25px 20px;
         }
 
         header h1 {
             font-family: var(--font-title);
-            font-size: 2.3rem;
+            font-size: 2.1rem;
             color: var(--primary);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
-
-        header p { font-size: 1rem; color: var(--secondary); }
 
         .container-blocos {
             max-width: 450px;
@@ -107,7 +85,7 @@
         }
 
         .bloco-separado {
-            background-color: #fff0f5; 
+            background-color: var(--bg-card);
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
@@ -115,55 +93,24 @@
         }
 
         .card-separador-interno {
-            position: relative;
-            background-color: var(--bg-card);
-            padding: 20px;
-            border-radius: 16px;
             margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(140, 98, 93, 0.05);
+            padding-bottom: 25px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .card-separador-interno:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
         .titulo-secao {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             text-align: center;
             color: var(--primary);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-
-        #container-publicacao-maria {
-            display: none; 
-        }
-        .form-publicacao {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .input-form-custom {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            font-size: 0.9rem;
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.8);
-            font-family: var(--font-main);
-        }
-        .btn-publicar-novo {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: background 0.2s;
-        }
-        .btn-publicar-novo:hover {
-            background-color: #734e4a;
         }
 
         .data-card {
@@ -175,7 +122,6 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
-            padding-right: 25px;
         }
 
         .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
@@ -201,166 +147,99 @@
         .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; }
         .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
 
+        .painel-upload {
+            background-color: #ffffff;
+            border: 1px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
+        }
+
+        .input-custom, .select-custom {
+            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
+            border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
+            margin-bottom: 12px; outline: none; background: #fffbfb;
+            color: var(--text-color);
+        }
+        .input-custom:focus, .select-custom:focus {
+            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+        }
+
+        .btn-postar {
+            width: 100%; background-color: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: 15px; font-family: var(--font-main);
+            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-postar:hover { background-color: #734f4b; }
+
         .secao-comentarios { 
-            margin-top: 25px; 
-            padding-top: 20px; 
-            border-top: 1px dashed var(--border-color); 
-            width: 100%;
+            margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); 
         }
-        
-        .form-comentario { 
-            display: flex; 
-            align-items: center;
-            gap: 8px; 
-            margin-bottom: 15px; 
-            width: 100%;
-        }
-        
+        .form-comentario { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; width: 100%; }
         .input-comentario {
-            flex: 1; 
-            min-width: 0;
-            padding: 10px 14px; 
-            border: 1px solid var(--border-color);
-            border-radius: 20px; 
-            font-size: 0.9rem;
-            outline: none; 
-            background-color: rgba(255, 255, 255, 0.6);
+            flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
+            border-radius: 20px; font-family: var(--font-main); font-size: 0.9rem; outline: none; 
         }
-        
         .btn-comentar { 
-            background-color: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 10px 14px; 
-            border-radius: 20px; 
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.85rem;
-            white-space: nowrap;
+            background-color: var(--primary); color: white; border: none; padding: 10px 16px; 
+            border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem;
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; text-align: left; }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; }
         .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; }
         .autor-comentario { font-weight: bold; color: var(--primary); }
         .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        .texto-comentario { flex: 1; word-wrap: break-word; overflow-wrap: break-word; }
+        .texto-comentario { flex: 1; word-break: break-word; }
         .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; }
 
-        /* Menu de Opções / 3 Pontinhos */
-        .menu-opcoes-container {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 10;
-        }
-        .btn-3pontinhos {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            color: var(--secondary);
-            cursor: pointer;
-            padding: 5px;
-        }
-        .dropdown-menu-opcoes {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 30px;
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            overflow: hidden;
-            min-width: 110px;
-        }
-        .dropdown-menu-opcoes button {
-            background: none;
-            border: none;
-            width: 100%;
-            padding: 10px;
-            font-size: 0.85rem;
-            text-align: left;
-            cursor: pointer;
-            color: var(--text-color);
-        }
-        .dropdown-menu-opcoes button:hover {
-            background-color: #fff3f2;
-        }
-        .dropdown-menu-opcoes .btn-menu-excluir {
-            color: #d9534f;
-        }
-
-        /* Container de Edição Inline */
-        .form-edicao-inline {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 15px 0;
-            padding: 10px;
-            border: 1px dashed var(--border-color);
-            border-radius: 10px;
-            background: #fffafa;
-        }
-        .btn-salvar-edicao {
-            background-color: #5cb85c;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-cancelar-edicao {
-            background-color: #777;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 4px;
-        }
+        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; padding: 5px 10px; border-radius: 10px; font-weight: bold; }
+        .btn-editar { color: #428bca; }
+        .btn-excluir { color: #d9534f; }
     </style>
 </head>
 <body>
 
-    <div id="conteudo-site">
-        <div class="header-status-bar">
-            <div class="status-usuario-container">
-                <span id="label-parceiro" class="status-nome-parceiro">Conectado...</span>
-            </div>
-            <a href="index.html" class="btn-voltar">⬅ Voltar</a>
-        </div>
+    <div class="header-status-bar">
+        <span id="label-parceiro" class="status-nome-parceiro">Conectado ❤</span>
+        <a href="index.html" class="btn-voltar">⬅ Voltar</a>
+    </div>
 
-        <header>
-            <h1>Coisinhas Dela</h1>
-            <p>Todos os cards e apresentações especiais criados por ela. ✨</p>
-        </header>
+    <header>
+        <h1>Todas as Coisinhas Dela ✨</h1>
+    </header>
 
-        <div class="container-blocos">
+    <div class="container-blocos">
+
+        <section class="painel-upload" id="painel-de-postagem">
+            <div class="titulo-secao" id="painel-titulo-acao">✨ Adicionar Novo Card (Apresentações)</div>
+            <input type="hidden" id="editando-id" value="">
             
-            <section id="container-publicacao-maria" class="bloco-separado">
-                <div class="titulo-secao">✍️ Publicar Nova Lembrança</div>
-                <div class="form-publicacao">
-                    <input type="text" id="post-titulo" class="input-form-custom" placeholder="Título da Apresentação...">
-                    <input type="text" id="post-subtitulo" class="input-form-custom" placeholder="Subtítulo opcional...">
-                    <input type="text" id="post-imagem" class="input-form-custom" placeholder="URL da Imagem de Capa...">
-                    <input type="text" id="post-link" class="input-form-custom" placeholder="URL do Link / Conteúdo...">
-                    <button class="btn-publicar-novo" onclick="publicarNovoCardFirebase()">💖 Publicar no Espaço Dela</button>
-                </div>
-            </section>
+            <select id="post-destino" class="select-custom">
+                <option value="dela" selected>Postar em: Coisinhas Dela</option>
+                <option value="meu">Postar em: Coisas Minhas</option>
+            </select>
+            <input type="text" id="post-titulo" class="input-custom" placeholder="Título">
+            <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link">
+            <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem">
+            <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
+            <input type="date" id="post-data" class="input-custom">
+            
+            <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
+        </section>
 
-            <section class="bloco-separado">
-                <div class="titulo-secao">✨ Todas as Apresentações</div>
-                <div id="todos-cards-dela"></div>
-            </section>
-        </div>
+        <section class="bloco-separado">
+            <div class="titulo-secao">💝 Histórico Completo</div>
+            <div id="lista-completa-dela">Carregando todas as coisinhas...</div>
+        </section>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, deleteDoc, onSnapshot, query, orderBy, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -374,13 +253,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let usuarioLogado = sessionStorage.getItem('user_canto') || "Visitante";
+        const usuarioLogado = sessionStorage.getItem('user_canto') || "Anônimo";
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
-
-        if (usuarioLogado === "Maria") {
-            const caixaPublicacao = document.getElementById('container-publicacao-maria');
-            if (caixaPublicacao) caixaPublicacao.style.display = 'block';
-        }
 
         function sanitizarHTML(str) { 
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
@@ -388,121 +262,71 @@
 
         function verificarPinSeguranca() {
             const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
-            return pinDigitado === "1566";
+            return pinDigitado === "1566" ? true : (pinDigitado !== null && alert("PIN incorreto!"), false);
         }
 
-        window.toggleMenuOpcoes = function(id) {
-            const menu = document.getElementById(`dropdown-${id}`);
-            if (menu) {
-                const visivel = menu.style.display === 'block';
-                document.querySelectorAll('.dropdown-menu-opcoes').forEach(m => m.style.display = 'none');
-                menu.style.display = visivel ? 'none' : 'block';
-            }
-        };
+        function resetarFormulario() {
+            document.getElementById('editando-id').value = '';
+            document.getElementById('post-destino').value = 'dela';
+            document.getElementById('post-titulo').value = '';
+            document.getElementById('post-subtitulo').value = '';
+            document.getElementById('post-imagem').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('post-data').value = '';
+            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card (Apresentações)';
+            document.getElementById('btn-salvar-post').innerText = 'Publicar Apresentação ❤️';
+        }
 
-        document.addEventListener('click', function(e) {
-            if (!e.target.classList.contains('btn-3pontinhos')) {
-                document.querySelectorAll('.dropdown-menu-opcoes').forEach(m => m.style.display = 'none');
-            }
-        });
+        window.salvarPostagemFirebase = async function() {
+            const idEditando = document.getElementById('editando-id').value;
+            const destino = document.getElementById('post-destino').value;
+            const titulo = document.getElementById('post-titulo').value.trim();
+            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
+            const imagem = document.getElementById('post-imagem').value.trim();
+            const link = document.getElementById('post-link').value.trim();
+            const dataInput = document.getElementById('post-data').value;
 
-        // FUNCIONALIDADE DO BOTÃO EDITAR (Transforma a exibição em campos editáveis)
-        window.ativarModoEdicao = function(id, tituloAtual, subtituloAtual, imagemAtual, linkAtual) {
-            const areaCard = document.getElementById(`bloco-conteudo-${id}`);
-            if (!areaCard) return;
-
-            areaCard.innerHTML = `
-                <div class="form-edicao-inline" onclick="event.stopPropagation()">
-                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar Título:</label>
-                    <input type="text" id="edit-t-${id}" class="input-form-custom" value="${tituloAtual}">
-                    
-                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar Subtítulo:</label>
-                    <input type="text" id="edit-s-${id}" class="input-form-custom" value="${subtituloAtual}">
-                    
-                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar URL da Imagem:</label>
-                    <input type="text" id="edit-img-${id}" class="input-form-custom" value="${imagemAtual}">
-                    
-                    <label style="font-size:0.8rem; font-weight:bold; color:var(--primary)">Editar URL do Link:</label>
-                    <input type="text" id="edit-lnk-${id}" class="input-form-custom" value="${linkAtual}">
-                    
-                    <button class="btn-salvar-edicao" onclick="salvarEdicaoCardFirebase('${id}')">Salvar Alterações ✔️</button>
-                    <button class="btn-cancelar-edicao" onclick="window.location.reload()">Cancelar ❌</button>
-                </div>
-            `;
-        };
-
-        // SALVA AS ALTERAÇÕES NO FIREBASE
-        window.salvarEdicaoCardFirebase = async function(id) {
-            const novoT = document.getElementById(`edit-t-${id}`).value.trim();
-            const novoS = document.getElementById(`edit-s-${id}`).value.trim();
-            const novoImg = document.getElementById(`edit-img-${id}`).value.trim();
-            const novoLnk = document.getElementById(`edit-lnk-${id}`).value.trim();
-
-            if (!novoT || !novoImg || !novoLnk) {
-                alert("Campos obrigatórios não podem ficar vazios!");
-                return;
-            }
-
-            if (verificarPinSeguranca()) {
-                try {
-                    await updateDoc(doc(db, "posts", id), {
-                        titulo: novoT,
-                        subtitulo: novoS,
-                        imagem: novoImg,
-                        link: novoLnk
-                    });
-                    alert("Card atualizado com sucesso! 📝");
-                } catch (error) {
-                    console.error(error);
-                    alert("Erro ao salvar alterações.");
-                }
-            } else {
-                alert("PIN incorreto! Ação cancelada.");
-            }
-        };
-
-        window.publicarNovoCardFirebase = async function() {
-            const t = document.getElementById('post-titulo').value.trim();
-            const s = document.getElementById('post-subtitulo').value.trim();
-            const img = document.getElementById('post-imagem').value.trim();
-            const lnk = document.getElementById('post-link').value.trim();
-
-            if (!t || !img || !lnk) {
-                alert("Por favor, preencha pelo menos o Título, Imagem e Link! ⚠️");
-                return;
-            }
+            if (!titulo || !imagem || !link || !dataInput) { alert('Por favor, preencha todos os campos obrigatórios e a data! ❤️'); return; }
+            
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
 
             try {
-                const agora = new Date();
-                const dataFormatada = agora.toLocaleDateString('pt-BR');
+                if (idEditando) {
+                    await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
+                    alert('Card atualizado com sucesso! ✨');
+                } else {
+                    await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
+                    alert('Card publicado com sucesso! ❤️');
+                }
+                resetarFormulario();
+            } catch (error) { console.error(error); }
+        };
+        document.getElementById('btn-salvar-post').addEventListener('click', window.salvarPostagemFirebase);
 
-                await addDoc(collection(db, "posts"), {
-                    titulo: t,
-                    subtitulo: s,
-                    imagem: img,
-                    link: lnk,
-                    destino: "dela", 
-                    autor: "Maria",
-                    data: dataFormatada,
-                    criadoEm: Date.now()
-                });
-
-                alert("Card publicado com sucesso! 🎉");
-                document.getElementById('post-titulo').value = '';
-                document.getElementById('post-subtitulo').value = '';
-                document.getElementById('post-imagem').value = '';
-                document.getElementById('post-link').value = '';
-            } catch (error) {
-                console.error(error);
+        window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
+            document.getElementById('editando-id').value = id;
+            document.getElementById('post-destino').value = destino;
+            document.getElementById('post-titulo').value = titulo;
+            document.getElementById('post-subtitulo').value = subtitulo;
+            document.getElementById('post-imagem').value = imagem;
+            document.getElementById('post-link').value = link;
+            
+            if(data && data.includes('/')) {
+                const [dia, mes, ano] = data.split('/');
+                document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
             }
+            
+            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
+            document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
+            document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
         };
 
         window.removerPostagemFirebase = async function(id) {
             if (verificarPinSeguranca()) {
                 await deleteDoc(doc(db, "posts", id));
+                resetarFormulario();
                 alert("Lembrança apagada com sucesso! 👍");
-            } else {
-                alert("PIN incorreto! Ação cancelada. 🔐");
             }
         };
 
@@ -512,90 +336,75 @@
             if (!texto) return;
             try {
                 const agora = new Date();
-                const dataHoraStr = `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-                
-                await addDoc(collection(db, "comentarios"), { 
-                    secaoId, texto, autor: usuarioLogado, dataHora: dataHoraStr, criadoEm: Date.now() 
-                });
+                const dataHora = `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                await addDoc(collection(db, "comentarios"), { secaoId, texto, autor: usuarioLogado, dataHora, criadoEm: Date.now() });
                 if (input) input.value = '';
             } catch (error) { console.error(error); }
         };
 
         window.excluirComentarioFirebase = async function(id) { 
-            if (verificarPinSeguranca()) { 
-                await deleteDoc(doc(db, "comentarios", id)); 
-                alert("Comentário removido! 👍"); 
-            } else {
-                alert("PIN incorreto! Ação cancelada. 🔐");
-            }
+            if (verificarPinSeguranca()) { await deleteDoc(doc(db, "comentarios", id)); alert("Comentário removido! 👍"); }
         };
 
         window.verificarEnter = function(event, id) {
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
-        
+        // Escuta em tempo real ordenada por 'criadoEm' de forma ASCENDENTE (igual a página principal)
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
-            const container = document.getElementById('todos-cards-dela');
-            if(container) container.innerHTML = '';
+            const container = document.getElementById('lista-completa-dela');
+            if (!container) return;
+            container.innerHTML = '';
 
-            let contadorDela = 1;
+            let contadorGlobalDela = 0;
 
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
                 
-                if (post.destino === "dela") {
+                // Nós contamos TODOS os elementos passados independentemente de onde eles se localizam na listagem
+                if (post.destino === 'dela') {
+                    contadorGlobalDela++; 
                     
-                    const tS = post.titulo ? post.titulo.replace(/'/g, "\\'") : '';
-                    const sS = post.subtitulo ? post.subtitulo.replace(/'/g, "\\'") : '';
-                    const iS = post.imagem ? post.imagem.replace(/'/g, "\\'") : '';
-                    const lS = post.link ? post.link.replace(/'/g, "\\'") : '';
-
-                    const controleModificacao = (usuarioLogado === "Maria") ? `
-                        <div class="menu-opcoes-container">
-                            <button class="btn-3pontinhos" onclick="event.stopPropagation(); toggleMenuOpcoes('${post.id}')">⋮</button>
-                            <div id="dropdown-${post.id}" class="dropdown-menu-opcoes">
-                                <button onclick="event.stopPropagation(); ativarModoEdicao('${post.id}', '${tS}', '${sS}', '${iS}', '${lS}')">Editar ✏️</button>
-                                <button class="btn-menu-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                            </div>
+                    const controleModificacao = (post.autor === usuarioLogado) ? `
+                        <div class="acoes-card-custom">
+                            <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                            <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     ` : '';
 
                     const bloco = document.createElement('div');
                     bloco.className = 'card-separador-interno';
                     bloco.innerHTML = `
-                        ${controleModificacao}
-                        <div id="bloco-conteudo-${post.id}">
-                            <div class="data-card"><span>🗓️ ${post.data || ''}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
-                            <a href="${post.link}" target="_blank" class="pdf-link">
-                                <div class="pdf-bloco">
-                                    <div class="numero-card">${contadorDela++}</div>
-                                    <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
-                                    <div class="contador-titulo">${post.titulo || 'Sem título'}</div>
-                                    <div class="contador-tempo">Clique para abrir 📂</div>
-                                    <div class="pdf-subtitulo">${post.subtitulo || ''}</div>
-                                </div>
-                            </a>
-                        </div>
+                        <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                        <a href="${post.link}" target="_blank" class="pdf-link">
+                            <div class="pdf-bloco">
+                                <div class="numero-card">${contadorGlobalDela}</div>
+                                <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                                <div class="contador-titulo">${post.titulo}</div>
+                                <div class="contador-tempo">Clique para abrir 📂</div>
+                                <div class="pdf-subtitulo">${post.subtitulo}</div>
+                            </div>
+                        </a>
                         <div class="secao-comentarios">
                             <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo..." onkeypress="verificarEnter(event, '${post.id}')">
                                 <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios"></div>
                         </div>
+                        ${controleModificacao}
                     `;
                     container.appendChild(bloco);
-
-                    setTimeout(() => {
-                        const inp = document.getElementById(`input-${post.id}`);
-                        if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                    }, 200);
                 }
             });
+
+            if(contadorGlobalDela === 0) {
+                container.innerHTML = '<p style="text-align:center; color: var(--secondary);">Nenhum card postado aqui ainda. ❤️</p>';
+            }
         });
 
+        // Monitoramento de comentários em tempo real
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
             document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
@@ -604,7 +413,7 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
-                const botaoExcluir = (com.autor === usuarioLogado || usuarioLogado === "Maria") ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
                 item.innerHTML = `
