@@ -82,6 +82,7 @@
             max-width: 450px;
             margin: 0 auto;
             padding: 0 15px;
+            width: 100%;
         }
 
         .bloco-separado {
@@ -156,13 +157,13 @@
             box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
         }
 
-        .input-custom, .select-custom {
+        .input-custom {
             width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
             border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
             margin-bottom: 12px; outline: none; background: #fffbfb;
             color: var(--text-color);
         }
-        .input-custom:focus, .select-custom:focus {
+        .input-custom:focus {
             border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
         }
 
@@ -173,17 +174,38 @@
         }
         .btn-postar:hover { background-color: #734f4b; }
 
+        /* Ajustado para evitar vazamento em telas pequenas */
         .secao-comentarios { 
             margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); 
         }
-        .form-comentario { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; width: 100%; }
+        .form-comentario { 
+            display: flex; 
+            flex-direction: row;
+            align-items: center; 
+            gap: 8px; 
+            margin-bottom: 15px; 
+            width: 100%; 
+        }
         .input-comentario {
-            flex: 1; padding: 10px 14px; border: 1px solid var(--border-color);
-            border-radius: 20px; font-family: var(--font-main); font-size: 0.9rem; outline: none; 
+            flex: 1; 
+            min-width: 0; /* Garante que o input encolha no flexbox se necessário */
+            padding: 10px 14px; 
+            border: 1px solid var(--border-color);
+            border-radius: 20px; 
+            font-family: var(--font-main); 
+            font-size: 0.9rem; 
+            outline: none; 
         }
         .btn-comentar { 
-            background-color: var(--primary); color: white; border: none; padding: 10px 16px; 
-            border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem;
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 10px 14px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.85rem;
+            white-space: nowrap; /* Impede o texto do botão de quebrar ou deformar */
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -213,14 +235,11 @@
 
     <div class="container-blocos">
 
+        <!-- PAINEL COM O MESMO LAYOUT PARA ADICIONAR E EDITAR -->
         <section class="painel-upload" id="painel-de-postagem">
-            <div class="titulo-secao" id="painel-titulo-acao">✨ Adicionar Novo Card (Apresentações)</div>
+            <div class="titulo-secao" id="painel-titulo-acao">✨ Adicionar Novo Card (Coisinhas Dela)</div>
             <input type="hidden" id="editando-id" value="">
             
-            <select id="post-destino" class="select-custom">
-                <option value="dela" selected>Postar em: Coisinhas Dela</option>
-                <option value="meu">Postar em: Coisas Minhas</option>
-            </select>
             <input type="text" id="post-titulo" class="input-custom" placeholder="Título">
             <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link">
             <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem">
@@ -230,6 +249,7 @@
             <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
         </section>
 
+        <!-- CONTAINER DA LISTA COMPLETA -->
         <section class="bloco-separado">
             <div class="titulo-secao">💝 Histórico Completo</div>
             <div id="lista-completa-dela">Carregando todas as coisinhas...</div>
@@ -267,19 +287,18 @@
 
         function resetarFormulario() {
             document.getElementById('editando-id').value = '';
-            document.getElementById('post-destino').value = 'dela';
             document.getElementById('post-titulo').value = '';
             document.getElementById('post-subtitulo').value = '';
             document.getElementById('post-imagem').value = '';
             document.getElementById('post-link').value = '';
             document.getElementById('post-data').value = '';
-            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card (Apresentações)';
+            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card (Coisinhas Dela)';
             document.getElementById('btn-salvar-post').innerText = 'Publicar Apresentação ❤️';
         }
 
         window.salvarPostagemFirebase = async function() {
             const idEditando = document.getElementById('editando-id').value;
-            const destino = document.getElementById('post-destino').value;
+            const destino = "dela"; // Fixo para salvar sempre aqui
             const titulo = document.getElementById('post-titulo').value.trim();
             const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
             const imagem = document.getElementById('post-imagem').value.trim();
@@ -306,7 +325,6 @@
 
         window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
             document.getElementById('editando-id').value = id;
-            document.getElementById('post-destino').value = destino;
             document.getElementById('post-titulo').value = titulo;
             document.getElementById('post-subtitulo').value = subtitulo;
             document.getElementById('post-imagem').value = imagem;
@@ -350,8 +368,8 @@
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        // Escuta em tempo real ordenada por 'criadoEm' de forma ASCENDENTE (igual a página principal)
-        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
+        // Escuta em tempo real filtrada por destino 'dela' ordenada de forma ASCENDENTE
+        const qCards = query(collection(db, "posts"), where("destino", "==", "dela"), orderBy("criadoEm", "asc"));
         onSnapshot(qCards, (snapshot) => {
             const container = document.getElementById('lista-completa-dela');
             if (!container) return;
@@ -362,41 +380,38 @@
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
                 
-                // Nós contamos TODOS os elementos passados independentemente de onde eles se localizam na listagem
-                if (post.destino === 'dela') {
-                    contadorGlobalDela++; 
-                    
-                    const controleModificacao = (post.autor === usuarioLogado) ? `
-                        <div class="acoes-card-custom">
-                            <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
-                            <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                        </div>
-                    ` : '';
+                contadorGlobalDela++; 
+                
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                    </div>
+                ` : '';
 
-                    const bloco = document.createElement('div');
-                    bloco.className = 'card-separador-interno';
-                    bloco.innerHTML = `
-                        <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
-                        <a href="${post.link}" target="_blank" class="pdf-link">
-                            <div class="pdf-bloco">
-                                <div class="numero-card">${contadorGlobalDela}</div>
-                                <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
-                                <div class="contador-titulo">${post.titulo}</div>
-                                <div class="contador-tempo">Clique para abrir 📂</div>
-                                <div class="pdf-subtitulo">${post.subtitulo}</div>
-                            </div>
-                        </a>
-                        <div class="secao-comentarios">
-                            <div class="form-comentario">
-                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo..." onkeypress="verificarEnter(event, '${post.id}')">
-                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
-                            </div>
-                            <div id="lista-${post.id}" class="lista-comentarios"></div>
+                const bloco = document.createElement('div');
+                bloco.className = 'card-separador-interno';
+                bloco.innerHTML = `
+                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <a href="${post.link}" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">${contadorGlobalDela}</div>
+                            <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                            <div class="contador-titulo">${post.titulo}</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">${post.subtitulo}</div>
                         </div>
-                        ${controleModificacao}
-                    `;
-                    container.appendChild(bloco);
-                }
+                    </a>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo..." onkeypress="verificarEnter(event, '${post.id}')">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
+                        </div>
+                        <div id="lista-${post.id}" class="lista-comentarios"></div>
+                    </div>
+                    ${controleModificacao}
+                `;
+                container.appendChild(bloco);
             });
 
             if(contadorGlobalDela === 0) {
