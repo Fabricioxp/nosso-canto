@@ -159,55 +159,57 @@
         }
         .btn-postar:hover { background-color: #734f4b; }
 
-        /* Estilo Polaroid para os Cards */
-        .card-dela-item {
-            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
-            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
-            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
-            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
+        /* Estilos idênticos ao layout interno de Cards da Página Principal */
+        .card-separador-interno {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(140, 98, 93, 0.06);
+            border: 1px solid rgba(230, 179, 168, 0.3);
+            position: relative;
         }
-        .card-dela-item.destaque {
-            border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
-            background: #fffbfb; animation: pulsarDestaqueCard 3s infinite ease-in-out;
+        .data-card {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
         }
-
-        @keyframes pulsarDestaqueCard {
-            0% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); }
-            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(140, 98, 93, 0.4); border-color: var(--border-color); }
-            100% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); border-color: var(--primary); }
+        .autor-tag { font-weight: bold; }
+        .pdf-link { text-decoration: none; color: inherit; display: block; }
+        .pdf-bloco { display: flex; flex-direction: column; gap: 8px; align-items: center; text-align: center; }
+        .numero-card {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
+        .moldura-imagem { width: 100%; max-height: 280px; overflow: hidden; border-radius: 12px; }
+        .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
+        .contador-titulo { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-top: 5px; }
+        .contador-tempo { font-size: 0.8rem; color: var(--secondary); font-weight: 500; }
+        .pdf-subtitulo { font-size: 0.9rem; color: var(--text-color); margin-top: 4px; white-space: pre-line; }
 
-        .card-layout { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; width: 100%; }
-        .card-foto { width: 100%; height: auto; max-height: 350px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; }
-        .card-info { width: 100%; }
-        .card-titulo { font-size: 1.2rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; word-wrap: break-word; overflow-wrap: break-word; }
-        .card-descricao { font-size: 0.9rem; color: var(--text-color); margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; white-space: pre-line; }
-        .card-autor { font-size: 0.75rem; color: var(--secondary); }
+        .acoes-card-custom { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+        .btn-acao-card { background: none; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-family: var(--font-main); }
+        .btn-editar { color: var(--primary); }
+        .btn-excluir { color: #d9534f; border-color: #f5c6cb; }
 
-        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 25; }
-        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
-        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
-        .opcoes-tres-pontos.visivel { display: block; }
-        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
-        .opcoes-tres-pontos button:hover { background: #fff0ee; }
-
-        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
-        .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
-        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
-
-        /* --- Estilos da Seção de Comentários --- */
-        .secao-comentarios-card { margin-top: 15px; border-top: 1px solid rgba(230, 179, 168, 0.2); padding-top: 12px; }
-        .lista-comentarios-container { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; margin-bottom: 10px; padding-right: 5px; }
-        .comentario-item { background: #fffaf9; border: 1px solid rgba(230, 179, 168, 0.15); padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; position: relative; display: flex; flex-direction: column; gap: 2px; }
-        .comentario-item strong { color: var(--primary); }
-        .btn-deletar-comentario { position: absolute; top: 6px; right: 8px; background: none; border: none; color: #d9534f; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-        .btn-deletar-comentario:hover { opacity: 1; }
-        .form-comentario-card { display: flex; gap: 8px; margin-top: 5px; }
-        .input-comentario-card { flex: 1; padding: 8px 12px; border: 1px solid rgba(230, 179, 168, 0.4); border-radius: 10px; font-size: 0.82rem; outline: none; font-family: var(--font-main); transition: border-color 0.2s; }
-        .input-comentario-card:focus { border-color: var(--primary); }
-        .btn-comentar-card { background: var(--primary); border: none; color: white; padding: 0 14px; border-radius: 10px; font-size: 0.82rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-comentar-card:hover { background: #734f4b; }
+        /* Comentários */
+        .secao-comentarios { margin-top: 15px; border-top: 1px dashed rgba(230, 179, 168, 0.4); padding-top: 12px; }
+        .form-comentario { display: flex; gap: 8px; margin-bottom: 10px; }
+        .input-comentario { flex: 1; padding: 8px 12px; border: 1px solid rgba(230, 179, 168, 0.4); border-radius: 10px; font-size: 0.82rem; outline: none; font-family: var(--font-main); }
+        .btn-comentar { background: var(--primary); border: none; color: white; padding: 0 12px; border-radius: 10px; font-size: 0.82rem; cursor: pointer; font-weight: bold; }
+        .lista-comentarios { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; }
+        .comentario-linha { font-size: 0.8rem; background: #fffaf9; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(230, 179, 168, 0.15); display: flex; justify-content: space-between; align-items: center; }
+        .btn-deletar-comentario { background: none; border: none; color: #d9534f; font-size: 0.75rem; cursor: pointer; margin-left: 5px; }
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
     </style>
@@ -237,11 +239,7 @@
             <input type="text" id="card-nome" class="input-custom" placeholder="Título da Lembrança (Obrigatório)">
             <textarea id="card-desc" class="input-custom" rows="3" placeholder="Escreva sobre este momento... (Obrigatório)" style="resize: none;"></textarea>
             <input type="text" id="card-foto-url" class="input-custom" placeholder="Link da Foto/Imagem (Obrigatório)">
-            
-            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
-                <input type="checkbox" id="card-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
-                <label for="card-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Destacar este Card!</label>
-            </div>
+            <input type="text" id="card-link-externo" class="input-custom" placeholder="Link de Destino / Pasta (Opcional)">
             
             <button class="btn-postar" id="btn-salvar-card">Publicar Lembrança 💖</button>
         </section>
@@ -276,33 +274,24 @@
 
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
-        function verificarPinSeguranca() {
-            const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
-            if (pinDigitado === "1566") {
-                return true;
-            } else if (pinDigitado !== null) {
-                alert("PIN incorreto! Ação cancelada. 🔐");
-            }
-            return false;
+        function obterDataFormatada() {
+            const d = new Date();
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
         }
 
-        window.alternarMenuTresPontos = function(id) {
-            const menu = document.getElementById(`opcoes-${id}`);
-            if (menu) menu.classList.toggle('visivel');
-        };
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.classList.contains('btn-tres-pontos')) {
-                document.querySelectorAll('.opcoes-tres-pontos').forEach(m => m.classList.remove('visivel'));
-            }
-        });
+        function verificarPinSeguranca() {
+            const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
+            if (pinDigitado === "1566") return true;
+            if (pinDigitado !== null) alert("PIN incorreto! Ação cancelada. 🔐");
+            return false;
+        }
 
         function resetarFormularioCard() {
             document.getElementById('editando-card-id').value = '';
             document.getElementById('card-nome').value = '';
             document.getElementById('card-desc').value = '';
             document.getElementById('card-foto-url').value = '';
-            document.getElementById('card-destaque').checked = false;
+            document.getElementById('card-link-externo').value = '';
             document.getElementById('titulo-painel-cardsdela').innerText = '📸 Adicionar Novo Card';
             document.getElementById('btn-salvar-card').innerText = 'Publicar Lembrança 💖';
         }
@@ -310,19 +299,19 @@
         window.salvarCardFirebase = async function() {
             const idEditando = document.getElementById('editando-card-id').value;
             const titulo = document.getElementById('card-nome').value.trim();
-            const descricao = document.getElementById('card-desc').value.trim();
+            const subtitulo = document.getElementById('card-desc').value.trim();
             const imagem = document.getElementById('card-foto-url').value.trim();
-            const destaque = document.getElementById('card-destaque').checked;
+            const link = document.getElementById('card-link-externo').value.trim() || "#";
 
-            if (!titulo || !descricao || !imagem) { alert('Por favor, preencha todos os campos obrigatórios! 📸'); return; }
+            if (!titulo || !subtitulo || !imagem) { alert('Por favor, preencha todos os campos obrigatórios! 📸'); return; }
 
             try {
                 if (idEditando) {
-                    await updateDoc(doc(db, "posts", idEditando), { titulo, descricao, imagem, destaque });
-                    alert('Card atualizado! ✨');
+                    await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, link });
+                    alert('Card atualizado com sucesso! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        destino: 'cardsdela', titulo, descricao, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                        destino: 'dela', titulo, subtitulo, imagem, link, autor: usuarioLogado, data: obterDataFormatada(), criadoEm: Date.now()
                     });
                     alert('Lembrança adicionada aos Cards Dela! ❤️');
                 }
@@ -331,12 +320,12 @@
         };
         document.getElementById('btn-salvar-card').addEventListener('click', window.salvarCardFirebase);
 
-        window.prepararEdicaoCard = function(id, titulo, descricao, imagem, destaque) {
+        window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
             document.getElementById('editando-card-id').value = id;
             document.getElementById('card-nome').value = titulo;
-            document.getElementById('card-desc').value = descricao;
+            document.getElementById('card-desc').value = subtitulo;
             document.getElementById('card-foto-url').value = imagem;
-            document.getElementById('card-destaque').checked = (destaque === 'true' || destaque === true);
+            document.getElementById('card-link-externo').value = (link === "#") ? "" : link;
             document.getElementById('titulo-painel-cardsdela').innerText = '✏️ Editar Card';
             document.getElementById('btn-salvar-card').innerText = 'Atualizar Card ✨';
             document.getElementById('painel-cardsdela-posts').scrollIntoView({ behavior: 'smooth' });
@@ -350,27 +339,8 @@
             }
         };
 
-        window.alternarCurtidaItem = async function(id) {
-            try {
-                const docRef = doc(db, "posts", id);
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    let listaLikes = docSnap.data().curtidas || [];
-                    if (!Array.isArray(listaLikes)) listaLikes = [];
-                    
-                    const index = listaLikes.indexOf(usuarioLogado);
-
-                    if (index > -1) { listaLikes.splice(index, 1); } 
-                    else { listaLikes.push(usuarioLogado); }
-
-                    await updateDoc(docRef, { curtidas: listaLikes });
-                }
-            } catch (error) { console.error(error); }
-        };
-
-        window.enviarComentarioCard = async function(idPost) {
-            const input = document.getElementById(`input-coment-${idPost}`);
+        window.adicionarComentarioFirebase = async function(idPost) {
+            const input = document.getElementById(`input-${idPost}`);
             const texto = input.value.trim();
             if(!texto) return;
 
@@ -384,77 +354,76 @@
             } catch(e) { console.error(e); }
         };
 
-        window.apagarComentarioCard = async function(idPost, idComent) {
+        window.removerComentarioFirebase = async function(idPost, idComent) {
             if(verificarPinSeguranca()) {
                 try {
                     await deleteDoc(doc(db, "posts", idPost, "comentarios", idComent));
-                    alert("Comentário apagado! ✨");
                 } catch(e) { console.error(e); }
             }
         };
 
+        window.verificarEnter = function(e, idPost) {
+            if(e.key === 'Enter') { window.adicionarComentarioFirebase(idPost); }
+        };
+
         const containerCards = document.getElementById('novos-cards-dela');
-        // Removido o orderBy do Firestore para evitar erros de índice composto e tratado via JS
-        const qCards = query(collection(db, "posts"), where("destino", "==", "cardsdela"));
+        // Filtro exato igual ao da página principal ('destino == dela')
+        const qCards = query(collection(db, "posts"), where("destino", "==", "dela"));
         
         onSnapshot(qCards, (snapshot) => {
             containerCards.innerHTML = '';
-            let itensCards = [];
+            let itensDela = [];
 
             snapshot.forEach((docSnap) => {
-                itensCards.push({ id: docSnap.id, ...docSnap.data() });
+                itensDela.push({ id: docSnap.id, ...docSnap.data() });
             });
 
-            // Ordenação manual via JS por data (criadoEm) de forma ascendente
-            itensCards.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
+            // Ordena do mais antigo para o mais recente igual à listagem base
+            itensDela.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
 
-            itensCards.forEach((post) => {
-                const curtidasArray = post.curtidas || [];
-                const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoCard = document.createElement('div');
-                let classesCartao = 'card-dela-item';
-                if (post.destaque) { classesCartao += ' destaque'; }
-
-                const menuTresPontosCard = (post.autor === usuarioLogado) ? `
-                    <div class="menu-acoes-container">
-                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoCard('${post.id}', '${post.titulo.replace(/'/g, "\\'")}', \`${post.descricao.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`, '${post.imagem}', ${post.destaque})">Editar ✏️</button>
-                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                        </div>
+            itensDela.forEach((post, index) => {
+                const numeroProgressivo = index + 1;
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo.replace(/'/g, "\\'")}', \`${post.subtitulo.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`, '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                     </div>
                 ` : '';
 
-                blocoCard.className = classesCartao;
-                blocoCard.innerHTML = `
-                    ${menuTresPontosCard}
-                    <div class="card-layout">
-                        <img src="${post.imagem}" class="card-foto" alt="Foto" loading="lazy">
-                        <div class="card-info">
-                            <div class="card-titulo">${post.titulo}</div>
-                            <div class="card-descricao">${post.descricao}</div>
-                            <div class="card-autor">Enviado por: <strong>${post.autor}</strong></div>
+                const bloco = document.createElement('div');
+                bloco.className = 'card-separador-interno';
+                bloco.innerHTML = `
+                    <div class="data-card"><span>🗓️ ${post.data || ''}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <a href="${post.link || '#'}" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">${numeroProgressivo}</div>
+                            <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                            <div class="contador-titulo">${post.titulo}</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">${post.subtitulo}</div>
                         </div>
-                    </div>
-                    <div class="barra-reacoes-polaroid">
-                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                        <span class="contagem-likes">${curtidasArray.length} amaram</span>
-                    </div>
-                    
-                    <div class="secao-comentarios-card">
-                        <div class="lista-comentarios-container" id="lista-coment-${post.id}"></div>
-                        <div class="form-comentario-card">
-                            <input type="text" id="input-coment-${post.id}" class="input-comentario-card" placeholder="Escreva um comentário...">
-                            <button class="btn-comentar-card" onclick="enviarComentarioCard('${post.id}')">Enviar</button>
+                    </a>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
                         </div>
+                        <div id="lista-${post.id}" class="lista-comentarios"></div>
                     </div>
+                    ${controleModificacao}
                 `;
                 
-                if (post.destaque) { containerCards.prepend(blocoCard); } else { containerCards.appendChild(blocoCard); }
+                containerCards.appendChild(bloco);
 
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 200);
+
+                // Carrega em tempo real os comentários com a mesma estrutura
                 const qComents = query(collection(db, "posts", post.id, "comentarios"), orderBy("criadoEm", "asc"));
                 onSnapshot(qComents, (comentSnap) => {
-                    const boxComentarios = document.getElementById(`lista-coment-${post.id}`);
+                    const boxComentarios = document.getElementById(`lista-${post.id}`);
                     if(!boxComentarios) return;
                     boxComentarios.innerHTML = '';
 
@@ -462,14 +431,13 @@
                         const coment = cDoc.data();
                         const idComent = cDoc.id;
                         const divC = document.createElement('div');
-                        divC.className = 'comentario-item';
+                        divC.className = 'comentario-linha';
 
                         const botaoApagar = (coment.autor === usuarioLogado) ? 
-                            `<button class="btn-deletar-comentario" onclick="apagarComentarioCard('${post.id}', '${idComent}')">🗑️</button>` : '';
+                            `<button class="btn-deletar-comentario" onclick="removerComentarioFirebase('${post.id}', '${idComent}')">🗑️</button>` : '';
 
                         divC.innerHTML = `
-                            <strong>${coment.autor}</strong>
-                            <span>${coment.texto}</span>
+                            <span><strong>${coment.autor}:</strong> ${coment.texto}</span>
                             ${botaoApagar}
                         `;
                         boxComentarios.appendChild(divC);
