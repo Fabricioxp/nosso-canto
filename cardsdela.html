@@ -174,7 +174,6 @@
         }
         .btn-postar:hover { background-color: #734f4b; }
 
-        /* Ajustado para evitar vazamento em telas pequenas */
         .secao-comentarios { 
             margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color); 
         }
@@ -188,7 +187,7 @@
         }
         .input-comentario {
             flex: 1; 
-            min-width: 0; /* Garante que o input encolha no flexbox se necessário */
+            min-width: 0; 
             padding: 10px 14px; 
             border: 1px solid var(--border-color);
             border-radius: 20px; 
@@ -205,7 +204,7 @@
             cursor: pointer; 
             font-weight: bold; 
             font-size: 0.85rem;
-            white-space: nowrap; /* Impede o texto do botão de quebrar ou deformar */
+            white-space: nowrap; 
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -221,6 +220,14 @@
         .btn-editar { color: #428bca; }
         .btn-excluir { color: #d9534f; }
     </style>
+
+    <!-- BLOQUEIO DE SEGURANÇA INSTANTÂNEO (Executa antes do HTML renderizar) -->
+    <script>
+        const checarUsuario = sessionStorage.getItem('user_canto');
+        if (!checarUsuario) {
+            window.location.replace("index.html");
+        }
+    </script>
 </head>
 <body>
 
@@ -234,8 +241,6 @@
     </header>
 
     <div class="container-blocos">
-
-        <!-- PAINEL COM O MESMO LAYOUT PARA ADICIONAR E EDITAR -->
         <section class="painel-upload" id="painel-de-postagem">
             <div class="titulo-secao" id="painel-titulo-acao">✨ Adicionar Novo Card (Coisinhas Dela)</div>
             <input type="hidden" id="editando-id" value="">
@@ -249,12 +254,10 @@
             <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
         </section>
 
-        <!-- CONTAINER DA LISTA COMPLETA -->
         <section class="bloco-separado">
             <div class="titulo-secao">💝 Histórico Completo</div>
             <div id="lista-completa-dela">Carregando todas as coisinhas...</div>
         </section>
-
     </div>
 
     <script type="module">
@@ -298,7 +301,7 @@
 
         window.salvarPostagemFirebase = async function() {
             const idEditando = document.getElementById('editando-id').value;
-            const destino = "dela"; // Fixo para salvar sempre aqui
+            const destino = "dela"; 
             const titulo = document.getElementById('post-titulo').value.trim();
             const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
             const imagem = document.getElementById('post-imagem').value.trim();
@@ -313,7 +316,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado com sucesso! ✨');
+                    alert('Card updated with success! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
                     alert('Card publicado com sucesso! ❤️');
@@ -368,18 +371,24 @@
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        // Escuta em tempo real filtrada por destino 'dela' ordenada de forma ASCENDENTE
-        const qCards = query(collection(db, "posts"), where("destino", "==", "dela"), orderBy("criadoEm", "asc"));
+        // CORREÇÃO DOS CARDS SUMIDOS: Removemos temporariamente o orderBy para ignorar a necessidade de criar índices manuais complexos no painel do Firebase. A ordenação agora é feita localmente no JavaScript.
+        const qCards = query(collection(db, "posts"), where("destino", "==", "dela"));
         onSnapshot(qCards, (snapshot) => {
             const container = document.getElementById('lista-completa-dela');
             if (!container) return;
             container.innerHTML = '';
 
+            let docsOrdenados = [];
+            snapshot.forEach((docSnap) => {
+                docsOrdenados.push({ id: docSnap.id, ...docSnap.data() });
+            });
+
+            // Ordenando em tempo de execução de forma ascendente pelo 'criadoEm'
+            docsOrdenados.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
+
             let contadorGlobalDela = 0;
 
-            snapshot.forEach((docSnap) => {
-                const post = { id: docSnap.id, ...docSnap.data() };
-                
+            docsOrdenados.forEach((post) => {
                 contadorGlobalDela++; 
                 
                 const controleModificacao = (post.autor === usuarioLogado) ? `
@@ -417,9 +426,11 @@
             if(contadorGlobalDela === 0) {
                 container.innerHTML = '<p style="text-align:center; color: var(--secondary);">Nenhum card postado aqui ainda. ❤️</p>';
             }
+        }, (error) => {
+            console.error("Erro na busca:", error);
+            document.getElementById('lista-completa-dela').innerText = "Erro ao carregar os cards.";
         });
 
-        // Monitoramento de comentários em tempo real
         const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
         onSnapshot(qComentarios, (snapshot) => {
             document.querySelectorAll('.lista-comentarios').forEach(l => l.innerHTML = '');
