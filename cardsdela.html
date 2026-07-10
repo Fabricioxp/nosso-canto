@@ -115,6 +115,7 @@
         }
 
         .card-separador-interno {
+            position: relative;
             background-color: var(--bg-card);
             padding: 20px;
             border-radius: 16px;
@@ -141,6 +142,7 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
+            padding-right: 25px; /* Espaço para não bater nos 3 pontinhos se houver */
         }
 
         .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
@@ -166,21 +168,25 @@
         .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; }
         .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
 
+        /* Ajustado para não vazar nada */
         .secao-comentarios { 
             margin-top: 25px; 
             padding-top: 20px; 
             border-top: 1px dashed var(--border-color); 
+            width: 100%;
         }
         
         .form-comentario { 
             display: flex; 
             align-items: center;
-            gap: 10px; 
+            gap: 8px; 
             margin-bottom: 15px; 
+            width: 100%;
         }
         
         .input-comentario {
             flex: 1; 
+            min-width: 0; /* Evita que o input empurre as coisas para fora */
             padding: 10px 14px; 
             border: 1px solid var(--border-color);
             border-radius: 20px; 
@@ -193,11 +199,12 @@
             background-color: var(--primary); 
             color: white; 
             border: none; 
-            padding: 10px 16px; 
+            padding: 10px 14px; 
             border-radius: 20px; 
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            white-space: nowrap; /* Garante que o texto do botão não quebre */
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -208,8 +215,49 @@
         .texto-comentario { flex: 1; word-wrap: break-word; overflow-wrap: break-word; }
         .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; }
 
-        .acoes-card-custom { display: flex; justify-content: center; margin-top: 15px; }
-        .btn-excluir { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        /* Menu de Opções / 3 Pontinhos */
+        .menu-opcoes-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+        }
+        .btn-3pontinhos {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--secondary);
+            cursor: pointer;
+            padding: 5px;
+        }
+        .dropdown-menu-opcoes {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-width: 110px;
+        }
+        .dropdown-menu-opcoes button {
+            background: none;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        .dropdown-menu-opcoes button:hover {
+            background-color: #fff3f2;
+        }
+        .dropdown-menu-opcoes .btn-menu-excluir {
+            color: #d9534f;
+        }
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     </style>
@@ -267,6 +315,22 @@
             return pinDigitado === "1566";
         }
 
+        window.toggleMenuOpcoes = function(id) {
+            const menu = document.getElementById(`dropdown-${id}`);
+            if (menu) {
+                const visivel = menu.style.display === 'block';
+                document.querySelectorAll('.dropdown-menu-opcoes').forEach(m => m.style.display = 'none');
+                menu.style.display = visivel ? 'none' : 'block';
+            }
+        };
+
+        // Fecha menus ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('btn-3pontinhos')) {
+                document.querySelectorAll('.dropdown-menu-opcoes').forEach(m => m.style.display = 'none');
+            }
+        });
+
         window.removerPostagemFirebase = async function(id) {
             if (verificarPinSeguranca()) {
                 await deleteDoc(doc(db, "posts", id));
@@ -304,7 +368,6 @@
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        // MECANISMO IDÊNTICO À PÁGINA PRINCIPAL: Busca limpa ordenada pela data de criação
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
         
         onSnapshot(qCards, (snapshot) => {
@@ -316,18 +379,23 @@
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
                 
-                // FILTRO DE SEGURANÇA: Renderiza de forma idêntica à principal, mas ignora o que não for "dela"
                 if (post.destino === "dela") {
                     
-                    const controleModificacao = (post.autor === usuarioLogado) ? `
-                        <div class="acoes-card-custom">
-                            <button class="btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                    // TRAVA DA MARIA: Menu de 3 pontinhos e ações só aparecem se logado como "Maria"
+                    const controleModificacao = (usuarioLogado === "Maria") ? `
+                        <div class="menu-opcoes-container">
+                            <button class="btn-3pontinhos" onclick="event.stopPropagation(); toggleMenuOpcoes('${post.id}')">⋮</button>
+                            <div id="dropdown-${post.id}" class="dropdown-menu-opcoes">
+                                <button onclick="alert('Funcionalidade de editar em desenvolvimento!')">Editar ✏️</button>
+                                <button class="btn-menu-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                            </div>
                         </div>
                     ` : '';
 
                     const bloco = document.createElement('div');
                     bloco.className = 'card-separador-interno';
                     bloco.innerHTML = `
+                        ${controleModificacao}
                         <div class="data-card"><span>🗓️ ${post.data || ''}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
                         <a href="${post.link}" target="_blank" class="pdf-link">
                             <div class="pdf-bloco">
@@ -345,7 +413,6 @@
                             </div>
                             <div id="lista-${post.id}" class="lista-comentarios"></div>
                         </div>
-                        ${controleModificacao}
                     `;
                     container.appendChild(bloco);
 
@@ -365,7 +432,8 @@
                 const containerLista = document.getElementById(`lista-${com.secaoId}`);
                 if (!containerLista) return;
 
-                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+                // Excluir comentário permitido se for o dono do comentário OU se for a Maria administrando
+                const botaoExcluir = (com.autor === usuarioLogado || usuarioLogado === "Maria") ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
                 const item = document.createElement('div');
                 item.className = 'item-comentario';
                 item.innerHTML = `
@@ -387,10 +455,10 @@
         class Coracao {
             constructor() {
                 this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
+                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.2 + 0.8; 
                 this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
             }
-            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
+            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.004; }
             desenhar() {
                 ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
                 ctx.beginPath(); ctx.moveTo(this.x, this.y);
@@ -402,7 +470,8 @@
 
         function animarLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if(listaCoracoes.length < 35 && Math.random() < 0.08) { listaCoracoes.push(new Coracao()); }
+            // Trava de segurança: impede geração desenfreada de partículas em abas em segundo plano
+            if(listaCoracoes.length < 25 && Math.random() < 0.04) { listaCoracoes.push(new Coracao()); }
             listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
             requestAnimationFrame(animarLoop);
         }
