@@ -304,50 +304,57 @@
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        // EXATAMENTE IGUAL À PÁGINA PRINCIPAL: Sem filtros restritivos no banco de dados.
-        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
+        // MECANISMO IGUAL À PAGINA PRINCIPAL (Busca limpa por criadoEm para não quebrar o Firebase)
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
+        
         onSnapshot(qCards, (snapshot) => {
             const container = document.getElementById('todos-cards-dela');
             if(container) container.innerHTML = '';
 
-            snapshot.forEach((docSnap, index) => {
+            let contadorDela = 1;
+
+            snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
-                const numeroProgressivo = index + 1;
                 
-                const controleModificacao = (post.autor === usuarioLogado) ? `
-                    <div class="acoes-card-custom">
-                        <button class="btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                    </div>
-                ` : '';
-
-                const bloco = document.createElement('div');
-                bloco.className = 'card-separador-interno';
-                bloco.innerHTML = `
-                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
-                    <a href="${post.link}" target="_blank" class="pdf-link">
-                        <div class="pdf-bloco">
-                            <div class="numero-card">${numeroProgressivo}</div>
-                            <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
-                            <div class="contador-titulo">${post.titulo}</div>
-                            <div class="contador-tempo">Clique para abrir 📂</div>
-                            <div class="pdf-subtitulo">${post.subtitulo || ''}</div>
+                // FILTRO DO LAYOUT: Só renderiza se for estritamente do destino "dela"
+                // Isso impede que seus cards pessoais e playlists apareçam e quebrem a página
+                if (post.destino === "dela") {
+                    
+                    const controleModificacao = (post.autor === usuarioLogado) ? `
+                        <div class="acoes-card-custom">
+                            <button class="btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
-                    </a>
-                    <div class="secao-comentarios">
-                        <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
-                        </div>
-                        <div id="lista-${post.id}" class="lista-comentarios"></div>
-                    </div>
-                    ${controleModificacao}
-                `;
-                container.appendChild(bloco);
+                    ` : '';
 
-                setTimeout(() => {
-                    const inp = document.getElementById(`input-${post.id}`);
-                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                }, 200);
+                    const bloco = document.createElement('div');
+                    bloco.className = 'card-separador-interno';
+                    bloco.innerHTML = `
+                        <div class="data-card"><span>🗓️ ${post.data || ''}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                        <a href="${post.link}" target="_blank" class="pdf-link">
+                            <div class="pdf-bloco">
+                                <div class="numero-card">${contadorDela++}</div>
+                                <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                                <div class="contador-titulo">${post.titulo || 'Sem título'}</div>
+                                <div class="contador-tempo">${post.tipo === 'playlist' ? 'Ouvir Playlist 🎵' : 'Clique para abrir 📂'}</div>
+                                <div class="pdf-subtitulo">${post.subtitulo || ''}</div>
+                            </div>
+                        </a>
+                        <div class="secao-comentarios">
+                            <div class="form-comentario">
+                                <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
+                                <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
+                            </div>
+                            <div id="lista-${post.id}" class="lista-comentarios"></div>
+                        </div>
+                        ${controleModificacao}
+                    `;
+                    container.appendChild(bloco);
+
+                    setTimeout(() => {
+                        const inp = document.getElementById(`input-${post.id}`);
+                        if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                    }, 200);
+                }
             });
         });
 
