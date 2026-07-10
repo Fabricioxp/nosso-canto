@@ -304,7 +304,7 @@
             if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
         };
 
-        // MECANISMO IGUAL À PAGINA PRINCIPAL (Busca limpa por criadoEm para não quebrar o Firebase)
+        // MECANISMO IDÊNTICO À PÁGINA PRINCIPAL: Busca limpa ordenada pela data de criação
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
         
         onSnapshot(qCards, (snapshot) => {
@@ -316,8 +316,7 @@
             snapshot.forEach((docSnap) => {
                 const post = { id: docSnap.id, ...docSnap.data() };
                 
-                // FILTRO DO LAYOUT: Só renderiza se for estritamente do destino "dela"
-                // Isso impede que seus cards pessoais e playlists apareçam e quebrem a página
+                // FILTRO DE SEGURANÇA: Renderiza de forma idêntica à principal, mas ignora o que não for "dela"
                 if (post.destino === "dela") {
                     
                     const controleModificacao = (post.autor === usuarioLogado) ? `
@@ -335,7 +334,7 @@
                                 <div class="numero-card">${contadorDela++}</div>
                                 <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
                                 <div class="contador-titulo">${post.titulo || 'Sem título'}</div>
-                                <div class="contador-tempo">${post.tipo === 'playlist' ? 'Ouvir Playlist 🎵' : 'Clique para abrir 📂'}</div>
+                                <div class="contador-tempo">Clique para abrir 📂</div>
                                 <div class="pdf-subtitulo">${post.subtitulo || ''}</div>
                             </div>
                         </a>
