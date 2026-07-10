@@ -785,8 +785,12 @@
             </section>
 
             <section class="bloco-separado" id="bloco-coisas-minhas">
-                <div class="titulo-secao">✨ coisinhas minhas</div>
+                <div class="titulo-secao">
+                    <span>✨ coisinhas minhas</span>
+                    <a href="cardsmeu.html" class="link-titulo-atalho" title="Ver Página Completa">🔗</a>
+                </div>
                 <div id="novos-cards-meu"></div>
+                <a href="cardsmeu.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-meu">Ver todos os Cards Meus ➡️</a>
             </section>
 
             <section class="painel-upload" id="painel-galeria-posts">
@@ -1138,7 +1142,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, data: dataFormatada });
-                    alert('Varal atualizado! 🖼️');
+                    alert('Varal updated! 🖼️');
                 } else {
                     await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
                     alert('Momento guardado no nosso varal! 💞');
@@ -1431,8 +1435,13 @@
                 }, 500);
             });
 
-            // Apresentações Coisas Minhas
-            itensMeu.forEach((post, index) => {
+            // Apresentações Coisas Minhas - Lógica de Limite (Apenas as 5 primeiras)
+            const meuExibido = itensMeu.slice(0, 5);
+            const btnMeuRestante = document.getElementById('btn-ver-restante-meu');
+            if(itensMeu.length > 5 && btnMeuRestante) { btnMeuRestante.style.display = 'block'; } 
+            else if(btnMeuRestante) { btnMeuRestante.style.display = 'none'; }
+
+            meuExibido.forEach((post, index) => {
                 const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
@@ -1615,67 +1624,14 @@
             });
         }
 
-        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
-        onSnapshot(qComentariosCorreto, (snapshot) => {
+        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentarios, (snapshot) => {
             ultimoSnapshotComentarios = snapshot;
             calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
             renderizarComentariosDOM(snapshot);
         });
 
         verificarSessao();
-    </script>
-
-    <script>
-        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2026, 7, 12, 0, 0, 0) };
-
-        function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
-
-        function renderizarTempo(dataAlvo, elementoId) {
-            const elemento = document.getElementById(elementoId); if (!elemento) return;
-            const diferenca = new Date().getTime() - dataAlvo.getTime();
-            if (diferenca < 0) { elemento.innerHTML = "Contando as horas... ✨"; return; }
-            elemento.className = "contador-tempo ativo";
-            const dias = Math.floor(diferenca / 86400000);
-            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
-            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
-            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
-            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
-        }
-
-        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
-        let listaCoracoes = []; let animandoAtivo = true;
-
-        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
-
-        class Coracao {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
-                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
-            }
-            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
-            desenhar() {
-                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
-                ctx.beginPath(); ctx.moveTo(this.x, this.y);
-                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
-                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
-                ctx.fill(); ctx.restore();
-            }
-        }
-
-        function animarLoop() {
-            if (!animandoAtivo) return; ctx.clearRect(0, 0, canvas.width, canvas.height);
-            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
-            requestAnimationFrame(animarLoop);
-        }
-
-        function celebrarAmor() { 
-            let total = 25;
-            for (let i = 0; i < total; i++) { setTimeout(() => { if(listaCoracoes.length < 80) listaCoracoes.push(new Coracao()); }, i * 40); } 
-        }
-
-        document.addEventListener('DOMContentLoaded', () => { atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop(); });
     </script>
 </body>
 </html>
