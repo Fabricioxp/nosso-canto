@@ -241,6 +241,7 @@
     </header>
 
     <div class="container-blocos">
+        <!-- O painel inicia visível por padrão, mas o JavaScript cuidará de ocultá-lo se não for a Maria -->
         <section class="painel-upload" id="painel-de-postagem">
             <div class="titulo-secao" id="painel-titulo-acao">✨ Adicionar Novo Card (Coisinhas Dela)</div>
             <input type="hidden" id="editando-id" value="">
@@ -254,7 +255,7 @@
             <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
         </section>
 
-        <section class="bloco-separate">
+        <section class="bloco-separado">
             <div class="titulo-secao">💝 Histórico Completo</div>
             <div id="lista-completa-dela">Carregando todas as coisinhas...</div>
         </section>
@@ -278,6 +279,14 @@
 
         const usuarioLogado = sessionStorage.getItem('user_canto') || "Anônimo";
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
+
+        // CORREÇÃO SOLICITADA: Esconde completamente a aba de publicação se quem estiver logado não for a Maria
+        if (usuarioLogado !== "Maria") {
+            const painelPostagem = document.getElementById('painel-de-postagem');
+            if (painelPostagem) {
+                painelPostagem.style.display = 'none';
+            }
+        }
 
         function sanitizarHTML(str) { 
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
@@ -382,15 +391,13 @@
                 docsOrdenados.push({ id: docSnap.id, ...docSnap.data() });
             });
 
-            // Ordenando em tempo de execução de forma ascendente pelo 'criadoEm'
             docsOrdenados.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
 
             let contadorGlobalDela = 0;
 
             docsOrdenados.forEach((post) => {
-                // REGRA MODIFICADA: Se não for a Maria que estiver logada, só mostra se o autor do post for estritamente a "Maria"
                 if (usuarioLogado !== "Maria" && post.autor !== "Maria") {
-                    return; // Ignora e passa para o próximo post da lista
+                    return; 
                 }
 
                 contadorGlobalDela++; 
