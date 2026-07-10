@@ -196,6 +196,19 @@
         .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
         .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
 
+        /* --- Estilos da Seção de Comentários --- */
+        .secao-comentarios-card { margin-top: 15px; border-top: 1px solid rgba(230, 179, 168, 0.2); padding-top: 12px; }
+        .lista-comentarios-container { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; margin-bottom: 10px; padding-right: 5px; }
+        .comentario-item { background: #fffaf9; border: 1px solid rgba(230, 179, 168, 0.15); padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; position: relative; display: flex; flex-direction: column; gap: 2px; }
+        .comentario-item strong { color: var(--primary); }
+        .btn-deletar-comentario { position: absolute; top: 6px; right: 8px; background: none; border: none; color: #d9534f; font-size: 0.75rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        .btn-deletar-comentario:hover { opacity: 1; }
+        .form-comentario-card { display: flex; gap: 8px; margin-top: 5px; }
+        .input-comentario-card { flex: 1; padding: 8px 12px; border: 1px solid rgba(230, 179, 168, 0.4); border-radius: 10px; font-size: 0.82rem; outline: none; font-family: var(--font-main); transition: border-color 0.2s; }
+        .input-comentario-card:focus { border-color: var(--primary); }
+        .btn-comentar-card { background: var(--primary); border: none; color: white; padding: 0 14px; border-radius: 10px; font-size: 0.82rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-comentar-card:hover { background: #734f4b; }
+
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
     </style>
 </head>
@@ -241,14 +254,13 @@
     </div>
 
     <script type="module">
-        // TRAVA INSTANTÂNEA DE SEGURANÇA
         let usuarioLogado = sessionStorage.getItem('user_canto');
         if (!usuarioLogado) {
             window.location.href = "index.html";
         }
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -307,7 +319,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { titulo, descricao, imagem, destaque });
-                    alert('Card atualizado! ✨');
+                    alert('Card updated! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), {
                         destino: 'cardsdela', titulo, descricao, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
@@ -357,16 +369,42 @@
             } catch (error) { console.error(error); }
         };
 
+        // --- Mecanismo de Enviar Comentários ---
+        window.enviarComentarioCard = async function(idPost) {
+            const input = document.getElementById(`input-coment-${idPost}`);
+            const texto = input.value.trim();
+            if(!texto) return;
+
+            try {
+                await addDoc(collection(db, "posts", idPost, "comentarios"), {
+                    autor: usuarioLogado,
+                    texto: texto,
+                    criadoEm: Date.now()
+                });
+                input.value = '';
+            } catch(e) { console.error(e); }
+        };
+
+        // --- Mecanismo de Apagar Comentários ---
+        window.apagarComentarioCard = async function(idPost, idComent) {
+            if(verificarPinSeguranca()) {
+                try {
+                    await deleteDoc(doc(db, "posts", idPost, "comentarios", idComent));
+                    alert("Comentário apagado! ✨");
+                } catch(e) { console.error(e); }
+            }
+        };
+
         const containerCards = document.getElementById('novos-cards-dela');
-        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
+        // Filtro correto direto no Firestore para evitar que falhe
+        const qCards = query(collection(db, "posts"), where("destino", "==", "cardsdela"), orderBy("criadoEm", "asc"));
         
         onSnapshot(qCards, (snapshot) => {
             containerCards.innerHTML = '';
             let itensCards = [];
 
             snapshot.forEach((docSnap) => {
-                const post = { id: docSnap.id, ...docSnap.data() };
-                if (post.destino === 'cardsdela') { itensCards.push(post); }
+                itensCards.push({ id: docSnap.id, ...docSnap.data() });
             });
 
             itensCards.forEach((post) => {
@@ -380,7 +418,7 @@
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoCard('${post.id}', '${post.titulo}', \`${post.descricao}\`, '${post.imagem}', ${post.destaque})">Editar ✏️</button>
+                            <button onclick="prepararEdicaoCard('${post.id}', '${post.titulo.replace(/'/g, "\\'")}', \`${post.descricao.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`, '${post.imagem}', ${post.destaque})">Editar ✏️</button>
                             <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     </div>
@@ -401,9 +439,43 @@
                         <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                         <span class="contagem-likes">${curtidasArray.length} amaram</span>
                     </div>
+                    
+                    <div class="secao-comentarios-card">
+                        <div class="lista-comentarios-container" id="lista-coment-${post.id}"></div>
+                        <div class="form-comentario-card">
+                            <input type="text" id="input-coment-${post.id}" class="input-comentario-card" placeholder="Escreva um comentário...">
+                            <button class="btn-comentar-card" onclick="enviarComentarioCard('${post.id}')">Enviar</button>
+                        </div>
+                    </div>
                 `;
                 
                 if (post.destaque) { containerCards.prepend(blocoCard); } else { containerCards.appendChild(blocoCard); }
+
+                // Carrega em tempo real os comentários específicos deste post
+                const qComents = query(collection(db, "posts", post.id, "comentarios"), orderBy("criadoEm", "asc"));
+                onSnapshot(qComents, (comentSnap) => {
+                    const boxComentarios = document.getElementById(`lista-coment-${post.id}`);
+                    if(!boxComentarios) return;
+                    boxComentarios.innerHTML = '';
+
+                    comentSnap.forEach((cDoc) => {
+                        const coment = cDoc.data();
+                        const idComent = cDoc.id;
+                        const divC = document.createElement('div');
+                        divC.className = 'comentario-item';
+
+                        const botaoApagar = (coment.autor === usuarioLogado) ? 
+                            `<button class="btn-deletar-comentario" onclick="apagarComentarioCard('${post.id}', '${idComent}')">🗑️</button>` : '';
+
+                        divC.innerHTML = `
+                            <strong>${coment.autor}</strong>
+                            <span>${coment.texto}</span>
+                            ${botaoApagar}
+                        `;
+                        boxComentarios.appendChild(divC);
+                    });
+                    boxComentarios.scrollTop = boxComentarios.scrollHeight;
+                });
             });
         });
     </script>
