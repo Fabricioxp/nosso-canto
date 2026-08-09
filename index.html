@@ -35,7 +35,55 @@
             overflow-x: hidden;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
+
+        /* Transição suave para o Modo Noturno */
+        body, .header-status-bar, .bloco-separado, .painel-upload, .card-declaracao-texto, .card-musica, .box-login, .item-opcao-flutuante, .input-custom, .select-custom, .textarea-custom, .input-comentario, .polaroid-frente, .polaroid-verso {
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* ESTILOS MODO NOTURNO */
+        body.dark-mode {
+            background-color: #121214;
+            color: #e1e1e6;
+            --primary: #d4a39c;
+            --secondary: #c29d98;
+            --border-color: #4a3431;
+            --bg-card: #1e1b1c;
+            --text-color: #e1e1e6;
+        }
+
+        body.dark-mode #tela-login { background-color: #121214; }
+        body.dark-mode .box-login { background-color: #1f1a1b; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        body.dark-mode .header-status-bar { background-color: rgba(26, 22, 23, 0.92); box-shadow: 0 2px 15px rgba(0,0,0,0.3); border-bottom-color: rgba(212, 163, 156, 0.2); }
+        body.dark-mode .bloco-separado, body.dark-mode .painel-upload, body.dark-mode .card-declaracao-texto, body.dark-mode .card-musica, body.dark-mode .armazenamento-container {
+            background-color: #1e1b1c;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .item-opcao-flutuante { background-color: #262122; color: #e1e1e6; border-color: rgba(212, 163, 156, 0.3); }
+        body.dark-mode .item-opcao-flutuante:hover { background-color: #332b2d; }
+        body.dark-mode .input-custom, body.dark-mode .select-custom, body.dark-mode .textarea-custom, body.dark-mode .input-comentario {
+            background-color: #292324;
+            color: #e1e1e6;
+            border-color: #4a3431;
+        }
+        body.dark-mode .input-custom:focus, body.dark-mode .select-custom:focus, body.dark-mode .textarea-custom:focus { background-color: #312a2b; }
+        body.dark-mode .polaroid-frente { background-color: #241f20; box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+        body.dark-mode .polaroid-verso { background-color: #1e1a1b; box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+        body.dark-mode .item-comentario { background-color: rgba(255, 255, 255, 0.05); }
+        body.dark-mode .opcoes-tres-pontos { background-color: #241f20; border-color: #4a3431; }
+        body.dark-mode .opcoes-tres-pontos button { color: #e1e1e6; }
+        body.dark-mode .opcoes-tres-pontos button:hover { background-color: #332b2d; }
+
+        /* Temas dos blocos específicos no Modo Noturno */
+        body.dark-mode #bloco-dias-amando { background-color: #2a1a1c; }
+        body.dark-mode #bloco-playlist { background-color: #281c19; } 
+        body.dark-mode #bloco-coisinhas-dela { background-color: #3a1f28; } /* Rosinha escuro combinando com o tema */
+        body.dark-mode #bloco-coisas-minhas { background-color: #142438; }  /* Azul mais escurinho */
+        body.dark-mode #bloco-galeria-momentos { background-color: #241a1c; }
+        body.dark-mode #bloco-nossos-textos { background-color: #221a28; }
+        body.dark-mode #bloco-historico-acessos { background-color: #222226; }
 
         button, input, select, textarea, a, .contador-bloco, .pdf-bloco {
             touch-action: manipulation;
@@ -671,7 +719,10 @@
             <div class="status-usuario-container">
                 <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
             </div>
-            <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn-logout" id="btn-theme-toggle" title="Alternar modo" style="font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; padding: 5px 9px;">☀️</button>
+                <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
+            </div>
         </div>
 
         <canvas id="canvas-hearts"></canvas>
@@ -1479,14 +1530,13 @@
                 }, 500);
             });
 
-            // Varal de Fotos e Vídeos da Galeria
+            // Galeria Varal
             itensGaleria.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoFoto = document.createElement('div');
-                blocoFoto.className = 'quadro-polaroid'; blocoFoto.id = `polaroid-${post.id}`;
+                const idCardPolaroid = `polaroid-${post.id}`;
 
-                const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
+                const menuTresPontosGaleria = (post.autor === usuarioLogado) ? `
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
@@ -1496,195 +1546,194 @@
                     </div>
                 ` : '';
 
-                let midiaHtml = '';
-                const idYT = extrairIDYouTube(post.imagem);
+                const blocoGaleria = document.createElement('div');
+                blocoGaleria.className = 'quadro-polaroid';
+                blocoGaleria.id = idCardPolaroid;
 
-                if (idYT) { midiaHtml = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" allowfullscreen></iframe>`; } 
-                else if (post.imagem.match(/\.(mp4|webm|ogg)/i)) { midiaHtml = `<video class="polaroid-video" src="${post.imagem}" controls preload="metadata"></video>`; } 
-                else { midiaHtml = `<img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+Invalido'">`; }
+                let elementoMidia = '';
+                if (post.imagem.match(/\.(mp4|webm|ogg)/i)) {
+                    elementoMidia = `<video src="${post.imagem}" class="polaroid-video" controls onclick="lidarCliqueFoto(event, '${post.imagem}', '${idCardPolaroid}')"></video>`;
+                } else if (extrairIDYouTube(post.imagem)) {
+                    const idYT = extrairIDYouTube(post.imagem);
+                    elementoMidia = `<iframe src="https://www.youtube.com/embed/${idYT}" class="polaroid-video" frameborder="0" allowfullscreen></iframe>`;
+                } else {
+                    elementoMidia = `<img src="${post.imagem}" class="polaroid-imagem" alt="${post.titulo || 'Foto'}" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', '${idCardPolaroid}')">`;
+                }
 
-                blocoFoto.innerHTML = `
-                    <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
+                blocoGaleria.innerHTML = `
+                    <div class="polaroid-inner">
                         <div class="polaroid-frente">
-                            ${menuTresPontosHtml}
-                            <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px; font-size: 0.75rem;">
-                                <span>🗓️ Publicado: ${post.data}</span>
-                            </div>
-                            ${midiaHtml}
-                            <div class="data-card" style="align-items: center; text-align: center; margin-top:12px; margin-bottom:0;">
-                                <span style="font-size:0.75rem; font-weight:normal; color:var(--secondary);">✨ Dê 2 cliques na moldura para girar</span>
-                            </div>
+                            ${menuTresPontosGaleria}
+                            ${elementoMidia}
                             <div class="polaroid-legenda-box">
                                 ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
                                 ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
-                            </div>
-                            <div class="barra-reacoes-polaroid">
-                                <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                                <span class="contagem-likes">${curtidasArray.length} curtidas</span>
-                            </div>
-                            <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                                <div class="form-comentario">
-                                    <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
-                                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
+                                <div class="data-card" style="margin-top:8px;"><span>🗓️ ${post.data}</span></div>
+                                <div class="barra-reacoes-polaroid">
+                                    <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                                    <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                                 </div>
-                                <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                             </div>
                         </div>
                         <div class="polaroid-verso">
-                            <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
-                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
-                            <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
-                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para voltar ↩️</div>
+                            <div class="polaroid-verso-titulo">🤍 Recordação</div>
+                            <div class="polaroid-verso-info"><strong>Data:</strong> ${post.data}</div>
+                            <div class="polaroid-verso-info"><strong>Autor:</strong> ${post.autor || 'Anônimo'}</div>
+                            <button class="btn-postar" style="margin-top:15px; width:auto; padding:8px 15px;" onclick="virarPolaroidCard('${idCardPolaroid}')">Voltar 🔄</button>
                         </div>
                     </div>
                 `;
-                containers.galeria.appendChild(blocoFoto);
-                setTimeout(() => {
-                    const inp = document.getElementById(`input-${post.id}`);
-                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                }, 500);
+                containers.galeria.appendChild(blocoGaleria);
             });
 
             // Cartas & Declarações
             itensTextos.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoTexto = document.createElement('div'); blocoTexto.className = 'card-declaracao-texto';
+                const tagEdit = post.editado ? '<span class="tag-editado">(editado)</span>' : '';
 
-                const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
+                const menuTresPontosTexto = (post.autor === usuarioLogado) ? `
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
+                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', \`${post.corpo}\`, '${post.data}')">Editar ✏️</button>
                             <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     </div>
                 ` : '';
 
+                const blocoTexto = document.createElement('div');
+                blocoTexto.className = 'card-declaracao-texto';
                 blocoTexto.innerHTML = `
-                    ${menuTresPontosTextHtml}
-                    <div class="data-card" style="align-items: flex-start; text-align: left;">
-                        <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
-                        <span class="autor-tag">Escrito por: ${post.autor}</span>
+                    ${menuTresPontosTexto}
+                    <div class="data-card" style="text-align:left; margin-bottom:12px;">
+                        <span>🗓️ ${post.data} ${tagEdit}</span>
+                        <span class="autor-tag">Escrito por: ${post.autor || 'Anônimo'}</span>
                     </div>
                     ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
                     <div class="declaracao-wrapper">
-                        <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
+                        <div class="declaracao-corpo-render" id="corpo-texto-${post.id}">${sanitizarHTML(post.corpo)}</div>
                     </div>
-                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
-                    <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
+                    <button class="btn-ler-mais" onclick="alternarLeituraCarta(this, 'corpo-texto-${post.id}')">Ler mais... 📖</button>
+                    <div class="barra-reacoes-polaroid">
                         <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                         <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                     </div>
-                    <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                        <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
-                        </div>
-                        <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
-                    </div>
                 `;
                 containers.texto.appendChild(blocoTexto);
-                
-                setTimeout(() => {
-                    const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
-                    const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
-                    if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
-                        if(botaoLerMais) botaoLerMais.style.display = 'none';
-                        if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
-                    }
-                }, 100);
-
-                setTimeout(() => {
-                    const inp = document.getElementById(`input-${post.id}`);
-                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                }, 500);
             });
 
             renderizarHistoricoDOM();
-            if(ultimoSnapshotComentarios) renderizarComentariosDOM(ultimoSnapshotComentarios);
         });
 
-        function renderizarComentariosDOM(snapshot) {
-            document.querySelectorAll('.lista-comentarios').forEach(l => { if(l.id !== 'lista-historico-container') l.innerHTML = ''; });
-            snapshot.forEach((docSnap) => {
-                const com = { id: docSnap.id, ...docSnap.data() };
-                const containerLista = document.getElementById(`lista-${com.secaoId}`);
-                if (!containerLista) return;
-                if (containerLista.querySelector(`[data-comment-id="${com.id}"]`)) return;
+        // Cronômetros de Amor / Namoro
+        function atualizarCronometros() {
+            const dataInicioAmor = new Date('2024-03-24T00:00:00');
+            const dataInicioNamoro = new Date('2024-05-18T00:00:00');
+            const agora = new Date();
 
-                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
-                const item = document.createElement('div');
-                item.className = 'item-comentario'; item.setAttribute('data-comment-id', com.id);
-                item.innerHTML = `
-                    <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
-                    <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
-                `;
-                containerLista.appendChild(item);
+            function calcularDiferenca(dataInicial) {
+                const diffMs = agora - dataInicial;
+                const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+                const minutos = Math.floor((diffMs / (1000 * 60)) % 60);
+                const segundos = Math.floor((diffMs / 1000) % 60);
+                return `<span>${dias}d ${horas}h ${minutos}m ${segundos}s</span>`;
+            }
+
+            const elemAmor = document.getElementById('contador-amor');
+            const elemNamoro = document.getElementById('contador-namoro');
+
+            if (elemAmor) { elemAmor.innerHTML = calcularDiferenca(dataInicioAmor); elemAmor.classList.add('ativo'); }
+            if (elemNamoro) { elemNamoro.innerHTML = calcularDiferenca(dataInicioNamoro); elemNamoro.classList.add('ativo'); }
+        }
+
+        setInterval(atualizarCronometros, 1000);
+        atualizarCronometros();
+
+        // Animação de Corações Flutuantes (Canvas)
+        const canvas = document.getElementById('canvas-hearts');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let coracoes = [];
+
+            function redimensionarCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', redimensionarCanvas);
+            redimensionarCanvas();
+
+            class Coracao {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = canvas.height + Math.random() * 100;
+                    this.tamanho = Math.random() * 12 + 8;
+                    this.velocidadeY = Math.random() * 1.5 + 0.5;
+                    this.velocidadeX = (Math.random() - 0.5) * 0.5;
+                    this.opacidade = Math.random() * 0.5 + 0.3;
+                    this.rotacao = Math.random() * Math.PI * 2;
+                }
+                update() {
+                    this.y -= this.velocidadeY;
+                    this.x += this.velocidadeX;
+                    if (this.y < -20) this.reset();
+                }
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotacao);
+                    ctx.globalAlpha = this.opacidade;
+                    ctx.fillStyle = '#e6b3a8';
+                    ctx.beginPath();
+                    const d = this.tamanho;
+                    ctx.moveTo(0, 0);
+                    ctx.bezierCurveTo(-d / 2, -d / 2, -d, d / 3, 0, d);
+                    ctx.bezierCurveTo(d, d / 3, d / 2, -d / 2, 0, 0);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < 25; i++) { coracoes.push(new Coracao()); }
+
+            function animar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                coracoes.forEach(c => { c.update(); c.draw(); });
+                requestAnimationFrame(animar);
+            }
+            animar();
+
+            window.celebrarAmor = function() {
+                for (let i = 0; i < 15; i++) {
+                    const c = new Coracao();
+                    c.y = canvas.height / 2;
+                    c.x = canvas.width / 2;
+                    c.velocidadeY = (Math.random() - 0.5) * 5;
+                    c.velocidadeX = (Math.random() - 0.5) * 5;
+                    coracoes.push(c);
+                }
+            };
+        }
+
+        // LÓGICA DE ALTERNÂNCIA DO MODO NOTURNO
+        const btnTheme = document.getElementById('btn-theme-toggle');
+        if (btnTheme) {
+            if (localStorage.getItem('theme_modo_noturno') === 'true') {
+                document.body.classList.add('dark-mode');
+                btnTheme.innerText = '🌙';
+            } else {
+                btnTheme.innerText = '☀️';
+            }
+
+            btnTheme.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                btnTheme.innerText = isDark ? '🌙' : '☀️';
+                localStorage.setItem('theme_modo_noturno', isDark);
             });
         }
-
-        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
-        onSnapshot(qComentariosCorreto, (snapshot) => {
-            ultimoSnapshotComentarios = snapshot;
-            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
-            renderizarComentariosDOM(snapshot);
-        });
-
-        verificarSessao();
-    </script>
-
-    <script>
-        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2026, 7, 12, 0, 0, 0) };
-
-        function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
-
-        function renderizarTempo(dataAlvo, elementoId) {
-            const elemento = document.getElementById(elementoId); if (!elemento) return;
-            const diferenca = new Date().getTime() - dataAlvo.getTime();
-            if (diferenca < 0) { elemento.innerHTML = "Contando as horas... ✨"; return; }
-            elemento.className = "contador-tempo ativo";
-            const dias = Math.floor(diferenca / 86400000);
-            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
-            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
-            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
-            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
-        }
-
-        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
-        let listaCoracoes = []; let animandoAtivo = true;
-
-        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
-
-        class Coracao {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
-                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
-            }
-            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
-            desenhar() {
-                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
-                ctx.beginPath(); ctx.moveTo(this.x, this.y);
-                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
-                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
-                ctx.fill(); ctx.restore();
-            }
-        }
-
-        function animarLoop() {
-            if (!animandoAtivo) return; ctx.clearRect(0, 0, canvas.width, canvas.height);
-            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
-            requestAnimationFrame(animarLoop);
-        }
-
-        function celebrarAmor() { 
-            let total = 25;
-            for (let i = 0; i < total; i++) { setTimeout(() => { if(listaCoracoes.length < 80) listaCoracoes.push(new Coracao()); }, i * 40); } 
-        }
-
-        document.addEventListener('DOMContentLoaded', () => { atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop(); });
     </script>
 </body>
 </html>
