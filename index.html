@@ -989,7 +989,6 @@
         });
 
         function extrairIDYouTube(url) {
-            if (!url) return null;
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
@@ -1095,7 +1094,7 @@
             try {
                 if (idEditando) {
                     await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
-                    alert('Card atualizado! ✨');
+                    alert('Card updated! ✨');
                 } else {
                     await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
                     alert('Card publicado! ❤️');
@@ -1203,7 +1202,7 @@
             document.getElementById('texto-corpo').value = corpo;
             const [dia, mes, ano] = data.split('/');
             document.getElementById('texto-data').value = `${ano}-${mes}-${dia}`;
-            document.getElementById('titulo-painel-texto').innerText = '✏️ Editar Declaração Escrita';
+            document.getElementById('titulo-painel-texto').innerText = '✏️ Editar Declaração Escritura';
             document.getElementById('btn-salvar-texto').innerText = 'Atualizar Carta ❤️';
             document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
         };
@@ -1480,61 +1479,66 @@
                 }, 500);
             });
 
-            // Galeria de Momentos (Varal Polaroid 3D)
+            // Varal de Fotos e Vídeos da Galeria
             itensGaleria.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const idYT = extrairIDYouTube(post.imagem);
+                const blocoFoto = document.createElement('div');
+                blocoFoto.className = 'quadro-polaroid'; blocoFoto.id = `polaroid-${post.id}`;
 
-                const controleModificacao = (post.autor === usuarioLogado) ? `
-                    <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
-                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
                     </div>
                 ` : '';
 
-                let midiaHTML = '';
-                if (idYT) {
-                    midiaHTML = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" frameborder="0" allowfullscreen></iframe>`;
-                } else if (post.imagem && post.imagem.match(/\.(mp4|webm|ogg)/i)) {
-                    midiaHTML = `<video class="polaroid-video" controls src="${post.imagem}"></video>`;
-                } else {
-                    midiaHTML = `<img class="polaroid-imagem" src="${post.imagem}" alt="${post.titulo || 'Momento'}" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" loading="lazy">`;
-                }
+                let midiaHtml = '';
+                const idYT = extrairIDYouTube(post.imagem);
 
-                const bloco = document.createElement('div');
-                bloco.className = 'quadro-polaroid';
-                bloco.id = `polaroid-${post.id}`;
-                bloco.innerHTML = `
-                    <div class="polaroid-inner">
+                if (idYT) { midiaHtml = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" allowfullscreen></iframe>`; } 
+                else if (post.imagem.match(/\.(mp4|webm|ogg)/i)) { midiaHtml = `<video class="polaroid-video" src="${post.imagem}" controls preload="metadata"></video>`; } 
+                else { midiaHtml = `<img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+Invalido'">`; }
+
+                blocoFoto.innerHTML = `
+                    <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
                         <div class="polaroid-frente">
-                            ${midiaHTML}
+                            ${menuTresPontosHtml}
+                            <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px; font-size: 0.75rem;">
+                                <span>🗓️ Publicado: ${post.data}</span>
+                            </div>
+                            ${midiaHtml}
+                            <div class="data-card" style="align-items: center; text-align: center; margin-top:12px; margin-bottom:0;">
+                                <span style="font-size:0.75rem; font-weight:normal; color:var(--secondary);">✨ Dê 2 cliques na moldura para girar</span>
+                            </div>
                             <div class="polaroid-legenda-box">
                                 ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
                                 ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
-                                <div class="barra-reacoes-polaroid">
-                                    <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                                    <span class="contagem-likes">${curtidasArray.length} curtidas</span>
+                            </div>
+                            <div class="barra-reacoes-polaroid">
+                                <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                                <span class="contagem-likes">${curtidasArray.length} curtidas</span>
+                            </div>
+                            <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
+                                <div class="form-comentario">
+                                    <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
+                                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
                                 </div>
+                                <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                             </div>
                         </div>
-                        <div class="polaroid-verso" onclick="virarPolaroidCard('polaroid-${post.id}')">
-                            <div class="polaroid-verso-titulo">🤍 Detalhes</div>
-                            <div class="polaroid-verso-info">🗓️ Data: ${post.data}</div>
-                            <div class="polaroid-verso-info">👤 Autor: ${post.autor || 'Anônimo'}</div>
-                            <p style="margin-top: 15px; font-size: 0.85rem; color: var(--secondary);">Clique para virar de volta 🔄</p>
+                        <div class="polaroid-verso">
+                            <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
+                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
+                            <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
+                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para voltar ↩️</div>
                         </div>
                     </div>
-                    <div class="secao-comentarios">
-                        <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
-                        </div>
-                        <div id="lista-${post.id}" class="lista-comentarios"></div>
-                    </div>
-                    ${controleModificacao}
                 `;
-                containers.galeria.appendChild(bloco);
+                containers.galeria.appendChild(blocoFoto);
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
                     if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
@@ -1545,40 +1549,52 @@
             itensTextos.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoTexto = document.createElement('div'); blocoTexto.className = 'card-declaracao-texto';
 
-                const controleModificacao = (post.autor === usuarioLogado) ? `
-                    <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${sanitizarHTML(post.corpo)}', '${post.data}')">Editar ✏️</button>
-                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
                     </div>
                 ` : '';
 
-                const bloco = document.createElement('div');
-                bloco.className = 'card-declaracao-texto';
-                bloco.innerHTML = `
-                    <div class="data-card" style="text-align: left; margin-bottom: 12px;">
-                        <span>🗓️ ${post.data}</span>
-                        <span class="autor-tag">Escrito por: ${post.autor || 'Anônimo'} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
+                blocoTexto.innerHTML = `
+                    ${menuTresPontosTextHtml}
+                    <div class="data-card" style="align-items: flex-start; text-align: left;">
+                        <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
+                        <span class="autor-tag">Escrito por: ${post.autor}</span>
                     </div>
                     ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
                     <div class="declaracao-wrapper">
-                        <div class="declaracao-corpo-render" id="corpo-texto-${post.id}">${sanitizarHTML(post.corpo)}</div>
+                        <div class="declaracao-corpo-render" id="corpo-carta-${post.id}">${sanitizarHTML(post.corpo)}</div>
                     </div>
-                    <button class="btn-ler-mais" onclick="alternarLeituraCarta(this, 'corpo-texto-${post.id}')">Ler mais... 📖</button>
-                    <div class="barra-reacoes-polaroid">
+                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
+                    <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
                         <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                         <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                     </div>
-                    <div class="secao-comentarios">
+                    <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
                         <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
                         </div>
-                        <div id="lista-${post.id}" class="lista-comentarios"></div>
+                        <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
                     </div>
-                    ${controleModificacao}
                 `;
-                containers.texto.appendChild(bloco);
+                containers.texto.appendChild(blocoTexto);
+                
+                setTimeout(() => {
+                    const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
+                    const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
+                    if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
+                        if(botaoLerMais) botaoLerMais.style.display = 'none';
+                        if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
+                    }
+                }, 100);
+
                 setTimeout(() => {
                     const inp = document.getElementById(`input-${post.id}`);
                     if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
@@ -1586,166 +1602,89 @@
             });
 
             renderizarHistoricoDOM();
+            if(ultimoSnapshotComentarios) renderizarComentariosDOM(ultimoSnapshotComentarios);
         });
 
-        // Atualização em Tempo Real dos Comentários
-        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
-        onSnapshot(qComentarios, (snapshot) => {
-            ultimoSnapshotComentarios = snapshot;
-            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
-
-            document.querySelectorAll('.lista-comentarios').forEach(c => {
-                if (c.id !== 'lista-historico-container') c.innerHTML = '';
-            });
-
+        function renderizarComentariosDOM(snapshot) {
+            document.querySelectorAll('.lista-comentarios').forEach(l => { if(l.id !== 'lista-historico-container') l.innerHTML = ''; });
             snapshot.forEach((docSnap) => {
                 const com = { id: docSnap.id, ...docSnap.data() };
-                const listaCont = document.getElementById(`lista-${com.secaoId}`);
+                const containerLista = document.getElementById(`lista-${com.secaoId}`);
+                if (!containerLista) return;
+                if (containerLista.querySelector(`[data-comment-id="${com.id}"]`)) return;
 
-                if (listaCont) {
-                    const itemCom = document.createElement('div');
-                    itemCom.className = 'item-comentario';
-                    const podeExcluir = (com.autor === usuarioLogado);
-
-                    itemCom.innerHTML = `
-                        <div class="meta-comentario">
-                            <span class="autor-comentario">${com.autor}</span>
-                            <span>${com.dataHora}</span>
-                        </div>
-                        <div class="corpo-comentario">
-                            <div class="texto-comentario">${sanitizarHTML(com.texto)}</div>
-                            ${podeExcluir ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : ''}
-                        </div>
-                    `;
-                    listaCont.appendChild(itemCom);
-                }
+                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+                const item = document.createElement('div');
+                item.className = 'item-comentario'; item.setAttribute('data-comment-id', com.id);
+                item.innerHTML = `
+                    <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
+                    <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
+                `;
+                containerLista.appendChild(item);
             });
+        }
+
+        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentariosCorreto, (snapshot) => {
+            ultimoSnapshotComentarios = snapshot;
+            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
+            renderizarComentariosDOM(snapshot);
         });
 
-        // Lógica dos Cronômetros (Datas Originais)
-        function atualizarCronometros() {
-            const agora = new Date();
-            const dataAmor = new Date(2024, 4, 17); // 17 de Maio de 2024
-            const dataNamoro = new Date(2024, 4, 18); // 18 de Maio de 2024
+        verificarSessao();
+    </script>
 
-            function formatarTempo(inicio) {
-                const diffMs = agora - inicio;
-                if (diffMs < 0) return "Em breve... ❤️";
-                
-                const diasTotais = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                const horas = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                const segundos = Math.floor((diffMs % (1000 * 60)) / 1000);
+    <script>
+        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2026, 7, 12, 0, 0, 0) };
 
-                return `<span>${diasTotais}</span> dias, <span>${horas}</span>h <span>${minutos}</span>m <span>${segundos}</span>s`;
-            }
+        function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
 
-            const elemAmor = document.getElementById('contador-amor');
-            const elemNamoro = document.getElementById('contador-namoro');
-
-            if (elemAmor) {
-                elemAmor.innerHTML = formatarTempo(dataAmor);
-                elemAmor.classList.add('ativo');
-            }
-            if (elemNamoro) {
-                elemNamoro.innerHTML = formatarTempo(dataNamoro);
-                elemNamoro.classList.add('ativo');
-            }
+        function renderizarTempo(dataAlvo, elementoId) {
+            const elemento = document.getElementById(elementoId); if (!elemento) return;
+            const diferenca = new Date().getTime() - dataAlvo.getTime();
+            if (diferenca < 0) { elemento.innerHTML = "Contando as horas... ✨"; return; }
+            elemento.className = "contador-tempo ativo";
+            const dias = Math.floor(diferenca / 86400000);
+            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
+            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
+            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
+            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
         }
-        setInterval(atualizarCronometros, 1000);
-        atualizarCronometros();
 
-        // Animação de Corações no Canvas
-        const canvas = document.getElementById('canvas-hearts');
-        const ctx = canvas ? canvas.getContext('2d') : null;
-        let coracoes = [];
+        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
+        let listaCoracoes = []; let animandoAtivo = true;
 
-        function redimensionarCanvas() {
-            if (canvas) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-        }
-        window.addEventListener('resize', redimensionarCanvas);
-        redimensionarCanvas();
+        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
 
         class Coracao {
-            constructor(x, y, tamanho, velocidadeY, velocidadeX, opacidade) {
-                this.x = x || Math.random() * (canvas ? canvas.width : window.innerWidth);
-                this.y = y || (canvas ? canvas.height : window.innerHeight) + Math.random() * 20;
-                this.tamanho = tamanho || Math.random() * 12 + 8;
-                this.velocidadeY = velocidadeY || Math.random() * 1.5 + 0.5;
-                this.velocidadeX = velocidadeX || (Math.random() - 0.5) * 0.8;
-                this.opacidade = opacidade || Math.random() * 0.6 + 0.4;
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
+                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
+                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
             }
-
+            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
             desenhar() {
-                if (!ctx) return;
-                ctx.save();
-                ctx.globalAlpha = this.opacidade;
-                ctx.fillStyle = '#8c625d';
-                ctx.beginPath();
-                const topCurveHeight = this.tamanho * 0.3;
-                ctx.moveTo(this.x, this.y + topCurveHeight);
-                ctx.bezierCurveTo(
-                    this.x, this.y,
-                    this.x - this.tamanho / 2, this.y,
-                    this.x - this.tamanho / 2, this.y + topCurveHeight
-                );
-                ctx.bezierCurveTo(
-                    this.x - this.tamanho / 2, this.y + (this.tamanho + topCurveHeight) / 2,
-                    this.x, this.y + this.tamanho,
-                    this.x, this.y + this.tamanho
-                );
-                ctx.bezierCurveTo(
-                    this.x, this.y + this.tamanho,
-                    this.x + this.tamanho / 2, this.y + (this.tamanho + topCurveHeight) / 2,
-                    this.x + this.tamanho / 2, this.y + topCurveHeight
-                );
-                ctx.bezierCurveTo(
-                    this.x + this.tamanho / 2, this.y,
-                    this.x, this.y,
-                    this.x, this.y + topCurveHeight
-                );
-                ctx.closePath();
-                ctx.fill();
-                ctx.restore();
-            }
-
-            atualizar() {
-                this.y -= this.velocidadeY;
-                this.x += this.velocidadeX;
+                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
+                ctx.beginPath(); ctx.moveTo(this.x, this.y);
+                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
+                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
+                ctx.fill(); ctx.restore();
             }
         }
 
-        function animarCanvas() {
-            if (!ctx) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (coracoes.length < 25 && Math.random() < 0.05) {
-                coracoes.push(new Coracao());
-            }
-            for (let i = coracoes.length - 1; i >= 0; i--) {
-                coracoes[i].atualizar();
-                coracoes[i].desenhar();
-                if (coracoes[i].y < -30) {
-                    coracoes.splice(i, 1);
-                }
-            }
-            requestAnimationFrame(animarCanvas);
+        function animarLoop() {
+            if (!animandoAtivo) return; ctx.clearRect(0, 0, canvas.width, canvas.height);
+            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
+            requestAnimationFrame(animarLoop);
         }
-        animarCanvas();
 
-        window.celebrarAmor = function() {
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const x = Math.random() * (canvas ? canvas.width : window.innerWidth);
-                    const y = (canvas ? canvas.height : window.innerHeight) - 20;
-                    coracoes.push(new Coracao(x, y, Math.random() * 18 + 10, Math.random() * 3 + 2, (Math.random() - 0.5) * 2, 0.9));
-                }, i * 50);
-            }
-        };
+        function celebrarAmor() { 
+            let total = 25;
+            for (let i = 0; i < total; i++) { setTimeout(() => { if(listaCoracoes.length < 80) listaCoracoes.push(new Coracao()); }, i * 40); } 
+        }
 
-        verificarSessao();
+        document.addEventListener('DOMContentLoaded', () => { atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop(); });
     </script>
 </body>
 </html>
