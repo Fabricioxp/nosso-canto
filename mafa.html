@@ -1,1 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- Redirecionamento Automático para o index.html -->
+  <meta http-equiv="refresh" content="0;url=index.html">
+  <script>
+    window.location.href = "index.html";
+  </script>
 
+  <title>Nossa História Inesquecível ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      background-color: #020617;
+      color: #f1f5f9;
+    }
+
+    /* Fundo Animado Cósmico */
+    #canvas-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .cosmic-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 30%, rgba(15, 23, 42, 0.7) 0%, rgba(10, 25, 47, 0.9) 70%, rgba(2, 6, 23, 0.98) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Container Principal */
+    .app-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: env(safe-area-inset-top, 16px) 16px env(safe-area-inset-bottom, 16px) 16px;
+    }
+
+    /* Barras de Progresso no Topo */
+    .progress-bar-container {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+      padding-top: 6px;
+      z-index: 30;
+    }
+
+    .progress-step {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #38bdf8, #1e40af);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+
+    .progress-step.active .progress-fill {
+      width: 100%;
+    }
+
+    /* Área dos Slides */
+    .slide-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.96) translateY(10px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Cards de Texto */
+    .card-content {
+      background: rgba(10, 25, 47, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 24px;
+      padding: 28px 22px;
+      width: 100%;
+      max-width: 380px;
+      max-height: 90%;
+      overflow-y: auto;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(15, 23, 42, 0.5);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .text-body {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      font-weight: 300;
+    }
+
+    /* SLIDE FINAL COM FOTO TOTALMENTE PREENCHIDA */
+    .slide-final-container {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      height: 100%;
+      max-height: 620px;
+      display: flex;
+      flex-direction: column;
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(30, 58, 138, 0.4);
+    }
+
+    .photo-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    .photo-gradient-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 35%;
+      background: linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.6) 60%, transparent 100%);
+    }
+
+    .final-text-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 12px 18px 20px 18px;
+      text-align: center;
+      z-index: 5;
+    }
+
+    .love-declaration {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f43f5e;
+      margin-top: 6px;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 18px rgba(244, 63, 94, 0.6);
+    }
+
+    /* Botões de Navegação Inferiores */
+    .nav-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 30;
+      padding-bottom: 4px;
+    }
+
+    .btn-nav {
+      flex: 1;
+      padding: 13px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.9) 100%);
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-nav:active {
+      transform: scale(0.96);
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      border-color: transparent;
+    }
+
+    .touch-area {
+      position: absolute;
+      top: 50px;
+      bottom: 70px;
+      width: 35%;
+      z-index: 25;
+    }
+    .touch-left { left: 0; }
+    .touch-right { right: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- Fundo Animado Cósmico -->
+  <canvas id="canvas-bg"></canvas>
+  <div class="cosmic-overlay"></div>
+
+  <div class="app-container">
+
+    <!-- Indicadores no Topo -->
+    <div class="progress-bar-container">
+      <div class="progress-step active" onclick="goToSlide(0)"><div class="progress-fill"></div></div>
+      <div class="progress-step" onclick="goToSlide(1)"><div class="progress-fill"></div></div>
+      <div class="progress-step" onclick="goToSlide(2)"><div class="progress-fill"></div></div>
+      <div class="progress-step" onclick="goToSlide(3)"><div class="progress-fill"></div></div>
+      <div class="progress-step" onclick="goToSlide(4)"><div class="progress-fill"></div></div>
+      <div class="progress-step" onclick="goToSlide(5)"><div class="progress-fill"></div></div>
+    </div>
+
+    <div class="touch-area touch-left" onclick="prevSlide()"></div>
+    <div class="touch-area touch-right" onclick="nextSlide()"></div>
+
+    <!-- Container dos Slides -->
+    <div class="slide-wrapper">
+
+      <!-- Slide 1 -->
+      <div class="slide active">
+        <div class="card-content">
+          <p class="text-body">
+            Finalmente o grande dia chegou e, sério, foi muito melhor do que eu esperava.<br><br>
+            Chegando ao local por nós marcado, logo de longe, ao te ver, já abri um sorriso. Desci da moto com uma vergonha boba e fui em direção ao seu abraço tímido. Encostar meu peito ao seu e colar nossos corações foi uma sensação de alívio tão boa! Após meses sobrecarregando nossas vontades, aquilo foi como se minhas energias tivessem sido repostas.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="slide">
+        <div class="card-content">
+          <p class="text-body">
+            Ao tocar seus lábios no nosso primeiro beijinho, sentir sua boca foi único para mim. Pude provar o que é um beijo com sabor de amor de verdade. Mesmo que meio tímido, foi surreal... eu amei!
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="slide">
+        <div class="card-content">
+          <p class="text-body">
+            A caminho do morro, tive o cuidado de andar bem devagar, principalmente em ruas esburacadas e lombadas, pois não queria te causar nenhum desconforto.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
+      <div class="slide">
+        <div class="card-content">
+          <p class="text-body">
+            Lá no morro, no nosso cantinho debaixo da tirolesa, tivemos nossos primeiros toques reais e menos envergonhados. Eu só queria ficar ali mesmo, sentindo o seu cheiro pelo qual me apaixonei, o calor do seu abraço maravilhoso e aqueles beijinhos incessantes.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div class="slide">
+        <div class="card-content">
+          <p class="text-body">
+            Foi tudo muito perfeito! Você é a mulher mais linda que eu já vi e a sua voz me encantou. Esse foi apenas o nosso começo; ainda vamos ter muitos momentos juntinhos.
+          </p>
+        </div>
+      </div>
+
+      <!-- SLIDE FINAL -->
+      <div class="slide">
+        <div class="slide-final-container">
+          <div class="photo-frame">
+            <img src="https://i.imgur.com/kNuQhYA.jpeg" alt="Nossa Foto Especial">
+            <div class="photo-gradient-overlay"></div>
+          </div>
+          <div class="final-text-content">
+            <p class="text-body" style="font-size: 0.9rem; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
+              Estou ansioso para te ver novamente e provar de todo o seu carinho de novo.
+            </p>
+            <div class="love-declaration">EU TE AMO! ❤️</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav-controls">
+      <button class="btn-nav" id="btnPrev" onclick="prevSlide()">← Voltar</button>
+      <button class="btn-nav" id="btnNext" onclick="nextSlide()">Avançar →</button>
+    </div>
+
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const steps = document.querySelectorAll('.progress-step');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+
+    function updateSlides() {
+      slides.forEach((slide, index) => {
+        if (index === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      steps.forEach((step, index) => {
+        if (index <= currentSlide) {
+          step.classList.add('active');
+        } else {
+          step.classList.remove('active');
+        }
+      });
+
+      btnPrev.disabled = currentSlide === 0;
+      if (currentSlide === slides.length - 1) {
+        btnNext.innerHTML = 'Reiniciar 🔄';
+      } else {
+        btnNext.innerHTML = 'Avançar →';
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+      } else {
+        currentSlide = 0;
+      }
+      updateSlides();
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlides();
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlides();
+    }
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 40) {
+        nextSlide();
+      }
+      if (touchEndX > touchStartX + 40) {
+        prevSlide();
+      }
+    }
+
+    const canvas = document.getElementById('canvas-bg');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const stars = [];
+    for (let i = 0; i < 80; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.8 + 0.5,
+        color: ['#1e40af', '#38bdf8', '#60a5fa', '#ffffff', '#93c5fd'][Math.floor(Math.random() * 5)],
+        alpha: Math.random(),
+        speed: Math.random() * 0.015 + 0.005
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      stars.forEach(star => {
+        star.alpha += star.speed;
+        if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
+        
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = star.color;
+        ctx.globalAlpha = Math.abs(star.alpha);
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = star.color;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    updateSlides();
+  </script>
+</body>
+</html>
