@@ -877,6 +877,96 @@
             const agora = new Date();
             return `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
         }
+<input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
+                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
+                <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem OU do Vídeo (MP4, YouTube, etc)">
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="flex: 1; text-align: left;">
+                        <label style="font-size: 0.75rem; color: var(--secondary); margin-left: 2px;">🗓️ Data da Publicação:</label>
+                        <input type="date" id="galeria-data" class="input-custom" style="margin-top: 2px;">
+                    </div>
+                    <div style="flex: 1; text-align: left;">
+                        <label style="font-size: 0.75rem; color: var(--secondary); margin-left: 2px;">📸 Data em que foi Tirada:</label>
+                        <input type="date" id="galeria-data-captura" class="input-custom" style="margin-top: 2px;">
+                    </div>
+                </div>
+                
+                <button class="btn-postar" id="btn-salvar-galeria">Publicar no Varal ✨</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-galeria-momentos">
+                <div class="titulo-secao">🖼️ Nosso Varal de Fotos & Vídeos</div>
+                <div id="novos-cards-galeria"></div>
+            </section>
+
+            <section class="painel-upload" id="painel-texto-posts">
+                <div class="titulo-secao" id="titulo-painel-texto" style="margin-bottom: 15px;">✍️ Escrever Nova Declaração</div>
+                <input type="hidden" id="editando-texto-id" value="">
+                
+                <input type="text" id="texto-titulo" class="input-custom" placeholder="Título da Carta/Declaração (Opcional)">
+                <textarea id="texto-corpo" class="textarea-custom" placeholder="Escreva aqui tudo o que seu coração sente... ❤️"></textarea>
+                <input type="date" id="texto-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-texto">Eternizar Declaração 🌹</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-nossos-textos">
+                <div class="titulo-secao">✍️ Cartas & Declarações</div>
+                <div id="novos-cards-textos"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
+            authDomain: "nosso-canto-5d714.firebaseapp.com",
+            projectId: "nosso-canto-5d714",
+            storageBucket: "nosso-canto-5d714.firebasestorage.app",
+            messagingSenderId: "1042257316625",
+            appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let usuarioLogado = sessionStorage.getItem('user_canto') || null;
+        let todosHistoricos = [];
+        let limiteHistorico = true;
+
+        function gerenciarSessaoUsuario() {
+            if (!usuarioLogado) return;
+            document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
+        }
+
+        async function inicializarCardsOriginais() {
+            const postsRef = collection(db, "posts");
+            const cardsOriginais = [
+                { identificadorUnico: "original_maria_1", destino: "dela", titulo: "A fofura que ela fez para mim 🥰", subtitulo: "Ver apresentação", imagem: "https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk", data: "17/05/2026", dataCaptura: "17/05/2026", autor: "Maria", criadoEm: 1715918400000 },
+                { identificadorUnico: "original_fabricio_1", destino: "meu", titulo: "meu objetivo de amoor", subtitulo: "Ver apresentação", imagem: "https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk", data: "18/05/2026", dataCaptura: "18/05/2026", autor: "Fabricio", criadoEm: 1716004800000 },
+                { identificadorUnico: "original_fabricio_2", destino: "meu", titulo: "para o amor da minha vida", subtitulo: "ver declaration", imagem: "https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1", data: "25/05/2026", dataCaptura: "25/05/2026", autor: "Fabricio", criadoEm: 1716609600000 }
+            ];
+
+            for (const card of cardsOriginais) {
+                const q = query(postsRef, where("identificadorUnico", "==", card.identificadorUnico));
+                const snap = await getDocs(q);
+                if (snap.empty) { await addDoc(postsRef, card); }
+            }
+        }
+
+        function sanitizarHTML(str) { 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+        }
+
+        function obterDataHoraAtual() {
+            const agora = new Date();
+            return `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        }
 
         function verificarPinSeguranca() {
             const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
@@ -900,6 +990,7 @@
                 document.getElementById('bloco-historico-acessos').style.display = 'none';
             }
         }
+
 
         function calcularArmazenamento(snapshotPosts, snapshotComentarios) {
             let totalBytes = 0;
