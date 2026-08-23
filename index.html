@@ -1490,7 +1490,7 @@
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
+                            <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}', '${post.dataCaptura || post.data}')">Editar ✏️</button>
                             <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     </div>
@@ -1532,7 +1532,7 @@
                         </div>
                         <div class="polaroid-verso">
                             <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
-                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
+                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.dataCaptura || post.data}</div>
                             <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
                             <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para voltar ↩️</div>
                         </div>
@@ -1544,6 +1544,7 @@
                     if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
                 }, 500);
             });
+
 
             //  Cartas & Declarações
             itensTextos.forEach((post) => {
