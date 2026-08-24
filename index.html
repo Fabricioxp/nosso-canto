@@ -738,7 +738,7 @@
                         <div id="stat-total-msgs" style="font-size: 1.4rem; font-weight: bold; color: var(--primary); margin-top: 4px;">0</div>
                     </div>
                 </div>
-                <div id="status-nuvem" style="font-size: 0.7rem; color: var(--secondary); text-align: center; margin-top: 10px;">☁️ Sincronizado com a nuvem</div>
+                <div id="status-nuvem" style="font-size: 0.7rem; color: var(--secondary); text-align: center; margin-top: 10px;">☁️ Dados salvos localmente e sincronizados</div>
                 <div id="ultima-atualizacao-whatsapp" style="font-size: 0.7rem; color: var(--secondary); text-align: center; margin-top: 5px;">Última atualização: nunca</div>
             </section>
 
@@ -860,12 +860,9 @@
         <div class="modal-conteudo">
             <h3 style="color: var(--primary); font-family: var(--font-title); margin-bottom: 8px;">💬 WhatsApp</h3>
             <p style="font-size: 0.82rem; color: var(--secondary); margin-bottom: 12px;">Selecione o arquivo exportado (.txt ou .zip).</p>
-
             <input type="file" id="whatsappFileInput" accept=".txt,.zip" class="input-custom" style="padding: 8px;">
             <input type="hidden" id="editando-whatsapp-id" value="">
-
             <div id="modalStatus" style="font-size: 0.8rem; margin: 8px 0; font-weight: bold; color: var(--primary);"></div>
-
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
                 <button class="btn-postar" id="btn-atualizar-whatsapp">🔄 Atualizar</button>
                 <button class="btn-postar" id="btn-excluir-whatsapp" style="background: #d9534f;">🗑️ Excluir dados</button>
@@ -1386,12 +1383,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                 else if (post.destino === 'dela') { itensDela.push(post); }
                 else if (post.destino === 'meu') { itensMeu.push(post); }
                 else if (post.destino === 'galeria') { itensGaleria.push(post); }
-                else if (post.destino === 'texto') {
-                    // O registro técnico das estatísticas do WhatsApp usa exatamente
-                    // o mesmo destino/permissão das cartas e declarações, mas não é
-                    // exibido na lista de cartas.
-                    if (post.tipo !== 'whatsapp_estatisticas') itensTextos.push(post);
-                }
+                else if (post.destino === 'texto' && post.titulo !== 'Estatísticas do WhatsApp') { itensTextos.push(post); }
                 else if (post.destino === 'playlist') { itensPlaylist.push(post); }
             });
 
@@ -1694,98 +1686,108 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         });
 
         // ============================================================
-        // WHATSAPP — MESMO PADRÃO DE SALVAMENTO DA PLAYLIST
-        // Usa a mesma coleção "posts", a mesma db, addDoc/updateDoc/deleteDoc.
-        // O arquivo é processado somente no aparelho; apenas os números são salvos.
+        // WHATSAPP — usa EXATAMENTE o mesmo formato de salvamento das CARTAS.
+        // Não existe coleção/destino novo: grava em posts com destino "texto"
+        // e somente com os campos que a declaração já usa.
         // ============================================================
+        const TITULO_WHATSAPP_NUVEM = 'Estatísticas do WhatsApp';
+
         async function buscarEstatisticasWhatsAppFirebase() {
-            // IMPORTANTE: não usa um destino novo. O WhatsApp reutiliza o mesmo
-            // caminho de salvamento já usado pelas cartas/declarações: destino 'texto'.
-            // Isso evita depender de uma permissão específica para 'whatsapp_estatisticas'.
             const q = query(collection(db, "posts"), where("destino", "==", "texto"));
             const snap = await getDocs(q);
-            const docSnap = snap.docs.find(d => d.data()?.tipo === 'whatsapp_estatisticas');
-            if (!docSnap) return null;
-            return { id: docSnap.id, ...docSnap.data() };
+            const docSnap = snap.docs.find(d => {
+                const dta = d.data() || {};
+                return dta.titulo === TITULO_WHATSAPP_NUVEM;
+            });
+            return docSnap ? { id: docSnap.id, ...docSnap.data() } : null;
         }
 
         async function carregarEstatisticasWhatsAppFirebase() {
-            const dados = await buscarEstatisticasWhatsAppFirebase();
-            const love = dados ? Number(dados.loveCount || 0) : 0;
-            const total = dados ? Number(dados.totalMsgs || 0) : 0;
-            const atualizadoEm = dados ? (dados.atualizadoEm || '') : '';
+            try {
+                const dados = await buscarEstatisticasWhatsAppFirebase();
+                const love = dados ? Number(dados.loveCount || 0) : 0;
+                const total = dados ? Number(dados.totalMsgs || 0) : 0;
+                const atualizadoEm = dados ? (dados.atualizadoEm || '') : '';
 
-            document.getElementById('stat-te-amo').innerText = love.toLocaleString('pt-BR');
-            document.getElementById('stat-total-msgs').innerText = total.toLocaleString('pt-BR');
-            atualizarTextoUltimaAtualizacao(atualizadoEm);
-
-            document.getElementById('editando-whatsapp-id').value = dados?.id || '';
-            document.getElementById('status-nuvem').innerText = dados
-                ? "☁️ Sincronizado com a nuvem"
-                : "☁️ Nenhum dado salvo";
+                document.getElementById('stat-te-amo').innerText = love.toLocaleString('pt-BR');
+                document.getElementById('stat-total-msgs').innerText = total.toLocaleString('pt-BR');
+                atualizarTextoUltimaAtualizacao(atualizadoEm);
+                document.getElementById('editando-whatsapp-id').value = dados?.id || '';
+                document.getElementById('status-nuvem').innerText = dados ? '☁️ Sincronizado com a nuvem' : '☁️ Nenhum dado salvo';
+            } catch (error) {
+                console.error('Erro ao carregar WhatsApp:', error);
+                throw error;
+            }
         }
 
         window.salvarEstatisticasWhatsAppFirebase = async function(loveCount, totalMsgs) {
-            const atualizadoEm = new Date().toISOString();
-            try {
-                // EXATAMENTE o mesmo caminho das cartas/declarações:
-                // collection(db, 'posts') + destino 'texto' + addDoc/updateDoc.
-                const dadosExistentes = await buscarEstatisticasWhatsAppFirebase();
-                const corpo = `WhatsApp — ${Number(loveCount).toLocaleString('pt-BR')} eu te amo; ${Number(totalMsgs).toLocaleString('pt-BR')} mensagens.`;
-                const campos = {
-                    destino: 'texto',
-                    tipo: 'whatsapp_estatisticas',
-                    titulo: 'Estatísticas do WhatsApp',
-                    corpo,
-                    data: new Date(atualizadoEm).toLocaleDateString('pt-BR'),
-                    loveCount: Number(loveCount),
-                    totalMsgs: Number(totalMsgs),
-                    atualizadoEm,
-                    autor: usuarioLogado,
-                    curtidas: []
-                };
+            const love = Number(loveCount);
+            const total = Number(totalMsgs);
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR');
 
-                if (dadosExistentes?.id) {
-                    await updateDoc(doc(db, "posts", dadosExistentes.id), campos);
-                    document.getElementById('editando-whatsapp-id').value = dadosExistentes.id;
-                } else {
-                    const novoDoc = await addDoc(collection(db, "posts"), {
-                        ...campos,
-                        criadoEm: Date.now()
-                    });
-                    document.getElementById('editando-whatsapp-id').value = novoDoc.id;
+            // MESMOS CAMPOS DA DECLARAÇÃO. Nada de campo/coleção/permissão nova.
+            const dados = {
+                destino: 'texto',
+                titulo: TITULO_WHATSAPP_NUVEM,
+                corpo: `Mensagens: ${total.toLocaleString('pt-BR')} | Eu te amo: ${love.toLocaleString('pt-BR')}`,
+                data: dataFormatada,
+                autor: usuarioLogado,
+                criadoEm: Date.now(),
+                curtidas: [],
+                loveCount: love,
+                totalMsgs: total,
+                atualizadoEm: agora.toISOString()
+            };
+
+            try {
+                let id = document.getElementById('editando-whatsapp-id').value;
+
+                if (!id) {
+                    const existente = await buscarEstatisticasWhatsAppFirebase();
+                    id = existente?.id || '';
                 }
 
-                document.getElementById('stat-te-amo').innerText = Number(loveCount).toLocaleString('pt-BR');
-                document.getElementById('stat-total-msgs').innerText = Number(totalMsgs).toLocaleString('pt-BR');
-                atualizarTextoUltimaAtualizacao(atualizadoEm);
-                document.getElementById('status-nuvem').innerText = "☁️ Salvo na nuvem";
+                if (id) {
+                    // Exatamente como salvar uma declaração existente.
+                    await updateDoc(doc(db, "posts", id), {
+                        titulo: dados.titulo,
+                        corpo: dados.corpo,
+                        data: dados.data,
+                        loveCount: dados.loveCount,
+                        totalMsgs: dados.totalMsgs,
+                        atualizadoEm: dados.atualizadoEm
+                    });
+                } else {
+                    // Exatamente como criar uma declaração nova.
+                    const novo = await addDoc(collection(db, "posts"), dados);
+                    id = novo.id;
+                }
+
+                document.getElementById('editando-whatsapp-id').value = id;
+                document.getElementById('stat-te-amo').innerText = love.toLocaleString('pt-BR');
+                document.getElementById('stat-total-msgs').innerText = total.toLocaleString('pt-BR');
+                atualizarTextoUltimaAtualizacao(dados.atualizadoEm);
+                document.getElementById('status-nuvem').innerText = '☁️ Salvo na nuvem';
+                return true;
             } catch (error) {
-                console.error('Erro ao salvar estatísticas do WhatsApp:', error);
+                console.error('ERRO REAL AO SALVAR WHATSAPP:', error);
+                document.getElementById('status-nuvem').innerText = '❌ Erro ao salvar: ' + (error.code || error.message || error);
                 throw error;
             }
         };
 
         window.excluirEstatisticasWhatsAppFirebase = async function() {
             if (!verificarPinSeguranca()) return;
-
-            let id = document.getElementById('editando-whatsapp-id').value;
-            if (!id) {
-                const dados = await buscarEstatisticasWhatsAppFirebase();
-                if (!dados) { alert('Não há estatísticas para excluir.'); return; }
-                id = dados.id;
-                document.getElementById('editando-whatsapp-id').value = id;
-            }
-
+            const dados = await buscarEstatisticasWhatsAppFirebase();
+            if (!dados?.id) { alert('Não há estatísticas para excluir.'); return; }
             if (!confirm('Tem certeza que deseja excluir as estatísticas do WhatsApp?')) return;
-
-            await deleteDoc(doc(db, "posts", id));
+            await deleteDoc(doc(db, "posts", dados.id));
             document.getElementById('editando-whatsapp-id').value = '';
             document.getElementById('stat-te-amo').innerText = '0';
             document.getElementById('stat-total-msgs').innerText = '0';
             atualizarTextoUltimaAtualizacao('');
-            document.getElementById('status-nuvem').innerText = '☁️ Estatísticas excluídas do Firebase';
-            alert('Estatísticas excluídas com sucesso! 🗑️');
+            document.getElementById('status-nuvem').innerText = '☁️ Excluído da nuvem';
         };
 
         verificarSessao();
@@ -1875,37 +1877,37 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         async function processarArquivoWhatsapp() {
             const input = document.getElementById('whatsappFileInput');
             const status = document.getElementById('modalStatus');
-            if (!input.files || input.files.length === 0) { status.innerText = 'Por favor, selecione um arquivo .txt ou .zip!'; return; }
-            const file = input.files[0];
-            status.innerText = 'Processando arquivo no aparelho...';
+            if (!input.files || !input.files.length) { status.innerText = 'Selecione um arquivo .txt ou .zip.'; return; }
+            status.innerText = 'Contando mensagens...';
             try {
                 let textContent = '';
+                const file = input.files[0];
                 if (file.name.toLowerCase().endsWith('.zip')) {
-                    const zip = new JSZip();
-                    const zipContent = await zip.loadAsync(file);
-                    const txtFileName = Object.keys(zipContent.files).find(name => name.toLowerCase().endsWith('.txt'));
-                    if (!txtFileName) { status.innerText = 'Nenhum arquivo .txt encontrado no ZIP!'; return; }
-                    textContent = await zipContent.files[txtFileName].async('string');
-                } else textContent = await file.text();
+                    const zip = await new JSZip().loadAsync(file);
+                    const nomeTxt = Object.keys(zip.files).find(n => n.toLowerCase().endsWith('.txt'));
+                    if (!nomeTxt) throw new Error('O ZIP não contém um arquivo .txt.');
+                    textContent = await zip.files[nomeTxt].async('string');
+                } else {
+                    textContent = await file.text();
+                }
 
-                let loveCount = 0, totalMessages = 0;
-                const lines = textContent.split(/\r?\n/);
+                let loveCount = 0;
+                let totalMessages = 0;
                 const msgRegex = /^\[?(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s?[AP]M)?)\]?\s*(?:-|\|Live)?\s*([^:]+):\s*(.*)$/i;
-                lines.forEach(line => {
-                    const match = line.match(msgRegex);
-                    if (!match) return;
+                for (const line of textContent.split(/\r?\n/)) {
+                    const m = line.match(msgRegex);
+                    if (!m) continue;
                     totalMessages++;
-                    const matches = match[4].match(masterLoveRegex);
-                    if (matches) loveCount += matches.length;
-                });
+                    const achou = m[4].match(masterLoveRegex);
+                    if (achou) loveCount += achou.length;
+                }
 
-                status.innerText = `Encontrado: ${loveCount.toLocaleString('pt-BR')} "eu te amo" e ${totalMessages.toLocaleString('pt-BR')} mensagens. Salvando...`;
+                status.innerText = `Encontrado: ${loveCount.toLocaleString('pt-BR')} "eu te amo" · ${totalMessages.toLocaleString('pt-BR')} mensagens.`;
                 await window.salvarEstatisticasWhatsAppFirebase(loveCount, totalMessages);
-                input.value = '';
                 fecharModalWhatsapp();
             } catch (err) {
-                console.error('Erro ao processar/salvar estatísticas do WhatsApp:', err);
-                status.innerText = '❌ Não foi possível salvar: ' + (err.message || err);
+                console.error('Erro no WhatsApp:', err);
+                status.innerText = '❌ ' + (err.code || err.message || err);
             }
         }
 
@@ -1932,11 +1934,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         document.getElementById('whatsappFileInput').addEventListener('change', function() {
             if (this.files && this.files.length) document.getElementById('modalStatus').innerText = `Arquivo selecionado: ${this.files[0].name}`;
         });
-        if (document.readyState === 'loading') {
-            window.addEventListener('DOMContentLoaded', carregarEstatisticasNuvem, { once: true });
-        } else {
-            carregarEstatisticasNuvem();
-        }
+        if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', carregarEstatisticasNuvem, { once: true }); else carregarEstatisticasNuvem();
     </script>
 </body>
 </html>
