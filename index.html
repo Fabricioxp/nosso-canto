@@ -687,6 +687,16 @@
         body.dark-mode .declaracao-corpo-render, body.dark-mode .polaroid-desc-txt, body.dark-mode .polaroid-verso-info, body.dark-mode .opcoes-tres-pontos button { color: #eee6e4; }
         body.dark-mode .opcoes-tres-pontos button:hover, body.dark-mode .item-opcao-flutuante:hover { background: #342d30; }
         body.dark-mode .painel-upload, body.dark-mode .card-declaracao-texto { border-color: #514448; }
+        /* Música destacada também acompanha o modo noturno */
+        body.dark-mode .card-musica.destaque {
+            background: linear-gradient(135deg, #3a2c31, #292326) !important;
+            border-color: #d6a39c !important;
+            box-shadow: 0 0 24px rgba(214, 163, 156, 0.28), 0 10px 28px rgba(0,0,0,0.28) !important;
+        }
+        body.dark-mode .card-musica.destaque::before { color: #fff !important; }
+        body.dark-mode .card-musica.destaque .musica-titulo { color: #f3c7c1; }
+        body.dark-mode .card-musica.destaque .musica-dedicatoria { color: #fff; }
+
         body.dark-mode .item-comentario { background-color: #302a2d; color: #ffffff; border: 1px solid #514448; }
         body.dark-mode .texto-comentario { color: #ffffff; }
         body.dark-mode .meta-comentario { color: #d8ced0; }
