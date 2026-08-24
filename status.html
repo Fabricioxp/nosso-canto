@@ -155,12 +155,6 @@
 
     .memory-card { background: var(--bg-card); border: 1px dashed var(--primary); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
 
-    .quiz-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; text-align: center; }
-    .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-    @media (max-width: 480px) { .quiz-options { grid-template-columns: 1fr; } }
-    .quiz-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; color: var(--text-color); }
-    .quiz-btn:hover { background: var(--primary); color: #fff; }
-
     .chat-controls { display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid var(--border-color); margin-bottom: 12px; }
     .search-row { display: flex; gap: 8px; align-items: center; position: relative; flex-wrap: wrap; }
     .input-wrapper { position: relative; flex: 1; min-width: 180px; }
@@ -226,6 +220,26 @@
     }
     .fullscreen-mode .chat-feed { max-height: none !important; height: 100% !important; flex: 1; }
 
+
+    /* EXPERIÊNCIA E CONTROLES APRIMORADOS */
+    .top-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; padding:10px 0; }
+    .brand-title { font-size:1.05rem; font-weight:800; color:var(--primary); }
+    .brand-subtitle { font-size:.75rem; color:var(--text-muted); }
+    .home-btn { text-decoration:none; white-space:nowrap; }
+    .chart-controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:0 0 12px; padding:10px; border-radius:12px; background:rgba(140,98,93,.06); }
+    .chart-controls label { font-size:.78rem; font-weight:700; color:var(--secondary); display:flex; align-items:center; gap:8px; }
+    .hour-range { flex:1; min-width:180px; accent-color:var(--primary); }
+    .chart-hint { font-size:.72rem; color:var(--text-muted); margin-top:8px; }
+    .hour-detail { margin-top:10px; padding:9px 12px; border:1px solid var(--border-color); border-radius:10px; font-size:.8rem; background:var(--bg-card); }
+    .wrap-controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:16px; }
+    .wrap-control { padding:10px; border:1px solid var(--border-color); border-radius:12px; background:rgba(140,98,93,.04); }
+    .wrap-control label { font-size:.78rem; font-weight:700; display:block; }
+    .wrap-control input,.wrap-control select { width:100%; padding:8px; border-radius:8px; border:1px solid var(--border-color); margin-top:5px; background:var(--bg-card); color:var(--text-color); }
+    .wrap-control input[type="range"] { padding:0; }
+    #exportCard { position:relative; overflow:hidden; isolation:isolate; }
+    #wrapBgImage { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-1; opacity:.18; pointer-events:none; }
+    .card-section-note { font-size:.78rem; color:var(--text-muted); margin-bottom:12px; }
+
     @media print {
       body { background: #fff; padding: 0; }
       .tabs-nav, .file-dropzone, .btn, .chat-controls { display: none !important; }
@@ -237,6 +251,10 @@
 <body>
 
   <div class="container">
+    <header class="top-header">
+      <div><div class="brand-title">💖 Nosso Histórico de Amor</div><div class="brand-subtitle">Explore, compare e transforme as conversas em lembranças.</div></div>
+      <a class="btn home-btn" href="index.html">← Página inicial</a>
+    </header>
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
         <span style="font-size: 0.75rem; font-weight: bold; color: var(--primary);">🎨 Tema do Site:</span>
@@ -291,7 +309,6 @@
     <div id="tabsNav" class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('analyticsTab')">📊 Análises</button>
       <button class="tab-btn" onclick="switchTab('memoriesTab')">✨ Recordações & Dicionário</button>
-      <button class="tab-btn" onclick="switchTab('quizTab')">🎮 Quiz</button>
       <button class="tab-btn" onclick="switchTab('chatTab')">💬 Histórico & Busca</button>
       <button class="tab-btn" id="tabGalleryBtn" style="display:none;" onclick="switchTab('galleryTab')">🖼️ Fotos</button>
       <button class="tab-btn" id="tabAudiosBtn" style="display:none;" onclick="switchTab('audiosTab')">🎙️ Áudios</button>
@@ -346,16 +363,6 @@
       </div>
     </div>
 
-    <div id="quizTab" class="tab-content">
-      <div class="card">
-        <div class="quiz-card">
-          <div class="section-title" style="margin-bottom: 8px;">🎮 Quem Sabe Mais Sobre o Nosso Chat?</div>
-          <p id="quizScore" style="font-size: 0.8rem; font-weight: bold; color: var(--primary);">Pontuação: 0</p>
-          <div id="quizQuestion" style="font-size: 1rem; font-weight: bold; margin: 16px 0;">Carregando pergunta...</div>
-          <div id="quizOptions" class="quiz-options"></div>
-        </div>
-      </div>
-    </div>
 
     <div id="chatTab" class="tab-content">
       <div class="card" id="chatSection">
@@ -421,7 +428,7 @@
       <div class="card">
         <div class="section-title" style="margin-bottom: 12px;">🎨 Personalizar Card (Wrapped)</div>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 16px;">
+        <p class="card-section-note">Personalize o formato, conteúdo, textos e visual antes de gerar a imagem.</p><div class="wrap-controls">
           <label style="font-size: 0.8rem; font-weight: bold;">Formato:
             <select id="wrapFormat" onchange="updateWrappedPreview()" style="width:100%; padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); margin-top:4px;">
               <option value="story">📱 Instagram Stories (9:16)</option>
@@ -446,12 +453,28 @@
               <option value="fun">🤡 Curiosidades Engraçadas</option>
             </select>
           </label>
+          <div class="wrap-control">
+            <label>Título personalizado:<input id="wrapCustomTitle" type="text" placeholder="Deixe vazio para automático" oninput="updateWrappedPreview()"></label>
+          </div>
+          <div class="wrap-control">
+            <label>Subtítulo:<input id="wrapCustomSubtitle" type="text" placeholder="Ex.: Nossa história em números" oninput="updateWrappedPreview()"></label>
+          </div>
+          <div class="wrap-control">
+            <label>Imagem de fundo (opcional):<input id="wrapImageInput" type="file" accept="image/*" onchange="loadWrapImage(event)"></label>
+          </div>
+          <div class="wrap-control">
+            <label>Transparência da imagem: <span id="wrapOpacityValue">18%</span><input id="wrapImageOpacity" type="range" min="0" max="70" value="18" oninput="updateWrappedPreview()"></label>
+          </div>
+          <div class="wrap-control">
+            <label>Estatísticas exibidas:<select id="wrapItemsCount" onchange="updateWrappedPreview()"><option value="4">4 itens</option><option value="2">2 itens</option><option value="6">6 itens</option></select></label>
+          </div>
         </div>
 
         <button class="btn btn-primary" onclick="downloadWrappedImage()" style="margin: 0 auto 16px auto;">📥 Baixar Imagem do Card</button>
 
         <div id="exportCardWrapper" style="display: flex; justify-content: center; overflow-x: auto; padding: 10px 0;">
           <div id="exportCard" class="wrap-story theme-romantic">
+            <img id="wrapBgImage" alt="" style="display:none;">
             <div>
               <h2 id="wrapTitle">Nosso Histórico de Amor ❤️</h2>
               <p id="wrapSubtitle">Estatísticas do nosso relacionamento</p>
@@ -477,6 +500,8 @@
 
     let timeChartInstance = null;
     let hourlyChartInstance = null;
+    let selectedHour = null;
+    let wrapImageUrl = null;
     let quizCurrentQuestion = null;
     let quizScorePoints = 0;
 
@@ -600,7 +625,6 @@
         renderDashboard();
         generateCharts();
         generateMemoriesAndRecords();
-        generateQuizQuestion();
         generateLinksTab();
 
         if (hasMediaZip) {
@@ -732,8 +756,31 @@
           labels: Array.from({length: 24}, (_, i) => `${i}h`),
           datasets: [{ label: 'Mensagens Trocadas', data: hoursData, backgroundColor: '#8c625d' }]
         },
-        options: { responsive: true, plugins: { title: { display: true, text: 'Horários de Maior Conversa' } } }
+        options: { responsive: true, onClick: (evt, elements) => { if (elements.length) selectHour(elements[0].index); }, plugins: { title: { display: false }, tooltip: { callbacks: { label: c => `${c.raw} mensagens às ${c.label}` } } } }
       });
+      document.getElementById('hourRange').oninput = e => selectHour(parseInt(e.target.value, 10));
+      resetHourSelection();
+    }
+
+
+    function selectHour(hour) {
+      selectedHour = hour;
+      const value = document.getElementById('hourRangeValue');
+      const detail = document.getElementById('hourDetail');
+      const count = parsedMessages.filter(m => m.hour === hour).length;
+      value.textContent = `${String(hour).padStart(2,'0')}:00`;
+      detail.innerHTML = `<b>${count}</b> mensagens registradas entre <b>${String(hour).padStart(2,'0')}:00</b> e <b>${String(hour).padStart(2,'0')}:59</b>.`;
+      if (hourlyChartInstance) {
+        hourlyChartInstance.data.datasets[0].backgroundColor = hourlyChartInstance.data.labels.map((_,i)=> i===hour ? '#d97706' : '#8c625d');
+        hourlyChartInstance.update();
+      }
+    }
+    function resetHourSelection() {
+      selectedHour = null;
+      const range=document.getElementById('hourRange'), value=document.getElementById('hourRangeValue'), detail=document.getElementById('hourDetail');
+      if (!range) return;
+      value.textContent='Todas'; detail.textContent='Toque em uma barra ou use o controle acima para ver um horário específico.';
+      if (hourlyChartInstance) { hourlyChartInstance.data.datasets[0].backgroundColor='#8c625d'; hourlyChartInstance.update(); }
     }
 
     function generateMemoriesAndRecords() {
@@ -994,12 +1041,30 @@
       generateQuizQuestion();
     }
 
+
+    function loadWrapImage(event) {
+      const file = event.target.files?.[0];
+      const img = document.getElementById('wrapBgImage');
+      if (!file) { img.style.display='none'; return; }
+      if (wrapImageUrl) URL.revokeObjectURL(wrapImageUrl);
+      wrapImageUrl = URL.createObjectURL(file);
+      img.src = wrapImageUrl; img.style.display='block';
+      updateWrappedPreview();
+    }
+
     function updateWrappedPreview() {
       const format = document.getElementById('wrapFormat').value;
       const theme = document.getElementById('wrapTheme').value;
       const contentType = document.getElementById('wrapContentType').value;
+      const customTitle = document.getElementById('wrapCustomTitle')?.value.trim();
+      const customSubtitle = document.getElementById('wrapCustomSubtitle')?.value.trim();
+      const itemsCount = parseInt(document.getElementById('wrapItemsCount')?.value || '4', 10);
       const card = document.getElementById('exportCard');
       const grid = document.getElementById('wrappedGrid');
+      const opacity = document.getElementById('wrapImageOpacity')?.value || 18;
+      const bgImg = document.getElementById('wrapBgImage');
+      if (bgImg) bgImg.style.opacity = opacity / 100;
+      const opacityValue = document.getElementById('wrapOpacityValue'); if (opacityValue) opacityValue.textContent = `${opacity}%`;
 
       card.className = `wrap-${format} theme-${theme}`;
 
@@ -1050,7 +1115,13 @@
         `;
       }
 
-      grid.innerHTML = itemsHTML;
+      if (customTitle) document.getElementById('wrapTitle').innerText = customTitle;
+      if (customSubtitle) document.getElementById('wrapSubtitle').innerText = customSubtitle;
+      else document.getElementById('wrapSubtitle').innerText = 'Estatísticas do nosso relacionamento';
+      const temp = document.createElement('div'); temp.innerHTML = itemsHTML;
+      let items = Array.from(temp.children);
+      if (itemsCount > items.length) items = items.concat(items.slice(0, Math.max(0, itemsCount-items.length)).map(x => x.cloneNode(true)));
+      grid.innerHTML = items.slice(0, itemsCount).map(x => x.outerHTML).join('');
     }
 
     function getNightOwl() {
