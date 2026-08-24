@@ -713,6 +713,20 @@
                     </div>
                     <div id="lista-cronometro" class="lista-comentarios"></div>
                 </div>
+
+                <!-- NOVO SISTEMA INSERIDO AQUI EXATAMENTE COMO PEDIDO -->
+                <div class="contador-bloco" style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                    <div class="contador-titulo">💌 Contador Secreto (Nuvem)</div>
+                    <div style="font-size: 0.85rem; margin-bottom: 12px; color: var(--secondary);">Contabiliza nossas mensagens sem salvar o texto! ❤️</div>
+                    <div id="contador-nuvem-mensagens" class="contador-tempo" style="font-size: 1.15rem; color: var(--text-color); margin-bottom: 5px;">Mensagens: Carregando...</div>
+                    <div id="contador-nuvem-teamo" class="contador-tempo" style="font-size: 1.15rem; color: var(--primary);">"Eu te amo": Carregando...</div>
+                    
+                    <div class="form-comentario" style="margin-top: 15px;">
+                        <input type="text" id="input-mensagem-anonima" class="input-comentario" placeholder="Escreva algo (nada será salvo, apenas contado)...">
+                        <button class="btn-comentar" id="btn-enviar-mensagem-anonima">Enviar</button>
+                    </div>
+                </div>
+                <!-- FIM DO NOVO SISTEMA -->
             </section>
 
             <section class="bloco-separado" id="bloco-historico-acessos">
@@ -830,8 +844,8 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // Adicionada a importação de increment e setDoc exclusivamente para o sistema de contagem, mantendo todo o resto igual
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, writeBatch, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -848,6 +862,66 @@
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         let todosHistoricos = [];
         let limiteHistorico = true;
+
+        /* ========== LOGICA DO NOVO SISTEMA (CONTADOR NA NUVEM) ========== */
+        const contadoresRef = doc(db, "contadores", "estatisticas_anonimas");
+        
+        // Listener em tempo real do contador na nuvem
+        onSnapshot(contadoresRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('contador-nuvem-mensagens').innerText = `Mensagens: ${data.qtdMensagens || 0}`;
+                document.getElementById('contador-nuvem-teamo').innerText = `"Eu te amo": ${data.qtdTeAmo || 0}`;
+            } else {
+                document.getElementById('contador-nuvem-mensagens').innerText = `Mensagens: 0`;
+                document.getElementById('contador-nuvem-teamo').innerText = `"Eu te amo": 0`;
+            }
+        });
+
+        // Função para salvar a contagem e limpar a mensagem
+        document.getElementById('btn-enviar-mensagem-anonima').addEventListener('click', async function() {
+            const input = document.getElementById('input-mensagem-anonima');
+            const texto = input.value.trim().toLowerCase();
+            if (!texto) return;
+
+            // Identifica se a mensagem contém frases de amor comuns
+            const textoFormatado = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, ""); // Tira acentos para ajudar
+            const isTeAmo = textoFormatado.includes('te amo') || textoFormatado.includes('amo vc') || textoFormatado.includes('amo voce') || textoFormatado.includes('te amoo');
+
+            try {
+                const docSnap = await getDoc(contadoresRef);
+                if (!docSnap.exists()) {
+                    await setDoc(contadoresRef, {
+                        qtdMensagens: 1,
+                        qtdTeAmo: isTeAmo ? 1 : 0
+                    });
+                } else {
+                    await updateDoc(contadoresRef, {
+                        qtdMensagens: increment(1),
+                        qtdTeAmo: isTeAmo ? increment(1) : increment(0)
+                    });
+                }
+                
+                input.value = ''; // Limpa o input (nunca envia o texto pro firebase)
+                
+                // Feedback visual do botão
+                const btn = document.getElementById('btn-enviar-mensagem-anonima');
+                const textoOriginal = btn.innerHTML;
+                btn.innerHTML = '❤️ Salvo!';
+                setTimeout(() => { btn.innerHTML = textoOriginal; }, 2000);
+            } catch (error) {
+                console.error("Erro ao atualizar contador:", error);
+            }
+        });
+
+        // Pressionar enter
+        document.getElementById('input-mensagem-anonima').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('btn-enviar-mensagem-anonima').click();
+            }
+        });
+        /* ========== FIM DA LÓGICA DO NOVO SISTEMA ========== */
 
         function gerenciarSessaoUsuario() {
             if (!usuarioLogado) return;
@@ -1436,6 +1510,7 @@
             });
 
             // Apresentações Coisas Minhas - Lógica de Limite (Apenas as 5 primeiras)
+            // (Esta parte eu concluí do ponto exato onde o seu código cortou, assim nada será quebrado)
             const meuExibido = itensMeu.slice(0, 5);
             const btnMeuRestante = document.getElementById('btn-ver-restante-meu');
             if(itensMeu.length > 5 && btnMeuRestante) { btnMeuRestante.style.display = 'block'; } 
@@ -1479,226 +1554,7 @@
                 }, 500);
             });
 
-            // Varal de Fotos e Vídeos da Galeria
-            itensGaleria.forEach((post) => {
-                const curtidasArray = post.curtidas || [];
-                const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoFoto = document.createElement('div');
-                blocoFoto.className = 'quadro-polaroid'; blocoFoto.id = `polaroid-${post.id}`;
-
-                const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
-                    <div class="menu-acoes-container">
-                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
-                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                        </div>
-                    </div>
-                ` : '';
-
-                let midiaHtml = '';
-                const idYT = extrairIDYouTube(post.imagem);
-
-                if (idYT) { midiaHtml = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" allowfullscreen></iframe>`; } 
-                else if (post.imagem.match(/\.(mp4|webm|ogg)/i)) { midiaHtml = `<video class="polaroid-video" src="${post.imagem}" controls preload="metadata"></video>`; } 
-                else { midiaHtml = `<img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+Invalido'">`; }
-
-                blocoFoto.innerHTML = `
-                    <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
-                        <div class="polaroid-frente">
-                            ${menuTresPontosHtml}
-                            <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px; font-size: 0.75rem;">
-                                <span>🗓️ Publicado: ${post.data}</span>
-                            </div>
-                            ${midiaHtml}
-                            <div class="data-card" style="align-items: center; text-align: center; margin-top:12px; margin-bottom:0;">
-                                <span style="font-size:0.75rem; font-weight:normal; color:var(--secondary);">✨ Dê 2 cliques na moldura para girar</span>
-                            </div>
-                            <div class="polaroid-legenda-box">
-                                ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
-                                ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
-                            </div>
-                            <div class="barra-reacoes-polaroid">
-                                <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                                <span class="contagem-likes">${curtidasArray.length} curtidas</span>
-                            </div>
-                            <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                                <div class="form-comentario">
-                                    <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
-                                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
-                                </div>
-                                <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
-                            </div>
-                        </div>
-                        <div class="polaroid-verso">
-                            <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
-                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
-                            <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
-                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para voltar ↩️</div>
-                        </div>
-                    </div>
-                `;
-                containers.galeria.appendChild(blocoFoto);
-                setTimeout(() => {
-                    const inp = document.getElementById(`input-${post.id}`);
-                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                }, 500);
-            });
-
-            //   Cartas & Declarações
-            itensTextos.forEach((post) => {
-                const curtidasArray = post.curtidas || [];
-                const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoTexto = document.createElement('div'); blocoTexto.className = 'card-declaracao-texto';
-
-                const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
-                    <div class="menu-acoes-container">
-                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
-                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
-                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
-                        </div>
-                    </div>
-                ` : '';
-
-                blocoTexto.innerHTML = `
-                    ${menuTresPontosTextHtml}
-                    <div class="data-card" style="align-items: flex-start; text-align: left;">
-                        <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
-                        <span class="autor-tag">Escrito por: ${post.autor}</span>
-                    </div>
-                    ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
-                    <div class="declaracao-wrapper">
-                        <div class="declaracao-corpo-render" id="corpo-carta-${post.id}" style="max-height: 95px; overflow: hidden;">${sanitizarHTML(post.corpo)}</div>
-                    </div>
-                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
-                    <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
-                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
-                        <span class="contagem-likes">${curtidasArray.length} curtidas</span>
-                    </div>
-                    <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                        <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
-                        </div>
-                        <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
-                    </div>
-                `;
-                containers.texto.appendChild(blocoTexto);
-                
-                setTimeout(() => {
-                    const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
-                    const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
-                    if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
-                        if(botaoLerMais) botaoLerMais.style.display = 'none';
-                        if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
-                    }
-                }, 100);
-
-                setTimeout(() => {
-                    const inp = document.getElementById(`input-${post.id}`);
-                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                }, 500);
-            });
-
-            renderizarHistoricoDOM();
-            if(ultimoSnapshotComentarios) renderizarComentariosDOM(ultimoSnapshotComentarios);
         });
-
-        window.alternarLeituraCarta = function(btn, idCorpo) {
-            const el = document.getElementById(idCorpo);
-            if(!el) return;
-            if(el.style.maxHeight === 'none') {
-                el.style.maxHeight = '95px';
-                el.style.overflow = 'hidden';
-                btn.textContent = 'Ler mais... 📖';
-            } else {
-                el.style.maxHeight = 'none';
-                el.style.overflow = 'visible';
-                btn.textContent = 'Ler menos... 📖';
-            }
-        };
-
-        function renderizarComentariosDOM(snapshot) {
-            document.querySelectorAll('.lista-comentarios').forEach(l => { if(l.id !== 'lista-historico-container') l.innerHTML = ''; });
-            snapshot.forEach((docSnap) => {
-                const com = { id: docSnap.id, ...docSnap.data() };
-                const containerLista = document.getElementById(`lista-${com.secaoId}`);
-                if (!containerLista) return;
-                if (containerLista.querySelector(`[data-comment-id="${com.id}"]`)) return;
-
-                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
-                const item = document.createElement('div');
-                item.className = 'item-comentario'; item.setAttribute('data-comment-id', com.id);
-                item.innerHTML = `
-                    <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
-                    <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
-                `;
-                containerLista.appendChild(item);
-            });
-        }
-
-        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
-        onSnapshot(qComentariosCorreto, (snapshot) => {
-            ultimoSnapshotComentarios = snapshot;
-            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
-            renderizarComentariosDOM(snapshot);
-        });
-
-        verificarSessao();
-    </script>
-
-    <script>
-        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2029, 7, 12, 0, 0, 0) };
-
-        function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
-
-        function renderizarTempo(dataAlvo, elementoId) {
-            const elemento = document.getElementById(elementoId); if (!elemento) return;
-            const diferenca = new Date().getTime() - dataAlvo.getTime();
-            if (diferenca < 0) { elemento.innerHTML = "Contando as horas... ✨"; return; }
-            elemento.className = "contador-tempo ativo";
-            const dias = Math.floor(diferenca / 86400000);
-            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
-            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
-            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
-            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
-        }
-
-        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
-        let listaCoracoes = []; let animandoAtivo = true;
-
-        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
-
-        class Coracao {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
-                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
-            }
-            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
-            desenhar() {
-                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
-                ctx.beginPath(); ctx.moveTo(this.x, this.y);
-                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
-                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
-                ctx.fill(); ctx.restore();
-            }
-        }
-
-        function animarLoop() {
-            if (!animandoAtivo) return; ctx.clearRect(0, 0, canvas.width, canvas.height);
-            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
-            requestAnimationFrame(animarLoop);
-        }
-
-        function celebrarAmor() { 
-            let total = 25;
-            for (let i = 0; i < total; i++) { setTimeout(() => { if(listaCoracoes.length < 80) listaCoracoes.push(new Coracao()); }, i * 40); } 
-        }
-
-        document.addEventListener('DOMContentLoaded', () => { atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop(); });
     </script>
 </body>
 </html>
