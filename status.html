@@ -326,6 +326,15 @@
           </div>
           <div class="chart-box">
             <canvas id="hourlyChart"></canvas>
+            <div class="hour-selector" style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border-color);">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; font-size:.8rem;">
+                <b>Selecionar horário</b><span id="hourRangeValue">Todas</span>
+              </div>
+              <input id="hourRange" type="range" min="0" max="23" step="1" value="12" style="width:100%;">
+              <div style="display:flex; justify-content:space-between; font-size:.68rem; color:var(--text-muted);"><span>00h</span><span>12h</span><span>23h</span></div>
+              <p id="hourDetail" style="font-size:.78rem; color:var(--text-muted); margin:8px 0;">Toque em uma barra ou use o controle acima para ver um horário específico.</p>
+              <button class="btn" type="button" onclick="resetHourSelection()">↺ Ver todos os horários</button>
+            </div>
           </div>
         </div>
       </div>
@@ -587,10 +596,10 @@
         let rawText = "";
         mediaFiles = {};
 
-        if (file.name.endsWith('.zip')) {
+        if (file.name.toLowerCase().endsWith('.zip')) {
           const zip = new JSZip();
           const zipContent = await zip.loadAsync(file);
-          const txtFileName = Object.keys(zipContent.files).find(name => name.endsWith('.txt'));
+          const txtFileName = Object.keys(zipContent.files).find(name => name.toLowerCase().endsWith('.txt'));
           
           if (!txtFileName) {
             showStatus("Arquivo .txt não encontrado dentro do .zip", true);
@@ -758,7 +767,8 @@
         },
         options: { responsive: true, onClick: (evt, elements) => { if (elements.length) selectHour(elements[0].index); }, plugins: { title: { display: false }, tooltip: { callbacks: { label: c => `${c.raw} mensagens às ${c.label}` } } } }
       });
-      document.getElementById('hourRange').oninput = e => selectHour(parseInt(e.target.value, 10));
+      const hourRange = document.getElementById('hourRange');
+      if (hourRange) hourRange.oninput = e => selectHour(parseInt(e.target.value, 10));
       resetHourSelection();
     }
 
@@ -768,8 +778,8 @@
       const value = document.getElementById('hourRangeValue');
       const detail = document.getElementById('hourDetail');
       const count = parsedMessages.filter(m => m.hour === hour).length;
-      value.textContent = `${String(hour).padStart(2,'0')}:00`;
-      detail.innerHTML = `<b>${count}</b> mensagens registradas entre <b>${String(hour).padStart(2,'0')}:00</b> e <b>${String(hour).padStart(2,'0')}:59</b>.`;
+      if (value) value.textContent = `${String(hour).padStart(2,'0')}:00`;
+      if (detail) detail.innerHTML = `<b>${count}</b> mensagens registradas entre <b>${String(hour).padStart(2,'0')}:00</b> e <b>${String(hour).padStart(2,'0')}:59</b>.`;
       if (hourlyChartInstance) {
         hourlyChartInstance.data.datasets[0].backgroundColor = hourlyChartInstance.data.labels.map((_,i)=> i===hour ? '#d97706' : '#8c625d');
         hourlyChartInstance.update();
@@ -779,7 +789,7 @@
       selectedHour = null;
       const range=document.getElementById('hourRange'), value=document.getElementById('hourRangeValue'), detail=document.getElementById('hourDetail');
       if (!range) return;
-      value.textContent='Todas'; detail.textContent='Toque em uma barra ou use o controle acima para ver um horário específico.';
+      if (value) value.textContent='Todas'; if (detail) detail.textContent='Toque em uma barra ou use o controle acima para ver um horário específico.';
       if (hourlyChartInstance) { hourlyChartInstance.data.datasets[0].backgroundColor='#8c625d'; hourlyChartInstance.update(); }
     }
 
