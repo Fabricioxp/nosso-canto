@@ -885,20 +885,25 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Estatísticas do WhatsApp: somente os dois números são armazenados na nuvem.
-        window.salvarEstatisticasWhatsAppFirebase = async function(loveCount, totalMsgs) {
+        // Estatísticas do WhatsApp — salva somente os dois números, usando o mesmo Firestore
+        // já utilizado pelos cards, comentários, galeria etc.
+        async function salvarEstatisticasWhatsAppFirebase(loveCount, totalMsgs) {
             await setDoc(doc(db, "estatisticas_whatsapp", "geral"), {
                 loveCount: Number(loveCount),
                 totalMsgs: Number(totalMsgs),
                 atualizadoEm: new Date().toISOString()
             }, { merge: true });
-        };
+        }
 
-        window.carregarEstatisticasWhatsAppFirebase = async function() {
+        async function carregarEstatisticasWhatsAppFirebase() {
             const ref = doc(db, "estatisticas_whatsapp", "geral");
             const snap = await getDoc(ref);
             return snap.exists() ? snap.data() : null;
-        };
+        }
+
+        window.salvarEstatisticasWhatsAppFirebase = salvarEstatisticasWhatsAppFirebase;
+        window.carregarEstatisticasWhatsAppFirebase = carregarEstatisticasWhatsAppFirebase;
+
 
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
@@ -1792,10 +1797,13 @@
                 console.error("Erro ao carregar estatísticas do WhatsApp:", err);
             }
         }
+            } catch (err) {
+                console.error("Erro ao carregar estatísticas do WhatsApp:", err);
+            }
+        }
 
         async function salvarEstatisticasNuvem(loveCount, totalMsgs) {
-            // Salva SOMENTE os dois valores numéricos na nuvem.
-            // O arquivo .txt/.zip e o conteúdo das mensagens nunca são enviados ao Firebase.
+            // Apenas os números são salvos. O arquivo e as mensagens não são enviados.
             localStorage.setItem('wa_love_count', loveCount);
             localStorage.setItem('wa_total_msgs', totalMsgs);
 
@@ -1806,6 +1814,11 @@
                 await window.salvarEstatisticasWhatsAppFirebase(Number(loveCount), Number(totalMsgs));
                 document.getElementById('status-nuvem').innerText = "☁️ Dados atualizados e salvos na nuvem!";
             } catch (err) {
+                console.error("Erro ao salvar estatísticas do WhatsApp na nuvem:", err);
+                document.getElementById('status-nuvem').innerText = "⚠️ Calculado, mas não foi possível salvar na nuvem.";
+                throw err;
+            }
+        } catch (err) {
                 console.error("Erro ao salvar estatísticas do WhatsApp na nuvem:", err);
                 document.getElementById('status-nuvem').innerText = "⚠️ Calculado, mas não foi possível salvar na nuvem.";
             }
