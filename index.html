@@ -15,8 +15,20 @@
             --border-color: #e6b3a8;
             --bg-card: #ffffff;
             --text-color: #4a3e3d;
+            --bg-page: #fff3f2;
+            --header-bg: rgba(255, 255, 255, 0.92);
             --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --font-title: Georgia, Cambria, 'Times New Roman', Times, serif;
+        }
+
+        body.dark-mode {
+            --primary: #e6b3a8;
+            --secondary: #c9a39d;
+            --border-color: #4a3e3d;
+            --bg-card: #221a19;
+            --text-color: #f3e8e6;
+            --bg-page: #140d0d;
+            --header-bg: rgba(20, 13, 13, 0.92);
         }
 
         * {
@@ -28,13 +40,14 @@
         html { scroll-behavior: smooth; }
 
         body {
-            background-color: #fff3f2; 
+            background-color: var(--bg-page); 
             color: var(--text-color);
             font-family: var(--font-main);
             padding-bottom: 90px;
             overflow-x: hidden;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         button, input, select, textarea, a, .contador-bloco, .pdf-bloco {
@@ -46,22 +59,24 @@
         #tela-login {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #fff3f2;
+            background-color: var(--bg-page);
             z-index: 100000;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            transition: background-color 0.4s ease;
         }
 
         .box-login {
-            background: white;
+            background: var(--bg-card);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(140, 98, 93, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             width: 100%;
             max-width: 360px;
             text-align: center;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .box-login h2 {
@@ -88,12 +103,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.92);
+            background-color: var(--header-bg);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             padding: 0 20px;
-            box-shadow: 0 2px 15px rgba(140, 98, 93, 0.08);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
             border-bottom: 1px solid rgba(230, 179, 168, 0.25);
+            transition: background-color 0.4s ease;
+        }
+
+        .header-acoes-direita {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-toggle-tema {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+        .btn-toggle-tema:hover {
+            transform: scale(1.15) rotate(15deg);
         }
 
         .status-usuario-container {
@@ -134,7 +173,7 @@
             justify-content: center;
             font-size: 1.6rem;
             pointer-events: auto;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease;
         }
 
         .botao-flutuante-principal:active { transform: scale(0.9) translateZ(0); }
@@ -158,7 +197,7 @@
 
         .item-opcao-flutuante {
             text-decoration: none;
-            background-color: white;
+            background-color: var(--bg-card);
             color: var(--text-color);
             padding: 12px 18px;
             border-radius: 25px;
@@ -169,12 +208,12 @@
             align-items: center;
             gap: 8px;
             border: 1px solid rgba(230, 179, 168, 0.5);
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.2s, background-color 0.4s ease, color 0.4s ease;
             white-space: nowrap;
             pointer-events: auto;
             cursor: pointer;
         }
-        .item-opcao-flutuante:hover { background-color: #fff0ee; }
+        .item-opcao-flutuante:hover { opacity: 0.9; }
 
         header {
             text-align: center;
@@ -191,7 +230,7 @@
             font-family: var(--font-main);
             color: var(--secondary); 
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, border-color 0.4s ease, color 0.4s ease;
         }
         .btn-logout:hover { background: rgba(230, 179, 168, 0.15); }
 
@@ -200,9 +239,10 @@
             font-size: 2.3rem;
             color: var(--primary);
             margin-bottom: 10px;
+            transition: color 0.4s ease;
         }
 
-        header p { font-size: 1rem; color: var(--secondary); }
+        header p { font-size: 1rem; color: var(--secondary); transition: color 0.4s ease; }
 
         .container-blocos {
             max-width: 450px;
@@ -216,10 +256,11 @@
             background-color: var(--bg-card);
             padding: 25px;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
             margin-bottom: 25px;
             position: relative;
             height: auto;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .card-separador-interno {
@@ -242,6 +283,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: color 0.4s ease;
         }
 
         .link-titulo-atalho {
@@ -257,6 +299,16 @@
             transform: scale(1.1);
         }
 
+        body.dark-mode #bloco-dias-amando,
+        body.dark-mode #bloco-playlist, 
+        body.dark-mode #bloco-coisinhas-dela,
+        body.dark-mode #bloco-coisas-minhas,
+        body.dark-mode #bloco-galeria-momentos,
+        body.dark-mode #bloco-nossos-textos,
+        body.dark-mode #bloco-historico-acessos {
+            background-color: var(--bg-card);
+        }
+
         #bloco-dias-amando { background-color: #ffebeb; }
         #bloco-playlist { background-color: #fff5f0; } 
         #bloco-coisinhas-dela { background-color: #fff0f5; }
@@ -267,8 +319,8 @@
 
         .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
         .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
-        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
-        .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; transition: color 0.4s ease; }
+        .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); transition: color 0.4s ease; }
         .contador-tempo.ativo span { display: inline-block; animation: pulse 1.5s infinite alternate ease-in-out; }
 
         .data-card {
@@ -280,19 +332,21 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
+            transition: color 0.4s ease;
         }
 
-        .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
+        .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; transition: color 0.4s ease; }
 
         .pdf-link { text-decoration: none; display: block; position: relative; z-index: 2; }
         .pdf-bloco { text-align: center; cursor: pointer; }
-        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; transition: color 0.4s ease; }
 
         .numero-card {
             display: inline-flex; align-items: center; justify-content: center;
             width: 26px; height: 26px; border: 1.5px solid var(--secondary);
             border-radius: 50%; font-size: 0.85rem; font-weight: bold;
             color: var(--secondary); margin-bottom: 15px; 
+            transition: color 0.4s ease, border-color 0.4s ease;
         }
 
         .moldura-imagem {
@@ -305,34 +359,35 @@
         .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
         .painel-upload {
-            background-color: #ffffff;
+            background-color: var(--bg-card);
             border: 1px dashed var(--border-color);
             border-radius: 20px;
             padding: 22px;
             margin-bottom: 25px;
-            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             position: relative;
             z-index: 6;
             height: auto;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
 
         .input-custom, .select-custom, .textarea-custom {
             width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
             border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
-            margin-bottom: 12px; outline: none; background: #fffbfb;
-            color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
+            margin-bottom: 12px; outline: none; background: var(--bg-card);
+            color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s, background-color 0.4s ease, color 0.4s ease;
         }
         .textarea-custom { resize: vertical; min-height: 90px; }
         .input-custom:focus, .select-custom:focus, .textarea-custom:focus {
-            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+            border-color: var(--primary); box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
         }
 
         .btn-postar {
             width: 100%; background-color: var(--primary); color: white; border: none;
             padding: 14px; border-radius: 15px; font-family: var(--font-main);
-            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
+            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s, background-color 0.4s ease;
         }
-        .btn-postar:hover { background-color: #734f4b; }
+        .btn-postar:hover { opacity: 0.9; }
 
         .btn-excluir-tudo {
             width: 100%; background-color: #d9534f; color: white; border: none;
@@ -349,6 +404,7 @@
             position: relative; 
             z-index: 5;
             height: auto;
+            transition: border-color 0.4s ease;
         }
         
         .form-comentario { 
@@ -368,7 +424,9 @@
             font-family: var(--font-main); 
             font-size: 0.9rem;
             outline: none; 
-            background-color: rgba(255, 255, 255, 0.6);
+            background-color: var(--bg-card);
+            color: var(--text-color);
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
         }
         
         .btn-comentar { 
@@ -385,12 +443,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            transition: background-color 0.4s ease;
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; }
-        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; }
-        .autor-comentario { font-weight: bold; color: var(--primary); }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.08); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; }
+        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; transition: color 0.4s ease; }
+        .autor-comentario { font-weight: bold; color: var(--primary); transition: color 0.4s ease; }
         .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
         .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
         .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; }
@@ -399,7 +458,7 @@
             display: block; width: 100%; padding: 10px; text-align: center;
             background: rgba(140, 98, 93, 0.1); color: var(--primary);
             border: none; border-radius: 10px; font-size: 0.85rem; font-weight: bold;
-            cursor: pointer; margin-top: 10px; transition: background 0.2s;
+            cursor: pointer; margin-top: 10px; transition: background 0.2s, color 0.4s ease;
         }
         .btn-ver-mais-hist:hover { background: rgba(140, 98, 93, 0.2); }
 
@@ -411,11 +470,11 @@
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
 
         .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 25; }
-        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
-        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
+        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; transition: color 0.4s ease; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: var(--bg-card); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; transition: background-color 0.4s ease; }
         .opcoes-tres-pontos.visivel { display: block; }
-        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
-        .opcoes-tres-pontos button:hover { background: #fff0ee; }
+        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; transition: color 0.4s ease; }
+        .opcoes-tres-pontos button:hover { opacity: 0.8; }
 
         /* Estilos da Polaroid 3D */
         .quadro-polaroid { 
@@ -446,12 +505,13 @@
             height: auto;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            background: #ffffff;
+            background: var(--bg-card);
             padding: 14px 14px 22px 14px;
-            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
             border-radius: 4px;
             border: 1px solid rgba(0,0,0,0.03);
             z-index: 2;
+            transition: background-color 0.4s ease;
         }
 
         .polaroid-verso {
@@ -465,13 +525,14 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: #fffcfc;
+            background: var(--bg-card);
             border: 2px dashed var(--border-color);
             padding: 20px;
             border-radius: 4px;
-            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
             z-index: 1;
             overflow: hidden;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
 
         .polaroid-verso-titulo {
@@ -479,12 +540,14 @@
             color: var(--primary);
             font-size: 1.4rem;
             margin-bottom: 15px;
+            transition: color 0.4s ease;
         }
 
         .polaroid-verso-info {
             font-size: 1rem;
             color: var(--text-color);
             margin-bottom: 8px;
+            transition: color 0.4s ease;
         }
 
         .polaroid-imagem, .polaroid-video { 
@@ -504,12 +567,12 @@
         }
 
         .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
-        .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
-        .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
-        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
+        .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; transition: color 0.4s ease; }
+        .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; transition: color 0.4s ease; }
+        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); transition: border-color 0.4s ease; }
         .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
         .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
-        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
+        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; transition: color 0.4s ease; }
 
         /* Estilos do Lightbox */
         .lightbox-modal {
@@ -550,9 +613,9 @@
             user-select: none;
         }
 
-        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
-        .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
-        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .card-declaracao-texto { background: var(--bg-card); border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; transition: background-color 0.4s ease; }
+        .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; transition: color 0.4s ease; }
+        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; transition: color 0.4s ease; }
         
         .declaracao-wrapper {
             position: relative;
@@ -565,7 +628,7 @@
             white-space: pre-wrap; 
             overflow: hidden; 
             max-height: 95px; 
-            transition: max-height 0.4s ease;
+            transition: max-height 0.4s ease, color 0.4s ease;
             overflow-wrap: break-word; 
             word-wrap: break-word; 
             word-break: break-word; 
@@ -575,27 +638,27 @@
             content: '';
             position: absolute;
             bottom: 0; left: 0; width: 100%; height: 35px;
-            background: linear-gradient(transparent, rgba(255,255,255,0.95));
+            background: linear-gradient(transparent, var(--bg-card));
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, background 0.4s ease;
         }
         .declaracao-wrapper.expandido::after { opacity: 0; }
         .btn-ler-mais {
             background: none; border: none; color: var(--primary); font-size: 0.85rem;
             font-weight: bold; cursor: pointer; padding: 5px 0; margin-bottom: 10px;
-            display: inline-block; font-family: var(--font-main);
+            display: inline-block; font-family: var(--font-main); transition: color 0.4s ease;
         }
         .btn-ler-mais:hover { text-decoration: underline; }
 
         .card-musica {
-            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
-            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            display: flex; flex-direction: column; background: var(--bg-card); padding: 16px; 
+            border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
             margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
-            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
+            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s, background-color 0.4s ease; content-visibility: auto; height: auto;
         }
         .card-musica.destaque {
             border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
-            background: #fffbfb; animation: pulsarDestaqueMusica 3s infinite ease-in-out;
+            background: var(--bg-card); animation: pulsarDestaqueMusica 3s infinite ease-in-out;
         }
 
         @keyframes pulsarDestaqueMusica {
@@ -607,19 +670,20 @@
         .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; width: 100%; }
         .musica-capa { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; flex-shrink: 0; }
         .musica-info { flex: 1; min-width: 0; }
-        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
-        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; }
-        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; white-space: nowrap; }
+        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; transition: color 0.4s ease; }
+        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; transition: color 0.4s ease; }
+        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s, background-color 0.4s ease; white-space: nowrap; }
         .musica-link-btn:hover { background: var(--primary); }
 
         /* Estilos da nova barra de progresso de espaço */
         .armazenamento-container {
-            background: #ffffff;
+            background: var(--bg-card);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 10px rgba(140, 98, 93, 0.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
         .armazenamento-info {
             display: flex;
@@ -628,11 +692,12 @@
             font-weight: bold;
             color: var(--text-color);
             margin-bottom: 8px;
+            transition: color 0.4s ease;
         }
         .armazenamento-barra-bg {
             width: 100%;
             height: 12px;
-            background-color: #f2f2f2;
+            background-color: rgba(0, 0, 0, 0.1);
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid rgba(230, 179, 168, 0.3);
@@ -671,7 +736,10 @@
             <div class="status-usuario-container">
                 <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
             </div>
-            <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
+            <div class="header-acoes-direita">
+                <button class="btn-toggle-tema" id="btn-toggle-tema" title="Alternar Modo Noturno">☀️</button>
+                <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
+            </div>
         </div>
 
         <canvas id="canvas-hearts"></canvas>
@@ -741,7 +809,7 @@
                 <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
                 <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
                 
-                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: rgba(255, 77, 77, 0.05); padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
                     <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
                     <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
                 </div>
@@ -848,6 +916,22 @@
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         let todosHistoricos = [];
         let limiteHistorico = true;
+
+        // Lógica do Modo Noturno
+        const btnToggleTema = document.getElementById('btn-toggle-tema');
+        const modoEscuroSalvo = localStorage.getItem('modo_noturno') === 'true';
+
+        if (modoEscuroSalvo) {
+            document.body.classList.add('dark-mode');
+            btnToggleTema.innerText = '🌙';
+        }
+
+        btnToggleTema.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const ehDark = document.body.classList.contains('dark-mode');
+            btnToggleTema.innerText = ehDark ? '🌙' : '☀️';
+            localStorage.setItem('modo_noturno', ehDark);
+        });
 
         function gerenciarSessaoUsuario() {
             if (!usuarioLogado) return;
@@ -1278,7 +1362,7 @@
                 itemHist.className = 'item-comentario';
                 itemHist.innerHTML = `
                     <div class="meta-comentario"><span class="autor-comentario">👤 ${post.autor}</span><span>⏱️ ${post.data}</span></div>
-                    <div class="corpo-comentario"><div class="texto-comentario" style="color: #666;">${sanitizarHTML(post.corpo)}</div><button class="btn-excluir-comentario" onclick="removerPostagemFirebase('${post.id}')">Excluir</button></div>
+                    <div class="corpo-comentario"><div class="texto-comentario" style="opacity: 0.8;">${sanitizarHTML(post.corpo)}</div><button class="btn-excluir-comentario" onclick="removerPostagemFirebase('${post.id}')">Excluir</button></div>
                 `;
                 containerHist.appendChild(itemHist);
             });
@@ -1522,183 +1606,91 @@
                                 <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                                 <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                             </div>
-                            <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                                <div class="form-comentario">
-                                    <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
-                                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
-                                </div>
-                                <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
-                            </div>
                         </div>
                         <div class="polaroid-verso">
-                            <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
-                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.data}</div>
-                            <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
-                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para voltar ↩️</div>
+                            <div class="polaroid-verso-titulo">Detalhes do Momento 🤍</div>
+                            <div class="polaroid-verso-info">👤 <strong>Postado por:</strong> ${post.autor || 'Anônimo'}</div>
+                            <div class="polaroid-verso-info">🗓️ <strong>Data:</strong> ${post.data}</div>
+                            <div class="polaroid-verso-info" style="margin-top: 15px; font-size:0.85rem; opacity:0.8;">
+                                💡 Dica: Duplo clique para voltar
+                            </div>
                         </div>
                     </div>
                 `;
                 containers.galeria.appendChild(blocoFoto);
-                setTimeout(() => {
-                    const inp = document.getElementById(`input-${post.id}`);
-                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                }, 500);
             });
 
-            //   Cartas & Declarações
+            // Cartas & Declarações
             itensTextos.forEach((post) => {
                 const curtidasArray = post.curtidas || [];
                 const jaCurtido = curtidasArray.includes(usuarioLogado);
-                const blocoTexto = document.createElement('div'); blocoTexto.className = 'card-declaracao-texto';
+                const idRender = `corpo-texto-${post.id}`;
+                const ehAutor = post.autor === usuarioLogado;
 
-                const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
+                const menuTresPontosCarta = ehAutor ? `
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
+                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', '${post.data}')">Editar ✏️</button>
                             <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     </div>
                 ` : '';
 
-                blocoTexto.innerHTML = `
-                    ${menuTresPontosTextHtml}
-                    <div class="data-card" style="align-items: flex-start; text-align: left;">
+                const blocoCarta = document.createElement('div');
+                blocoCarta.className = 'card-declaracao-texto';
+                blocoCarta.innerHTML = `
+                    ${menuTresPontosCarta}
+                    <div class="data-card" style="align-items: flex-start; text-align: left; margin-bottom: 8px;">
                         <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
-                        <span class="autor-tag">Escrito por: ${post.autor}</span>
+                        <span class="autor-tag">Escrito por: ${post.autor || 'Anônimo'}</span>
                     </div>
                     ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
                     <div class="declaracao-wrapper">
-                        <div class="declaracao-corpo-render" id="corpo-carta-${post.id}" style="max-height: 95px; overflow: hidden;">${sanitizarHTML(post.corpo)}</div>
+                        <div class="declaracao-corpo-render" id="${idRender}">${sanitizarHTML(post.corpo)}</div>
                     </div>
-                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
-                    <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
+                    <button class="btn-ler-mais" onclick="alternarLeituraCarta(this, '${idRender}')">Ler mais... 📖</button>
+                    <div class="barra-reacoes-polaroid">
                         <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                         <span class="contagem-likes">${curtidasArray.length} curtidas</span>
                     </div>
-                    <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
-                        <div class="form-comentario">
-                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
-                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
-                        </div>
-                        <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
-                    </div>
                 `;
-                containers.texto.appendChild(blocoTexto);
-                
-                setTimeout(() => {
-                    const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
-                    const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
-                    if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
-                        if(botaoLerMais) botaoLerMais.style.display = 'none';
-                        if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
-                    }
-                }, 100);
-
-                setTimeout(() => {
-                    const inp = document.getElementById(`input-${post.id}`);
-                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
-                }, 500);
+                containers.texto.appendChild(blocoCarta);
             });
 
             renderizarHistoricoDOM();
-            if(ultimoSnapshotComentarios) renderizarComentariosDOM(ultimoSnapshotComentarios);
         });
 
-        window.alternarLeituraCarta = function(btn, idCorpo) {
-            const el = document.getElementById(idCorpo);
-            if(!el) return;
-            if(el.style.maxHeight === 'none') {
-                el.style.maxHeight = '95px';
-                el.style.overflow = 'hidden';
-                btn.textContent = 'Ler mais... 📖';
-            } else {
-                el.style.maxHeight = 'none';
-                el.style.overflow = 'visible';
-                btn.textContent = 'Ler menos... 📖';
-            }
-        };
-
-        function renderizarComentariosDOM(snapshot) {
-            document.querySelectorAll('.lista-comentarios').forEach(l => { if(l.id !== 'lista-historico-container') l.innerHTML = ''; });
-            snapshot.forEach((docSnap) => {
-                const com = { id: docSnap.id, ...docSnap.data() };
-                const containerLista = document.getElementById(`lista-${com.secaoId}`);
-                if (!containerLista) return;
-                if (containerLista.querySelector(`[data-comment-id="${com.id}"]`)) return;
-
-                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
-                const item = document.createElement('div');
-                item.className = 'item-comentario'; item.setAttribute('data-comment-id', com.id);
-                item.innerHTML = `
-                    <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
-                    <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
-                `;
-                containerLista.appendChild(item);
-            });
-        }
-
-        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
-        onSnapshot(qComentariosCorreto, (snapshot) => {
+        // listener para comentarios
+        const qComentarios = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentarios, (snapshot) => {
             ultimoSnapshotComentarios = snapshot;
             calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
-            renderizarComentariosDOM(snapshot);
+
+            document.querySelectorAll('.lista-comentarios').forEach(l => {
+                if (l.id !== 'lista-historico-container') l.innerHTML = '';
+            });
+
+            snapshot.forEach((docSnap) => {
+                const com = { id: docSnap.id, ...docSnap.data() };
+                const listaDiv = document.getElementById(`lista-${com.secaoId}`);
+
+                if (listaDiv) {
+                    const itemCom = document.createElement('div');
+                    itemCom.className = 'item-comentario';
+
+                    const btnExcluirHtml = com.autor === usuarioLogado ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+
+                    itemCom.innerHTML = `
+                        <div class="meta-comentario"><span class="autor-comentario">❤️ ${com.autor}</span><span>⏱️ ${com.dataHora}</span></div>
+                        <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${btnExcluirHtml}</div>
+                    `;
+                    listaDiv.appendChild(itemCom);
+                }
+            });
         });
 
         verificarSessao();
-    </script>
-
-    <script>
-        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2029, 7, 12, 0, 0, 0) };
-
-        function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
-
-        function renderizarTempo(dataAlvo, elementoId) {
-            const elemento = document.getElementById(elementoId); if (!elemento) return;
-            const diferenca = new Date().getTime() - dataAlvo.getTime();
-            if (diferenca < 0) { elemento.innerHTML = "Contando as horas... ✨"; return; }
-            elemento.className = "contador-tempo ativo";
-            const dias = Math.floor(diferenca / 86400000);
-            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
-            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
-            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
-            elemento.innerHTML = `<span>${dias} dias, ${horas}h ${minutes}m ${segundos}s</span>`;
-        }
-
-        const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
-        let listaCoracoes = []; let animandoAtivo = true;
-
-        function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', redimensionarCanvas); redimensionarCanvas();
-
-        class Coracao {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 20;
-                this.size = Math.random() * 8 + 5; this.speed = Math.random() * 1.5 + 1.2; 
-                this.opacity = 1; this.colorValue = 140 + Math.floor(Math.random() * 40);
-            }
-            atualizar() { this.y -= this.speed; this.x += Math.sin(this.y / 30) * 0.2; this.opacity -= 0.005; }
-            desenhar() {
-                ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = `rgba(${this.colorValue}, 98, 93, ${this.opacity})`;
-                ctx.beginPath(); ctx.moveTo(this.x, this.y);
-                ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
-                ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
-                ctx.fill(); ctx.restore();
-            }
-        }
-
-        function animarLoop() {
-            if (!animandoAtivo) return; ctx.clearRect(0, 0, canvas.width, canvas.height);
-            listaCoracoes = listaCoracoes.filter(c => { c.atualizar(); c.desenhar(); return c.opacity > 0 && c.y >= -20; });
-            requestAnimationFrame(animarLoop);
-        }
-
-        function celebrarAmor() { 
-            let total = 25;
-            for (let i = 0; i < total; i++) { setTimeout(() => { if(listaCoracoes.length < 80) listaCoracoes.push(new Coracao()); }, i * 40); } 
-        }
-
-        document.addEventListener('DOMContentLoaded', () => { atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop(); });
     </script>
 </body>
 </html>
