@@ -14,9 +14,24 @@
             --secondary: #a68580;
             --border-color: #e6b3a8;
             --bg-card: #ffffff;
+            --bg-page: #fff3f2;
             --text-color: #4a3e3d;
+            --header-bg: rgba(255, 255, 255, 0.92);
+            --item-bg: rgba(255, 255, 255, 0.5);
             --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --font-title: Georgia, Cambria, 'Times New Roman', Times, serif;
+        }
+
+        /* Variaveis para o Modo Escuro */
+        :root[data-theme="dark"] {
+            --primary: #e6b3a8;
+            --secondary: #c9a09a;
+            --border-color: #5a4542;
+            --bg-card: #2a2221;
+            --bg-page: #1a1413;
+            --text-color: #f3e8e6;
+            --header-bg: rgba(42, 34, 33, 0.92);
+            --item-bg: rgba(255, 255, 255, 0.08);
         }
 
         * {
@@ -28,13 +43,14 @@
         html { scroll-behavior: smooth; }
 
         body {
-            background-color: #fff3f2; 
+            background-color: var(--bg-page); 
             color: var(--text-color);
             font-family: var(--font-main);
             padding-bottom: 90px;
             overflow-x: hidden;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         button, input, select, textarea, a, .contador-bloco, .pdf-bloco {
@@ -46,7 +62,7 @@
         #tela-login {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #fff3f2;
+            background-color: var(--bg-page);
             z-index: 100000;
             display: flex;
             align-items: center;
@@ -55,10 +71,10 @@
         }
 
         .box-login {
-            background: white;
+            background: var(--bg-card);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(140, 98, 93, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 360px;
             text-align: center;
@@ -88,12 +104,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.92);
+            background-color: var(--header-bg);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             padding: 0 20px;
-            box-shadow: 0 2px 15px rgba(140, 98, 93, 0.08);
-            border-bottom: 1px solid rgba(230, 179, 168, 0.25);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .status-usuario-container {
@@ -107,6 +123,26 @@
             font-weight: bold;
             color: var(--primary);
         }
+
+        .header-acoes-direita {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 5px 8px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .btn-theme-toggle:active { transform: scale(0.9); }
 
         .menu-flutuante-container {
             position: fixed;
@@ -128,7 +164,7 @@
             color: white;
             border: none;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(140, 98, 93, 0.4);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -158,23 +194,22 @@
 
         .item-opcao-flutuante {
             text-decoration: none;
-            background-color: white;
+            background-color: var(--bg-card);
             color: var(--text-color);
             padding: 12px 18px;
             border-radius: 25px;
             font-size: 0.9rem;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
             gap: 8px;
-            border: 1px solid rgba(230, 179, 168, 0.5);
+            border: 1px solid var(--border-color);
             transition: transform 0.2s, background 0.2s;
             white-space: nowrap;
             pointer-events: auto;
             cursor: pointer;
         }
-        .item-opcao-flutuante:hover { background-color: #fff0ee; }
 
         header {
             text-align: center;
@@ -216,10 +251,11 @@
             background-color: var(--bg-card);
             padding: 25px;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
             margin-bottom: 25px;
             position: relative;
             height: auto;
+            border: 1px solid var(--border-color);
         }
 
         .card-separador-interno {
@@ -256,14 +292,6 @@
             opacity: 1;
             transform: scale(1.1);
         }
-
-        #bloco-dias-amando { background-color: #ffebeb; }
-        #bloco-playlist { background-color: #fff5f0; } 
-        #bloco-coisinhas-dela { background-color: #fff0f5; }
-        #bloco-coisas-minhas { background-color: #e6f2ff; }
-        #bloco-galeria-momentos { background-color: #fdf8f5; }
-        #bloco-nossos-textos { background-color: #f7f3f9; }
-        #bloco-historico-acessos { background-color: #f2f2f2; display: none; }
 
         .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
         .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
@@ -305,26 +333,26 @@
         .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
         .painel-upload {
-            background-color: #ffffff;
+            background-color: var(--bg-card);
             border: 1px dashed var(--border-color);
             border-radius: 20px;
             padding: 22px;
             margin-bottom: 25px;
-            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             position: relative;
             z-index: 6;
             height: auto;
         }
 
         .input-custom, .select-custom, .textarea-custom {
-            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border-color);
             border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
-            margin-bottom: 12px; outline: none; background: #fffbfb;
+            margin-bottom: 12px; outline: none; background: var(--bg-page);
             color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
         }
         .textarea-custom { resize: vertical; min-height: 90px; }
         .input-custom:focus, .select-custom:focus, .textarea-custom:focus {
-            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+            border-color: var(--primary); box-shadow: 0 0 8px rgba(140, 98, 93, 0.2);
         }
 
         .btn-postar {
@@ -332,7 +360,7 @@
             padding: 14px; border-radius: 15px; font-family: var(--font-main);
             font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
         }
-        .btn-postar:hover { background-color: #734f4b; }
+        .btn-postar:hover { opacity: 0.9; }
 
         .btn-excluir-tudo {
             width: 100%; background-color: #d9534f; color: white; border: none;
@@ -368,7 +396,8 @@
             font-family: var(--font-main); 
             font-size: 0.9rem;
             outline: none; 
-            background-color: rgba(255, 255, 255, 0.6);
+            background-color: var(--bg-page);
+            color: var(--text-color);
         }
         
         .btn-comentar { 
@@ -388,7 +417,7 @@
         }
 
         .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; }
+        .item-comentario { background-color: var(--item-bg); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; border: 1px solid var(--border-color); }
         .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; }
         .autor-comentario { font-weight: bold; color: var(--primary); }
         .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
@@ -397,11 +426,10 @@
 
         .btn-ver-mais-hist {
             display: block; width: 100%; padding: 10px; text-align: center;
-            background: rgba(140, 98, 93, 0.1); color: var(--primary);
-            border: none; border-radius: 10px; font-size: 0.85rem; font-weight: bold;
+            background: var(--item-bg); color: var(--primary);
+            border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.85rem; font-weight: bold;
             cursor: pointer; margin-top: 10px; transition: background 0.2s;
         }
-        .btn-ver-mais-hist:hover { background: rgba(140, 98, 93, 0.2); }
 
         .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
         .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
@@ -412,10 +440,9 @@
 
         .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 25; }
         .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
-        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: var(--bg-card); box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
         .opcoes-tres-pontos.visivel { display: block; }
         .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
-        .opcoes-tres-pontos button:hover { background: #fff0ee; }
 
         /* Estilos da Polaroid 3D */
         .quadro-polaroid { 
@@ -446,11 +473,11 @@
             height: auto;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            background: #ffffff;
+            background: var(--bg-card);
             padding: 14px 14px 22px 14px;
-            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
             border-radius: 4px;
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
             z-index: 2;
         }
 
@@ -465,11 +492,11 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: #fffcfc;
+            background: var(--bg-card);
             border: 2px dashed var(--border-color);
             padding: 20px;
             border-radius: 4px;
-            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
             z-index: 1;
             overflow: hidden;
         }
@@ -506,7 +533,7 @@
         .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
         .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
-        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
+        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); }
         .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
         .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
         .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
@@ -550,7 +577,7 @@
             user-select: none;
         }
 
-        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
+        .card-declaracao-texto { background: var(--bg-card); border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid var(--border-color); position: relative; content-visibility: auto; height: auto; }
         .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
         .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
         
@@ -575,7 +602,7 @@
             content: '';
             position: absolute;
             bottom: 0; left: 0; width: 100%; height: 35px;
-            background: linear-gradient(transparent, rgba(255,255,255,0.95));
+            background: linear-gradient(transparent, var(--bg-card));
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
@@ -588,14 +615,14 @@
         .btn-ler-mais:hover { text-decoration: underline; }
 
         .card-musica {
-            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
-            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
-            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
+            display: flex; flex-direction: column; background: var(--bg-card); padding: 16px; 
+            border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+            margin-bottom: 20px; position: relative; border: 1px solid var(--border-color);
             transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
         }
         .card-musica.destaque {
             border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
-            background: #fffbfb; animation: pulsarDestaqueMusica 3s infinite ease-in-out;
+            background: var(--bg-card); animation: pulsarDestaqueMusica 3s infinite ease-in-out;
         }
 
         @keyframes pulsarDestaqueMusica {
@@ -614,12 +641,12 @@
 
         /* Estilos da nova barra de progresso de espaço */
         .armazenamento-container {
-            background: #ffffff;
+            background: var(--bg-card);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 10px rgba(140, 98, 93, 0.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
         .armazenamento-info {
             display: flex;
@@ -632,10 +659,10 @@
         .armazenamento-barra-bg {
             width: 100%;
             height: 12px;
-            background-color: #f2f2f2;
+            background-color: var(--bg-page);
             border-radius: 6px;
             overflow: hidden;
-            border: 1px solid rgba(230, 179, 168, 0.3);
+            border: 1px solid var(--border-color);
         }
         .armazenamento-barra-progresso {
             width: 0%;
@@ -671,7 +698,10 @@
             <div class="status-usuario-container">
                 <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
             </div>
-            <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
+            <div class="header-acoes-direita">
+                <button class="btn-theme-toggle" id="btn-theme-toggle" title="Alternar modo escuro">🌙</button>
+                <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
+            </div>
         </div>
 
         <canvas id="canvas-hearts"></canvas>
@@ -741,7 +771,7 @@
                 <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
                 <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
                 
-                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: var(--bg-page); padding: 10px; border-radius: 10px; border: 1px solid var(--border-color);">
                     <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
                     <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
                 </div>
@@ -844,6 +874,28 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // Lógica do Tema Escuro
+        const themeBtn = document.getElementById('btn-theme-toggle');
+        const currentTheme = localStorage.getItem('theme_canto') || 'light';
+
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeBtn.innerText = '☀️';
+        }
+
+        themeBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme_canto', 'light');
+                themeBtn.innerText = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme_canto', 'dark');
+                themeBtn.innerText = '☀️';
+            }
+        });
 
         let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         let todosHistoricos = [];
@@ -998,6 +1050,7 @@
             document.getElementById('editando-playlist-id').value = '';
             document.getElementById('playlist-nome').value = '';
             document.getElementById('playlist-link').value = '';
+
             document.getElementById('playlist-capa').value = '';
             document.getElementById('playlist-destaque').checked = false;
             document.getElementById('titulo-painel-playlist').innerText = '🎧 Dedicar uma Música';
