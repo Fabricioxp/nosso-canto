@@ -648,6 +648,27 @@
         @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
 
 
+        /* Modo noturno */
+        .theme-toggle { background: none; border: 1px solid var(--border-color); border-radius: 18px; padding: 6px 10px; cursor: pointer; font-size: 1.05rem; line-height: 1; }
+        body.dark-mode { background: #161415; color: #eee6e4; }
+        body.dark-mode #tela-login { background: #161415; }
+        body.dark-mode .box-login, body.dark-mode .bloco-separado, body.dark-mode .painel-upload,
+        body.dark-mode .card-declaracao-texto, body.dark-mode .card-musica, body.dark-mode .armazenamento-container,
+        body.dark-mode .polaroid-frente, body.dark-mode .polaroid-verso, body.dark-mode .item-opcao-flutuante,
+        body.dark-mode .header-status-bar, body.dark-mode .opcoes-tres-pontos { background-color: #242022 !important; color: #eee6e4; }
+        body.dark-mode .header-status-bar { border-bottom-color: #514448; }
+        body.dark-mode #bloco-dias-amando { background-color: #38272b !important; }
+        body.dark-mode #bloco-playlist { background-color: #332925 !important; }
+        body.dark-mode #bloco-coisinhas-dela { background-color: #382735 !important; }
+        body.dark-mode #bloco-coisas-minhas { background-color: #263342 !important; }
+        body.dark-mode #bloco-galeria-momentos, body.dark-mode #bloco-nossos-textos { background-color: #282426 !important; }
+        body.dark-mode .input-custom, body.dark-mode .select-custom, body.dark-mode .textarea-custom, body.dark-mode .input-comentario { background: #302a2d; color: #f3ebea; border-color: #66575b; }
+        body.dark-mode .input-custom:focus, body.dark-mode .select-custom:focus, body.dark-mode .textarea-custom:focus { background: #382f33; }
+        body.dark-mode .declaracao-wrapper::after { background: linear-gradient(transparent, rgba(36,32,34,.96)); }
+        body.dark-mode .declaracao-corpo-render, body.dark-mode .polaroid-desc-txt, body.dark-mode .polaroid-verso-info, body.dark-mode .opcoes-tres-pontos button { color: #eee6e4; }
+        body.dark-mode .opcoes-tres-pontos button:hover, body.dark-mode .item-opcao-flutuante:hover { background: #342d30; }
+        body.dark-mode .painel-upload, body.dark-mode .card-declaracao-texto { border-color: #514448; }
+
     </style>
 </head>
 <body>
@@ -673,7 +694,7 @@
             <div class="status-usuario-container">
                 <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
             </div>
-            <button class="btn-logout" id="btn-logout-click">Sair 🚪</button>
+            <div style="display:flex; align-items:center; gap:8px;"><button class="theme-toggle" id="btn-theme-toggle" aria-label="Alternar modo claro e noturno" title="Modo noturno">☀️</button><button class="btn-logout" id="btn-logout-click">Sair 🚪</button></div>
         </div>
 
         <canvas id="canvas-hearts"></canvas>
@@ -880,6 +901,8 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             }
         }
 
+        function argsEdicao(...args) { return args.map(v => sanitizarHTML(JSON.stringify(v ?? ''))).join(', '); }
+
         function sanitizarHTML(str) { 
             return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
         }
@@ -962,6 +985,17 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             sessionStorage.removeItem('user_canto'); usuarioLogado = null; verificarSessao();
         };
         document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
+
+        const botaoTema = document.getElementById('btn-theme-toggle');
+        function aplicarTema(modo) {
+            const escuro = modo === 'dark';
+            document.body.classList.toggle('dark-mode', escuro);
+            botaoTema.textContent = escuro ? '🌙' : '☀️';
+            botaoTema.title = escuro ? 'Modo noturno ativo — trocar para modo claro' : 'Modo claro ativo — trocar para modo noturno';
+            localStorage.setItem('tema_canto', escuro ? 'dark' : 'light');
+        }
+        aplicarTema(localStorage.getItem('tema_canto') || 'light');
+        botaoTema.addEventListener('click', () => aplicarTema(document.body.classList.contains('dark-mode') ? 'light' : 'dark'));
 
         window.alternarMenuBalao = function() {
             const menu = document.getElementById('opcoes-menu-balao');
@@ -1382,7 +1416,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoPlaylist('${post.id}', '${post.titulo}', '${post.link}', '${post.imagem}', ${post.destaque})">Editar ✏️</button>
+                            <button onclick='prepararEdicaoPlaylist(${argsEdicao(post.id, post.titulo, post.link, post.imagem, post.destaque)})'>Editar ✏️</button>
                             <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     </div>
@@ -1417,7 +1451,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                 const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-editar" onclick='prepararEdicaoFirebase(${argsEdicao(post.id, post.destino, post.titulo, post.subtitulo, post.imagem, post.link, post.data)})'>Editar ✏️</button>
                         <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                     </div>
                 ` : '';
@@ -1461,7 +1495,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                 const numeroProgressivo = index + 1;
                 const controleModificacao = (post.autor === usuarioLogado) ? `
                     <div class="acoes-card-custom">
-                        <button class="btn-acao-card btn-editar" onclick="prepararEdicaoFirebase('${post.id}', '${post.destino}', '${post.titulo}', '${post.subtitulo}', '${post.imagem}', '${post.link}', '${post.data}')">Editar ✏️</button>
+                        <button class="btn-acao-card btn-editar" onclick='prepararEdicaoFirebase(${argsEdicao(post.id, post.destino, post.titulo, post.subtitulo, post.imagem, post.link, post.data)})'>Editar ✏️</button>
                         <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                     </div>
                 ` : '';
@@ -1506,7 +1540,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoGaleria('${post.id}', '${post.titulo || ''}', '${post.subtitulo || ''}', '${post.imagem}', '${post.data}')">Editar ✏️</button>
+                            <button onclick='prepararEdicaoGaleria(${argsEdicao(post.id, post.titulo, post.subtitulo, post.imagem, post.data)})'>Editar ✏️</button>
                             <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     </div>
@@ -1571,7 +1605,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     <div class="menu-acoes-container">
                         <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
                         <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
-                            <button onclick="prepararEdicaoTexto('${post.id}', '${post.titulo || ''}', '${post.corpo || ''}', '${post.data}')">Editar ✏️</button>
+                            <button onclick='prepararEdicaoTexto(${argsEdicao(post.id, post.titulo, post.corpo, post.data)})'>Editar ✏️</button>
                             <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
                         </div>
                     </div>
