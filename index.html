@@ -594,14 +594,33 @@
             transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
         }
         .card-musica.destaque {
-            border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
-            background: #fffbfb; animation: pulsarDestaqueMusica 3s infinite ease-in-out;
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, #fffdfd 0%, #fff5f2 100%);
+            box-shadow: 0 10px 28px rgba(140, 98, 93, 0.22);
+            transform: translateY(-2px);
+            animation: pulsarDestaqueMusica 3s infinite ease-in-out;
+        }
+        .card-musica.destaque::before {
+            content: '🌟 Música do momento';
+            display: inline-flex;
+            align-self: flex-start;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary);
+            color: white;
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            letter-spacing: 0.2px;
+            margin-bottom: 4px;
+            box-shadow: 0 4px 10px rgba(140, 98, 93, 0.2);
         }
 
         @keyframes pulsarDestaqueMusica {
-            0% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); }
-            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(140, 98, 93, 0.4); border-color: var(--border-color); }
-            100% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); border-color: var(--primary); }
+            0% { box-shadow: 0 10px 28px rgba(140, 98, 93, 0.22); }
+            50% { box-shadow: 0 14px 34px rgba(140, 98, 93, 0.34); border-color: var(--border-color); }
+            100% { box-shadow: 0 10px 28px rgba(140, 98, 93, 0.22); border-color: var(--primary); }
         }
 
         .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; width: 100%; }
@@ -668,6 +687,10 @@
         body.dark-mode .declaracao-corpo-render, body.dark-mode .polaroid-desc-txt, body.dark-mode .polaroid-verso-info, body.dark-mode .opcoes-tres-pontos button { color: #eee6e4; }
         body.dark-mode .opcoes-tres-pontos button:hover, body.dark-mode .item-opcao-flutuante:hover { background: #342d30; }
         body.dark-mode .painel-upload, body.dark-mode .card-declaracao-texto { border-color: #514448; }
+        body.dark-mode .item-comentario { background-color: #302a2d; color: #ffffff; border: 1px solid #514448; }
+        body.dark-mode .texto-comentario { color: #ffffff; }
+        body.dark-mode .meta-comentario { color: #d8ced0; }
+        body.dark-mode .autor-comentario { color: #ffffff; }
 
     </style>
 </head>
@@ -1401,8 +1424,10 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
             todosHistoricos.reverse();
 
-            // Lógica de Limite da Playlist Principal (Exibe apenas as 5 primeiras)
-            const playlistExibida = itensPlaylist.slice(0, 5);
+            // Playlist: a música dedicada mais recentemente aparece primeiro, de cima para baixo.
+            const playlistOrdenada = [...itensPlaylist].sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+            // Lógica de Limite da Playlist Principal (Exibe apenas as 5 mais recentes)
+            const playlistExibida = playlistOrdenada.slice(0, 5);
             const btnPlaylistRestante = document.getElementById('btn-ver-restante-playlist');
             if(itensPlaylist.length > 5 && btnPlaylistRestante) { btnPlaylistRestante.style.display = 'block'; } 
             else if(btnPlaylistRestante) { btnPlaylistRestante.style.display = 'none'; }
@@ -1440,7 +1465,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                         <span class="contagem-likes">${curtidasArray.length} amaram</span>
                     </div>
                 `;
-                if (post.destaque) { containers.playlist.prepend(blocoMusica); } else { containers.playlist.appendChild(blocoMusica); }
+                containers.playlist.appendChild(blocoMusica);
             });
 
             // Apresentações Coisinhas Dela - Lógica de Limite (Apenas as 5 primeiras)
