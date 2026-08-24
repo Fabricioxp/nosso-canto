@@ -35,29 +35,7 @@
             overflow-x: hidden;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-
-            body.theme-dark {
-      --primary: #38bdf8;
-      --secondary: #0284c7;
-      --border-color: #1e293b;
-      --bg-card: #0f172a;
-      --text-color: #f8fafc;
-      --text-muted: #94a3b8;
-      --bg-main: #020617;
-            }
         }
-
-        <div class="container">
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span style="font-size: 0.75rem; font-weight: bold; color: var(--primary);">🎨 Tema do Site:</span>
-        <div style="display: flex; gap: 6px;">
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('default')">🌸 Padrão</button>
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('whatsapp')">💬 Whats</button>
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('dark')">🌙 Dark</button>
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('neon')">⚡ Neon</button>
-        </div>
-      </div>
 
         button, input, select, textarea, a, .contador-bloco, .pdf-bloco {
             touch-action: manipulation;
@@ -1723,4 +1701,4 @@
         document.addEventListener('DOMContentLoaded', () => { atualizarContadores(); setInterval(atualizarContadores, 1000); animarLoop(); });
     </script>
 </body>
-                </html>
+</html>
