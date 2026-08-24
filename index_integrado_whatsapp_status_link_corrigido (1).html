@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Canto 🤍</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <style>
+        :root {
+            --primary: #8c625d;
+            --secondary: #a68580;
+            --border-color: #e6b3a8;
+            --bg-card: #ffffff;
+            --text-color: #4a3e3d;
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font-title: Georgia, Cambria, 'Times New Roman', Times, serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: #fff3f2; 
+            color: var(--text-color);
+            font-family: var(--font-main);
+            padding-bottom: 90px;
+            overflow-x: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button, input, select, textarea, a, .contador-bloco, .pdf-bloco {
+            touch-action: manipulation;
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        #tela-login {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #fff3f2;
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .box-login {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(140, 98, 93, 0.15);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+
+        .box-login h2 {
+            font-family: var(--font-title);
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        #conteudo-site { 
+            display: none; 
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
+            padding-top: 60px;
+        }
+
+        .header-status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55px;
+            z-index: 9999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0 20px;
+            box-shadow: 0 2px 15px rgba(140, 98, 93, 0.08);
+            border-bottom: 1px solid rgba(230, 179, 168, 0.25);
+        }
+
+        .status-usuario-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-nome-parceiro {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .menu-flutuante-container {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 99995;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+            pointer-events: none; 
+        }
+
+        .botao-flutuante-principal {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(140, 98, 93, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            pointer-events: auto;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .botao-flutuante-principal:active { transform: scale(0.9) translateZ(0); }
+
+        .menu-opcoes-flutuantes {
+            display: none; 
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(20px) translateZ(0);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            will-change: transform, opacity;
+        }
+
+        .menu-opcoes-flutuantes.aberto {
+            display: flex; 
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) translateZ(0);
+        }
+
+        .item-opcao-flutuante {
+            text-decoration: none;
+            background-color: white;
+            color: var(--text-color);
+            padding: 12px 18px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(230, 179, 168, 0.5);
+            transition: transform 0.2s, background 0.2s;
+            white-space: nowrap;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .item-opcao-flutuante:hover { background-color: #fff0ee; }
+
+        header {
+            text-align: center;
+            padding: 30px 20px 35px 20px;
+            position: relative;
+        }
+
+        .btn-logout {
+            background: none; 
+            border: 1px solid var(--border-color);
+            padding: 5px 10px; 
+            border-radius: 10px;
+            font-size: 0.8rem; 
+            font-family: var(--font-main);
+            color: var(--secondary); 
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(230, 179, 168, 0.15); }
+
+        header h1 {
+            font-family: var(--font-title);
+            font-size: 2.3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p { font-size: 1rem; color: var(--secondary); }
+
+        .container-blocos {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 0 15px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .bloco-separado {
+            background-color: var(--bg-card);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(140, 98, 93, 0.12);
+            margin-bottom: 25px;
+            position: relative;
+            height: auto;
+        }
+
+        .card-separador-interno {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px dashed var(--border-color);
+            position: relative;
+            height: auto;
+        }
+
+        .titulo-secao {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .link-titulo-atalho {
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .link-titulo-atalho:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        #bloco-dias-amando { background-color: #ffebeb; }
+        #bloco-playlist { background-color: #fff5f0; } 
+        #bloco-coisinhas-dela { background-color: #fff0f5; }
+        #bloco-coisas-minhas { background-color: #e6f2ff; }
+        #bloco-galeria-momentos { background-color: #fdf8f5; }
+        #bloco-nossos-textos { background-color: #f7f3f9; }
+        #bloco-historico-acessos { background-color: #f2f2f2; display: none; }
+
+        .contador-bloco { text-align: center; cursor: pointer; user-select: none; }
+        .contador-bloco:first-child { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
+        .contador-titulo { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); margin-bottom: 8px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .contador-tempo { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+        .contador-tempo.ativo span { display: inline-block; animation: pulse 1.5s infinite alternate ease-in-out; }
+
+        .data-card {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .autor-tag { font-size: 0.75rem; color: var(--primary); font-weight: normal; }
+
+        .pdf-link { text-decoration: none; display: block; position: relative; z-index: 2; }
+        .pdf-bloco { text-align: center; cursor: pointer; }
+        .pdf-subtitulo { font-size: 0.9rem; color: var(--secondary); margin-top: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+
+        .numero-card {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border: 1.5px solid var(--secondary);
+            border-radius: 50%; font-size: 0.85rem; font-weight: bold;
+            color: var(--secondary); margin-bottom: 15px; 
+        }
+
+        .moldura-imagem {
+            width: 100%; max-width: 250px; aspect-ratio: 16 / 9; 
+            margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.5);
+            display: block;
+            content-visibility: auto;
+        }
+        .moldura-imagem img { width: 100%; height: 100%; object-fit: cover; }
+
+        .painel-upload {
+            background-color: #ffffff;
+            border: 1px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(140, 98, 93, 0.05);
+            position: relative;
+            z-index: 6;
+            height: auto;
+        }
+
+        .input-custom, .select-custom, .textarea-custom {
+            width: 100%; padding: 12px 16px; border: 1px solid rgba(230, 179, 168, 0.6);
+            border-radius: 15px; font-family: var(--font-main); font-size: 0.9rem;
+            margin-bottom: 12px; outline: none; background: #fffbfb;
+            color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .textarea-custom { resize: vertical; min-height: 90px; }
+        .input-custom:focus, .select-custom:focus, .textarea-custom:focus {
+            border-color: var(--primary); background: #ffffff; box-shadow: 0 0 8px rgba(140, 98, 93, 0.1);
+        }
+
+        .btn-postar {
+            width: 100%; background-color: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: 15px; font-family: var(--font-main);
+            font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-postar:hover { background-color: #734f4b; }
+
+        .btn-excluir-tudo {
+            width: 100%; background-color: #d9534f; color: white; border: none;
+            padding: 10px; border-radius: 12px; font-family: var(--font-main);
+            font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-bottom: 15px;
+            transition: background 0.2s;
+        }
+        .btn-excluir-tudo:hover { background-color: #c9302c; }
+
+        .secao-comentarios { 
+            margin-top: 25px; 
+            padding-top: 20px; 
+            border-top: 1px dashed var(--border-color); 
+            position: relative; 
+            z-index: 5;
+            height: auto;
+        }
+        
+        .form-comentario { 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            margin-bottom: 15px; 
+            width: 100%;
+        }
+        
+        .input-comentario {
+            flex: 1; 
+            min-width: 0;
+            padding: 10px 14px; 
+            border: 1px solid var(--border-color);
+            border-radius: 20px; 
+            font-family: var(--font-main); 
+            font-size: 0.9rem;
+            outline: none; 
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .btn-comentar { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 10px 16px; 
+            border-radius: 20px; 
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lista-comentarios { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .item-comentario { background-color: rgba(255, 255, 255, 0.5); padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; height: auto; }
+        .meta-comentario { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--secondary); margin-bottom: 4px; gap: 5px; }
+        .autor-comentario { font-weight: bold; color: var(--primary); }
+        .corpo-comentario { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .texto-comentario { flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        .btn-excluir-comentario { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; white-space: nowrap; }
+
+        .btn-ver-mais-hist {
+            display: block; width: 100%; padding: 10px; text-align: center;
+            background: rgba(140, 98, 93, 0.1); color: var(--primary);
+            border: none; border-radius: 10px; font-size: 0.85rem; font-weight: bold;
+            cursor: pointer; margin-top: 10px; transition: background 0.2s;
+        }
+        .btn-ver-mais-hist:hover { background: rgba(140, 98, 93, 0.2); }
+
+        .acoes-card-custom { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 4; }
+        .btn-acao-card { background: none; border: none; cursor: pointer; font-size: 0.85rem; font-family: var(--font-main); padding: 5px 10px; border-radius: 10px; font-weight: bold; }
+        .btn-editar { color: #428bca; }
+        .btn-excluir { color: #d9534f; }
+
+        #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
+
+        .menu-acoes-container { position: absolute; top: 15px; right: 15px; z-index: 25; }
+        .btn-tres-pontos { background: none; border: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 0 5px; line-height: 1; }
+        .opcoes-tres-pontos { display: none; position: absolute; right: 0; top: 25px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; z-index: 30; }
+        .opcoes-tres-pontos.visivel { display: block; }
+        .opcoes-tres-pontos button { display: block; width: 100%; padding: 10px 16px; background: none; border: none; font-family: var(--font-main); font-size: 0.85rem; text-align: left; cursor: pointer; color: var(--text-color); white-space: nowrap; }
+        .opcoes-tres-pontos button:hover { background: #fff0ee; }
+
+        /* Estilos da Polaroid 3D */
+        .quadro-polaroid { 
+            background: transparent; 
+            margin: 20px auto 30px auto; 
+            max-width: 380px; 
+            perspective: 1000px;
+            height: auto;
+            content-visibility: auto;
+        }
+        
+        .polaroid-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: left;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .quadro-polaroid.flipped .polaroid-inner {
+            transform: rotateY(180deg);
+        }
+
+        .polaroid-frente {
+            position: relative;
+            width: 100%;
+            height: auto;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background: #ffffff;
+            padding: 14px 14px 22px 14px;
+            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.03);
+            z-index: 2;
+        }
+
+        .polaroid-verso {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: #fffcfc;
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 6px 16px rgba(140, 98, 93, 0.12);
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .polaroid-verso-titulo {
+            font-family: var(--font-title);
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .polaroid-verso-info {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .polaroid-imagem, .polaroid-video { 
+            width: 100%; 
+            aspect-ratio: 1 / 1; 
+            object-fit: cover; 
+            background: #fafafa; 
+            display: block; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            border: none;
+        }
+
+        .polaroid-legenda-box { text-align: center; padding: 15px 5px 0 5px; }
+        .polaroid-titulo-txt { font-family: var(--font-title); font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .polaroid-desc-txt { font-size: 0.9rem; color: var(--text-color); line-height: 1.4; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        .barra-reacoes-polaroid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #f5e4e1; }
+        .btn-coracao-minimalista { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-coracao-minimalista:active { transform: scale(1.25) translateZ(0); }
+        .contagem-likes { font-size: 0.85rem; color: var(--secondary); font-weight: bold; }
+
+        /* Estilos do Lightbox */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 200000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .lightbox-modal.ativo { display: flex; }
+        .lightbox-img-wrapper {
+            max-width: 95%;
+            max-height: 85vh;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 4px;
+            transition: transform 0.2s;
+            cursor: zoom-in;
+        }
+        .lightbox-img:active { cursor: grabbing; }
+        .lightbox-fechar {
+            position: absolute;
+            top: 20px; right: 25px;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card-declaracao-texto { background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid rgba(230, 179, 168, 0.3); position: relative; content-visibility: auto; height: auto; }
+        .tag-editado { font-size: 0.75rem; color: var(--secondary); font-style: italic; display: inline-block; margin-left: 5px; font-weight: normal; }
+        .declaracao-titulo-render { font-family: var(--font-title); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; font-weight: bold; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+        
+        .declaracao-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .declaracao-corpo-render { 
+            font-size: 1rem; 
+            line-height: 1.6; 
+            color: var(--text-color); 
+            white-space: pre-wrap; 
+            overflow: hidden; 
+            max-height: 95px; 
+            transition: max-height 0.4s ease;
+            overflow-wrap: break-word; 
+            word-wrap: break-word; 
+            word-break: break-word; 
+        }
+        .declaracao-corpo-render.expandido { max-height: 2000px; }
+        .declaracao-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 35px;
+            background: linear-gradient(transparent, rgba(255,255,255,0.95));
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .declaracao-wrapper.expandido::after { opacity: 0; }
+        .btn-ler-mais {
+            background: none; border: none; color: var(--primary); font-size: 0.85rem;
+            font-weight: bold; cursor: pointer; padding: 5px 0; margin-bottom: 10px;
+            display: inline-block; font-family: var(--font-main);
+        }
+        .btn-ler-mais:hover { text-decoration: underline; }
+
+        .card-musica {
+            display: flex; flex-direction: column; background: #ffffff; padding: 16px; 
+            border-radius: 16px; box-shadow: 0 4px 12px rgba(140, 98, 93, 0.08); 
+            margin-bottom: 20px; position: relative; border: 1px solid rgba(230, 179, 168, 0.3);
+            transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s; content-visibility: auto; height: auto;
+        }
+        .card-musica.destaque {
+            border: 2px solid var(--primary); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25);
+            background: #fffbfb; animation: pulsarDestaqueMusica 3s infinite ease-in-out;
+        }
+
+        @keyframes pulsarDestaqueMusica {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(140, 98, 93, 0.4); border-color: var(--border-color); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(140, 98, 93, 0.25); border-color: var(--primary); }
+        }
+
+        .musica-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; width: 100%; }
+        .musica-capa { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.1); background-color: #f0f0f0; flex-shrink: 0; }
+        .musica-info { flex: 1; min-width: 0; }
+        .musica-titulo { font-size: 1.15rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        .musica-dedicatoria { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; }
+        .musica-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--secondary); color: white; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; transition: background 0.2s; white-space: nowrap; }
+        .musica-link-btn:hover { background: var(--primary); }
+
+        /* Estilos da nova barra de progresso de espaço */
+        .armazenamento-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(140, 98, 93, 0.05);
+        }
+        .armazenamento-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        .armazenamento-barra-bg {
+            width: 100%;
+            height: 12px;
+            background-color: #f2f2f2;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(230, 179, 168, 0.3);
+        }
+        .armazenamento-barra-progresso {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 6px;
+            transition: width 0.5s ease-out;
+        }
+
+        @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
+
+
+        /* Modo noturno */
+        .theme-toggle { background: none; border: 1px solid var(--border-color); border-radius: 18px; padding: 6px 10px; cursor: pointer; font-size: 1.05rem; line-height: 1; }
+        body.dark-mode { background: #161415; color: #eee6e4; }
+        body.dark-mode #tela-login { background: #161415; }
+        body.dark-mode .box-login, body.dark-mode .bloco-separado, body.dark-mode .painel-upload,
+        body.dark-mode .card-declaracao-texto, body.dark-mode .card-musica, body.dark-mode .armazenamento-container,
+        body.dark-mode .polaroid-frente, body.dark-mode .polaroid-verso, body.dark-mode .item-opcao-flutuante,
+        body.dark-mode .header-status-bar, body.dark-mode .opcoes-tres-pontos { background-color: #242022 !important; color: #eee6e4; }
+        body.dark-mode .header-status-bar { border-bottom-color: #514448; }
+        body.dark-mode #bloco-dias-amando { background-color: #38272b !important; }
+        body.dark-mode #bloco-playlist { background-color: #332925 !important; }
+        body.dark-mode #bloco-coisinhas-dela { background-color: #382735 !important; }
+        body.dark-mode #bloco-coisas-minhas { background-color: #263342 !important; }
+        body.dark-mode #bloco-galeria-momentos, body.dark-mode #bloco-nossos-textos { background-color: #282426 !important; }
+        body.dark-mode .input-custom, body.dark-mode .select-custom, body.dark-mode .textarea-custom, body.dark-mode .input-comentario { background: #302a2d; color: #f3ebea; border-color: #66575b; }
+        body.dark-mode .input-custom:focus, body.dark-mode .select-custom:focus, body.dark-mode .textarea-custom:focus { background: #382f33; }
+        body.dark-mode .declaracao-wrapper::after { background: linear-gradient(transparent, rgba(36,32,34,.96)); }
+        body.dark-mode .declaracao-corpo-render, body.dark-mode .polaroid-desc-txt, body.dark-mode .polaroid-verso-info, body.dark-mode .opcoes-tres-pontos button { color: #eee6e4; }
+        body.dark-mode .opcoes-tres-pontos button:hover, body.dark-mode .item-opcao-flutuante:hover { background: #342d30; }
+        body.dark-mode .painel-upload, body.dark-mode .card-declaracao-texto { border-color: #514448; }
+
+    </style>
+</head>
+<body>
+
+    <div id="tela-login">
+        <div class="box-login">
+            <h2>Quem está entrando? 🤍</h2>
+            <input type="text" id="login-nome" class="input-custom" placeholder="Seu nome (Fabricio ou Maria)">
+            <input type="password" id="login-senha" class="input-custom" placeholder="Senha secreta">
+            <button class="btn-postar" id="btn-login-click">Entrar no Nosso Canto</button>
+        </div>
+    </div>
+
+    <div id="lightbox-galeria" class="lightbox-modal">
+        <span class="lightbox-fechar" onclick="fecharLightbox()">&times;</span>
+        <div class="lightbox-img-wrapper">
+            <img id="lightbox-img-source" class="lightbox-img" src="" alt="Zoom" onclick="alternarZoomInterno(event)">
+        </div>
+    </div>
+
+    <div id="conteudo-site">
+        <div class="header-status-bar">
+            <div class="status-usuario-container">
+                <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;"><button class="theme-toggle" id="btn-theme-toggle" aria-label="Alternar modo claro e noturno" title="Modo noturno">☀️</button><button class="btn-logout" id="btn-logout-click">Sair 🚪</button></div>
+        </div>
+
+        <canvas id="canvas-hearts"></canvas>
+
+        <header>
+            <h1>Nosso Lugar no Mundo</h1>
+            <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
+        </header>
+
+        <div class="menu-flutuante-container">
+            <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
+                <a href="#bloco-dias-amando" class="item-opcao-flutuante" id="lnk-tempo">⏳ Nosso Tempo</a>
+                <a href="playlist.html" class="item-opcao-flutuante" id="lnk-playlist">🎧 Nossa Playlist</a>
+                <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="lnk-galeria">🖼️ Galeria</a>
+                <a href="#bloco-nossos-textos" class="item-opcao-flutuante" id="lnk-cartas">✍️ Cartas</a>
+                <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="lnk-apresentacoes">✨ Apresentações</a>
+                <div class="item-opcao-flutuante" id="lnk-historico">📜 Histórico (PIN)</div>
+            </div>
+            <button class="botao-flutuante-principal" id="btn-flutuante-click">📌</button>
+        </div>
+
+        <div class="container-blocos">
+            
+            <section class="bloco-separado" id="bloco-dias-amando">
+                <div class="contador-bloco" onclick="celebrarAmor()">
+                    <div class="contador-titulo">❤️ Dias se amando</div>
+                    <div id="contador-amor" class="contador-tempo">Carregando momentos...</div>
+                </div>
+                
+                <div class="contador-bloco">
+                    <div class="contador-titulo">💍 Dias de namoro</div>
+                    <div id="contador-namoro" class="contador-tempo">Carregando momentos...</div>
+                </div>
+
+                <div class="secao-comentarios">
+                    <div class="form-comentario">
+                        <input type="text" id="input-cronometro" class="input-comentario" placeholder="Deixe um recadinho sobre o nosso tempo...">
+                        <button class="btn-comentar" id="btn-comentar-cronometro">❤️ Enviar</button>
+                    </div>
+                    <div id="lista-cronometro" class="lista-comentarios"></div>
+                </div>
+            </section>
+
+            <!-- PAINEL DE MENSAGENS -->
+            <section class="bloco-separado" id="bloco-whatsapp-stats" style="background-color: #f0fdf4; border: 1px solid rgba(37, 211, 102, 0.3); text-align: center;">
+                <div class="titulo-secao" style="margin-bottom: 12px;">💬 Nossas Mensagens</div>
+                <p style="color: var(--secondary); font-size: 0.95rem; margin-bottom: 18px;">
+                    Quer ver o status das nossas mensagens e acompanhar tudo em um só lugar? 🤍
+                </p>
+                <a href="status.html" class="btn-postar" style="display: block; text-decoration: none;">
+                    Ver Status das Mensagens ➡️
+                </a>
+            </section>
+
+            <section class="bloco-separado" id="bloco-historico-acessos">
+                <div class="titulo-secao">📜 Histórico de Acessos</div>
+                
+                <div class="armazenamento-container">
+                    <div class="armazenamento-info">
+                        <span id="armazenamento-texto-usado">Usado: 0 KB</span>
+                        <span id="armazenamento-texto-disponivel">Total: 1 GB</span>
+                    </div>
+                    <div class="armazenamento-barra-bg">
+                        <div id="armazenamento-barra-interna" class="armazenamento-barra-progresso"></div>
+                    </div>
+                </div>
+
+                <button id="btn-excluir-todo-historico" class="btn-excluir-tudo">⚠️ Excluir Todo Histórico</button>
+                <div id="lista-historico-container" class="lista-comentarios" style="max-height: none; overflow-y: visible;"></div>
+                <button id="btn-ver-mais-historico" class="btn-ver-mais-hist" style="display: none;">Ver mais históricos 🔽</button>
+            </section>
+
+            <section class="painel-upload" id="painel-playlist-posts">
+                <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
+                <input type="hidden" id="editando-playlist-id" value="">
+                
+                <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
+                <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
+                <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
+                
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
+                    <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
+                    <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
+                </div>
+                
+                <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-playlist">
+                <div class="titulo-secao">
+                    <span>🎶 Nossa Playlist</span>
+                    <a href="playlist.html" class="link-titulo-atalho" title="Ver Página da Playlist">🔗</a>
+                </div>
+                <div id="novos-cards-playlist"></div>
+                <a href="playlist.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-playlist">Ver o restante da playlist 🔽</a>
+            </section>
+
+            <section class="painel-upload" id="painel-de-postagem">
+                <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card (Apresentações)</div>
+                <input type="hidden" id="editando-id" value="">
+                
+                <select id="post-destino" class="select-custom">
+                    <option value="dela">Postar em: Coisinhas Dela</option>
+                    <option value="meu">Postar em: Coisas Minhas</option>
+                </select>
+                <input type="text" id="post-titulo" class="input-custom" placeholder="Título">
+                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link">
+                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem">
+                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
+                <input type="date" id="post-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-coisinhas-dela">
+                <div class="titulo-secao">
+                    <span>✨ coisinhas dela</span>
+                    <a href="cardsdela.html" class="link-titulo-atalho" title="Ver Página Completa">🔗</a>
+                </div>
+                <div id="novos-cards-dela"></div>
+                <a href="cardsdela.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-dela">Ver todos os Cards Dela ➡️</a>
+            </section>
+
+            <section class="bloco-separado" id="bloco-coisas-minhas">
+                <div class="titulo-secao">
+                    <span>✨ coisinhas minhas</span>
+                    <a href="cardsmeu.html" class="link-titulo-atalho" title="Ver Página Completa">🔗</a>
+                </div>
+                <div id="novos-cards-meu"></div>
+                <a href="cardsmeu.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-meu">Ver todos os Cards Meus ➡️</a>
+            </section>
+
+            <section class="painel-upload" id="painel-galeria-posts">
+                <div class="titulo-secao" id="titulo-painel-galeria" style="margin-bottom: 15px;">📸 Postar Novo Momento na Galeria / Varal</div>
+                <input type="hidden" id="editando-galeria-id" value="">
+                
+                <input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
+                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
+                <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem OU do Vídeo (MP4, YouTube, etc)">
+                <label for="galeria-data" style="font-size:0.85rem; color:var(--secondary); font-weight:bold; display:block; margin:4px 0 6px;">📸 Dia em que a foto/vídeo foi capturado</label>
+                <input type="date" id="galeria-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-galeria">Publicar no Varal ✨</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-galeria-momentos">
+                <div class="titulo-secao">🖼️ Nosso Varal de Fotos & Vídeos</div>
+                <div id="novos-cards-galeria"></div>
+            </section>
+
+            <section class="painel-upload" id="painel-texto-posts">
+                <div class="titulo-secao" id="titulo-painel-texto" style="margin-bottom: 15px;">✍️ Escrever Nova Declaração</div>
+                <input type="hidden" id="editando-texto-id" value="">
+                
+                <input type="text" id="texto-titulo" class="input-custom" placeholder="Título da Carta/Declaração (Opcional)">
+                <textarea id="texto-corpo" class="textarea-custom" placeholder="Escreva aqui tudo o que seu coração sente... ❤️"></textarea>
+                <input type="date" id="texto-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-texto">Eternizar Declaração 🌹</button>
+            </section>
+
+            <section class="bloco-separado" id="bloco-nossos-textos">
+                <div class="titulo-secao">✍️ Cartas & Declarações</div>
+                <div id="novos-cards-textos"></div>
+            </section>
+
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, where, writeBatch, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
+            authDomain: "nosso-canto-5d714.firebaseapp.com",
+            projectId: "nosso-canto-5d714",
+            storageBucket: "nosso-canto-5d714.firebasestorage.app",
+            messagingSenderId: "1042257316625",
+            appId: "1:1042257316625:web:b96e37ad034b598ea61ab0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+let usuarioLogado = sessionStorage.getItem('user_canto') || null;
+        let todosHistoricos = [];
+        let limiteHistorico = true;
+
+        function gerenciarSessaoUsuario() {
+            if (!usuarioLogado) return;
+            document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
+        }
+
+        async function inicializarCardsOriginais() {
+            const postsRef = collection(db, "posts");
+            const cardsOriginais = [
+                { identificadorUnico: "original_maria_1", destino: "dela", titulo: "A fofura que ela fez para mim 🥰", subtitulo: "Ver apresentação", imagem: "https://i.imgur.com/PK5e75L_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://drive.google.com/file/d/1uzf_d7XeskZ5DdEyrNAUE3BWJqXaSBA1/view?usp=drivesdk", data: "17/05/2026", autor: "Maria", criadoEm: 1715918400000 },
+                { identificadorUnico: "original_fabricio_1", destino: "meu", titulo: "meu objetivo de amoor", subtitulo: "Ver apresentação", imagem: "https://i.imgur.com/XOb05NH_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://drive.google.com/file/d/10sOwlTDQcAncZSfJqFYdweFhIcPstH-m/view?usp=drivesdk", data: "18/05/2026", autor: "Fabricio", criadoEm: 1716004800000 },
+                { identificadorUnico: "original_fabricio_2", destino: "meu", titulo: "para o amor da minha vida", subtitulo: "ver declaration", imagem: "https://i.imgur.com/rU5f275_d.jpeg?maxwidth=520&shape=thumb&fidelity=high", link: "https://sites.google.com/view/memorial-maria-fabricio/declara%C3%A7%C3%A3o-1", data: "25/05/2026", autor: "Fabricio", criadoEm: 1716609600000 }
+            ];
+
+            for (const card of cardsOriginais) {
+                const q = query(postsRef, where("identificadorUnico", "==", card.identificadorUnico));
+                const snap = await getDocs(q);
+                if (snap.empty) { await addDoc(postsRef, card); }
+            }
+        }
+
+        function argsEdicao(...args) { return args.map(v => sanitizarHTML(JSON.stringify(v ?? ''))).join(', '); }
+
+        function sanitizarHTML(str) { 
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+        }
+
+        function obterDataHoraAtual() {
+            const agora = new Date();
+            return `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
+        function verificarPinSeguranca() {
+            const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
+            if (pinDigitado === "1566") {
+                return true;
+            } else if (pinDigitado !== null) {
+                alert("PIN incorreto! Ação cancelada. 🔐");
+            }
+            return false;
+        }
+
+        async function verificarSessao() {
+            if (usuarioLogado) {
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('conteudo-site').style.display = 'block';
+                inicializarCardsOriginais();
+                gerenciarSessaoUsuario();
+            } else {
+                document.getElementById('tela-login').style.display = 'flex';
+                document.getElementById('conteudo-site').style.display = 'none';
+                document.getElementById('bloco-historico-acessos').style.display = 'none';
+            }
+        }
+
+        function calcularArmazenamento(snapshotPosts, snapshotComentarios) {
+            let totalBytes = 0;
+            const limiteMaximoBytes = 1024 * 1024 * 1024; 
+
+            if (snapshotPosts && typeof snapshotPosts.forEach === 'function') {
+                snapshotPosts.forEach((docSnap) => { totalBytes += JSON.stringify(docSnap.data()).length; });
+            }
+            if (snapshotComentarios && typeof snapshotComentarios.forEach === 'function') {
+                snapshotComentarios.forEach((docSnap) => { totalBytes += JSON.stringify(docSnap.data()).length; });
+            }
+
+            let textoFormatado = "";
+            if (totalBytes < 1024) { textoFormatado = `${totalBytes} Bytes`; } 
+            else if (totalBytes < 1024 * 1024) { textoFormatado = `${(totalBytes / 1024).toFixed(2)} KB`; } 
+            else if (totalBytes < 1024 * 1024 * 1024) { textoFormatado = `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`; } 
+            else { textoFormatado = `${(totalBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`; }
+
+            let porcentagem = (totalBytes / limiteMaximoBytes) * 100;
+            if (porcentagem > 100) porcentagem = 100;
+            if (porcentagem < 0.2 && totalBytes > 0) porcentagem = 0.2; 
+
+            const textoUsado = document.getElementById("armazenamento-texto-usado");
+            const barraInterna = document.getElementById("armazenamento-barra-interna");
+            
+            if (textoUsado) textoUsado.innerText = `Usado: ${textoFormatado}`;
+            if (barraInterna) barraInterna.style.width = `${porcentagem}%`;
+        }
+
+        document.getElementById('btn-login-click').addEventListener('click', async function() {
+            const nomeInput = document.getElementById('login-nome').value.trim().toLowerCase();
+            const senhaInput = document.getElementById('login-senha').value.trim();
+            
+            if ((nomeInput === 'fabricio' || nomeInput === 'maria') && senhaInput === 'winchester') {
+                const nomeFormatado = nomeInput === 'fabricio' ? 'Fabricio' : 'Maria';
+                sessionStorage.setItem('user_canto', nomeFormatado);
+                usuarioLogado = nomeFormatado;
+                
+                try {
+                    await addDoc(collection(db, "posts"), {
+                        destino: "historico", corpo: "Fez login no site. 👋", autor: nomeFormatado, data: obterDataHoraAtual(), criadoEm: Date.now()
+                    });
+                } catch(err) { console.error("Erro ao publicar acesso:", err); }
+                verificarSessao();
+            } else { alert('Nome ou senha incorretos! 🥺'); }
+        });
+
+        const fazerLogout = function() {
+            sessionStorage.removeItem('user_canto'); usuarioLogado = null; verificarSessao();
+        };
+        document.getElementById('btn-logout-click').addEventListener('click', fazerLogout);
+
+        const botaoTema = document.getElementById('btn-theme-toggle');
+        function aplicarTema(modo) {
+            const escuro = modo === 'dark';
+            document.body.classList.toggle('dark-mode', escuro);
+            botaoTema.textContent = escuro ? '🌙' : '☀️';
+            botaoTema.title = escuro ? 'Modo noturno ativo — trocar para modo claro' : 'Modo claro ativo — trocar para modo noturno';
+            localStorage.setItem('tema_canto', escuro ? 'dark' : 'light');
+        }
+        aplicarTema(localStorage.getItem('tema_canto') || 'light');
+        botaoTema.addEventListener('click', () => aplicarTema(document.body.classList.contains('dark-mode') ? 'light' : 'dark'));
+
+        window.alternarMenuBalao = function() {
+            const menu = document.getElementById('opcoes-menu-balao');
+            if(menu.classList.contains('aberto')) {
+                menu.classList.remove('aberto');
+                setTimeout(() => { menu.style.display = "none"; }, 250);
+            } else {
+                menu.style.display = "flex";
+                setTimeout(() => { menu.classList.add('aberto'); }, 10);
+            }
+        };
+        document.getElementById('btn-flutuante-click').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-tempo').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-playlist').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-galeria').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-cartas').addEventListener('click', window.alternarMenuBalao);
+        document.getElementById('lnk-apresentacoes').addEventListener('click', window.alternarMenuBalao);
+        
+        document.getElementById('lnk-historico').addEventListener('click', function() {
+            window.alternarMenuBalao();
+            if (verificarPinSeguranca()) {
+                const abaHist = document.getElementById('bloco-historico-acessos');
+                abaHist.style.display = 'block'; abaHist.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        window.alternarMenuTresPontos = function(id) {
+            const menu = document.getElementById(`opcoes-${id}`);
+            if (menu) menu.classList.toggle('visivel');
+        };
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('btn-tres-pontos')) {
+                document.querySelectorAll('.opcoes-tres-pontos').forEach(m => m.classList.remove('visivel'));
+            }
+        });
+
+        function extrairIDYouTube(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function resetarFormularioPlaylist() {
+            document.getElementById('editando-playlist-id').value = '';
+            document.getElementById('playlist-nome').value = '';
+            document.getElementById('playlist-link').value = '';
+            document.getElementById('playlist-capa').value = '';
+            document.getElementById('playlist-destaque').checked = false;
+            document.getElementById('titulo-painel-playlist').innerText = '🎧 Dedicar uma Música';
+            document.getElementById('btn-salvar-playlist').innerText = 'Adicionar à Playlist 🎶';
+        }
+
+        window.salvarMusicaFirebase = async function() {
+            const idEditando = document.getElementById('editando-playlist-id').value;
+            const titulo = document.getElementById('playlist-nome').value.trim();
+            const link = document.getElementById('playlist-link').value.trim();
+            let imagem = document.getElementById('playlist-capa').value.trim();
+            const destaque = document.getElementById('playlist-destaque').checked;
+
+            if (!titulo || !link) { alert('Por favor, digite o nome e cole o link da música! 🎧'); return; }
+            if (!imagem) {
+                const idYT = extrairIDYouTube(link);
+                imagem = idYT ? `https://img.youtube.com/vi/${idYT}/hqdefault.jpg` : 'https://placehold.co/400x400/8c625d/ffffff?text=M%C3%BAsica+Sem+Capa';
+            }
+
+            try {
+                if (idEditando) {
+                    await updateDoc(doc(db, "posts", idEditando), { titulo, link, imagem, destaque });
+                    alert('Música atualizada! 🎶');
+                } else {
+                    await addDoc(collection(db, "posts"), {
+                        destino: 'playlist', titulo, link, imagem, destaque, autor: usuarioLogado, criadoEm: Date.now(), curtidas: []
+                    });
+                    alert('Música dedicada com sucesso! ❤️');
+                }
+                resetarFormularioPlaylist();
+            } catch (error) { console.error(error); }
+        };
+        document.getElementById('btn-salvar-playlist').addEventListener('click', window.salvarMusicaFirebase);
+
+        window.prepararEdicaoPlaylist = function(id, titulo, link, imagem, destaque) {
+            document.getElementById('editando-playlist-id').value = id;
+            document.getElementById('playlist-nome').value = titulo;
+            document.getElementById('playlist-link').value = link;
+            document.getElementById('playlist-capa').value = imagem;
+            document.getElementById('playlist-destaque').checked = (destaque === 'true' || destaque === true);
+            document.getElementById('titulo-painel-playlist').innerText = '✏️ Editar Música Dedicada';
+            document.getElementById('btn-salvar-playlist').innerText = 'Atualizar Música 🎧';
+            document.getElementById('painel-playlist-posts').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.removerPostagemFirebase = async function(id) {
+            if (verificarPinSeguranca()) {
+                await deleteDoc(doc(db, "posts", id));
+                resetarFormulario(); resetarFormularioGaleria(); resetarFormularioTexto(); resetarFormularioPlaylist();
+                alert("Lembrança apagada com sucesso! 👍");
+            }
+        };
+
+        window.excluirTodoHistoricoFirebase = async function() {
+            if (verificarPinSeguranca()) {
+                if (confirm("Você tem certeza absoluta que deseja apagar TODOS os históricos de uma vez só?")) {
+                    try {
+                        const q = query(collection(db, "posts"), where("destino", "==", "historico"));
+                        const snap = await getDocs(q);
+                        if (snap.empty) { alert("Não há históricos para excluir! 😊"); return; }
+                        const batch = writeBatch(db);
+                        snap.forEach((docSnap) => { batch.delete(docSnap.ref); });
+                        await batch.commit(); alert("Todo o histórico de acessos foi limpo com sucesso! 🧹");
+                    } catch (error) { console.error(error); }
+                }
+            }
+        };
+        document.getElementById('btn-excluir-todo-historico').addEventListener('click', window.excluirTodoHistoricoFirebase);
+
+        function resetarFormulario() {
+            document.getElementById('editando-id').value = '';
+            document.getElementById('post-titulo').value = '';
+            document.getElementById('post-subtitulo').value = '';
+            document.getElementById('post-imagem').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('post-data').value = '';
+            document.getElementById('painel-titulo-acao').innerText = '✨ Adicionar Novo Card (Apresentações)';
+            document.getElementById('btn-salvar-post').innerText = 'Publicar Apresentação ❤️';
+        }
+
+        window.salvarPostagemFirebase = async function() {
+            const idEditando = document.getElementById('editando-id').value;
+            const destino = document.getElementById('post-destino').value;
+            const titulo = document.getElementById('post-titulo').value.trim();
+            const subtitulo = document.getElementById('post-subtitulo').value.trim() || 'Ver apresentação';
+            const imagem = document.getElementById('post-imagem').value.trim();
+            const link = document.getElementById('post-link').value.trim();
+            const dataInput = document.getElementById('post-data').value;
+
+            if (!titulo || !imagem || !link || !dataInput) { alert('Por favor, preencha todos os campos! ❤️'); return; }
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            try {
+                if (idEditando) {
+                    await updateDoc(doc(db, "posts", idEditando), { destino, titulo, subtitulo, imagem, link, data: dataFormatada });
+                    alert('Card updated! ✨');
+                } else {
+                    await addDoc(collection(db, "posts"), { destino, titulo, subtitulo, imagem, link, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now() });
+                    alert('Card publicado! ❤️');
+                }
+                resetarFormulario();
+            } catch (error) { console.error(error); }
+        };
+        document.getElementById('btn-salvar-post').addEventListener('click', window.salvarPostagemFirebase);
+
+        window.prepararEdicaoFirebase = function(id, destino, titulo, subtitulo, imagem, link, data) {
+            document.getElementById('editando-id').value = id;
+            document.getElementById('post-destino').value = destino;
+            document.getElementById('post-titulo').value = titulo;
+            document.getElementById('post-subtitulo').value = subtitulo;
+            document.getElementById('post-imagem').value = imagem;
+            document.getElementById('post-link').value = link;
+            const [dia, mes, ano] = data.split('/');
+            document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
+            document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
+            document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
+            document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        function resetarFormularioGaleria() {
+            document.getElementById('editando-galeria-id').value = '';
+            document.getElementById('galeria-titulo').value = '';
+            document.getElementById('galeria-subtitulo').value = '';
+            document.getElementById('galeria-imagem').value = '';
+            document.getElementById('galeria-data').value = '';
+            document.getElementById('titulo-painel-galeria').innerText = '📸 Postar Novo Momento na Galeria';
+            document.getElementById('btn-salvar-galeria').innerText = 'Publicar na Galeria ✨';
+        }
+
+        window.salvarFotoGaleriaFirebase = async function() {
+            const idEditando = document.getElementById('editando-galeria-id').value;
+            const titulo = document.getElementById('galeria-titulo').value.trim();
+            const subtitulo = document.getElementById('galeria-subtitulo').value.trim();
+            const imagem = document.getElementById('galeria-imagem').value.trim();
+            const dataInput = document.getElementById('galeria-data').value;
+            const dataPublicacao = new Date().toLocaleDateString('pt-BR');
+
+            if (!imagem || !dataInput) { alert('O arquivo (imagem/vídeo) e a data do momento são obrigatórias! 📸'); return; }
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataCaptura = `${dia}/${mes}/${ano}`;
+
+            try {
+                if (idEditando) {
+                    await updateDoc(doc(db, "posts", idEditando), { titulo, subtitulo, imagem, dataCaptura });
+                    alert('Varal atualizado! 🖼️');
+                } else {
+                    await addDoc(collection(db, "posts"), { destino: 'galeria', titulo, subtitulo, imagem, data: dataPublicacao, dataCaptura, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
+                    alert('Momento guardado no nosso varal! 💞');
+                }
+                resetarFormularioGaleria();
+            } catch (error) { console.error(error); }
+        };
+        document.getElementById('btn-salvar-galeria').addEventListener('click', window.salvarFotoGaleriaFirebase);
+
+        window.prepararEdicaoGaleria = function(id, titulo, subtitulo, imagem, dataCaptura) {
+            document.getElementById('editando-galeria-id').value = id;
+            document.getElementById('galeria-titulo').value = titulo;
+            document.getElementById('galeria-subtitulo').value = subtitulo;
+            document.getElementById('galeria-imagem').value = imagem;
+            const dataParaEdicao = dataCaptura || '';
+            if (dataParaEdicao) { const [dia, mes, ano] = dataParaEdicao.split('/'); document.getElementById('galeria-data').value = `${ano}-${mes}-${dia}`; }
+            document.getElementById('titulo-painel-galeria').innerText = '✏️ Editar Momento do Varal';
+            document.getElementById('btn-salvar-galeria').innerText = 'Atualizar Mídia ❤️';
+            document.getElementById('painel-galeria-posts').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        function resetarFormularioTexto() {
+            document.getElementById('editando-texto-id').value = '';
+            document.getElementById('texto-titulo').value = '';
+            document.getElementById('texto-corpo').value = '';
+            document.getElementById('texto-data').value = '';
+            document.getElementById('titulo-painel-texto').innerText = '✍️ Escrever Nova Declaração';
+            document.getElementById('btn-salvar-texto').innerText = 'Eternizar Declaração 🌹';
+        }
+
+        window.salvarTextoFirebase = async function() {
+            const idEditando = document.getElementById('editando-texto-id').value;
+            const titulo = document.getElementById('texto-titulo').value.trim();
+            const corpo = document.getElementById('texto-corpo').value.trim();
+            const dataInput = document.getElementById('texto-data').value;
+
+            if (!corpo || !dataInput) { alert('Escreva algo na declaração e insira uma data! ✍️'); return; }
+            const [ano, mes, dia] = dataInput.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            try {
+                if (idEditando) {
+                    await updateDoc(doc(db, "posts", idEditando), { titulo, corpo, data: dataFormatada, editado: true });
+                    alert('Sua linda carta foi atualizada! ✨');
+                } else {
+                    await addDoc(collection(db, "posts"), { destino: 'texto', titulo, corpo, data: dataFormatada, autor: usuarioLogado, criadoEm: Date.now(), curtidas: [] });
+                    alert('Sua declaração foi guardada! 📝');
+                }
+                resetarFormularioTexto();
+            } catch (error) { console.error(error); }
+        };
+        document.getElementById('btn-salvar-texto').addEventListener('click', window.salvarTextoFirebase);
+
+        window.prepararEdicaoTexto = function(id, titulo, corpo, data) {
+            document.getElementById('editando-texto-id').value = id;
+            document.getElementById('texto-titulo').value = titulo;
+            document.getElementById('texto-corpo').value = corpo;
+            const [dia, mes, ano] = data.split('/');
+            document.getElementById('texto-data').value = `${ano}-${mes}-${dia}`;
+            document.getElementById('titulo-painel-texto').innerText = '✏️ Editar Declaração Escritura';
+            document.getElementById('btn-salvar-texto').innerText = 'Atualizar Carta ❤️';
+            document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.alternarLeituraCarta = function(botao, idElemento) {
+            const containerCorpo = document.getElementById(idElemento);
+            const wrapper = containerCorpo.parentElement;
+
+            if (containerCorpo.classList.contains('expandido')) {
+                containerCorpo.classList.remove('expandido'); wrapper.classList.remove('expandido');
+                botao.innerText = 'Ler mais... 📖'; wrapper.parentElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                containerCorpo.classList.add('expandido'); wrapper.classList.add('expandido');
+                botao.innerText = 'Ler menos ↩️';
+            }
+        };
+
+        window.alternarCurtidaItem = async function(id) {
+            try {
+                const docRef = doc(db, "posts", id);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    let listaLikes = docSnap.data().curtidas || [];
+                    if (!Array.isArray(listaLikes)) listaLikes = [];
+                    
+                    const index = listaLikes.indexOf(usuarioLogado);
+                    const btn = document.querySelector(`#polaroid-${id} .btn-coracao-minimalista, #opcoes-${id} ~ .barra-reacoes-polaroid .btn-coracao-minimalista, .card-musica .btn-coracao-minimalista`);
+                    const txtContagem = document.querySelector(`#polaroid-${id} .contagem-likes, #opcoes-${id} ~ .barra-reacoes-polaroid .contagem-likes, .card-musica .contagem-likes`);
+
+                    if (index > -1) { listaLikes.splice(index, 1); if (btn) btn.innerText = '🤍'; } 
+                    else { listaLikes.push(usuarioLogado); if (btn) btn.innerText = '❤️'; if (typeof celebrarAmor === "function") celebrarAmor(); }
+
+                    if (txtContagem) {
+                        const sufixo = docSnap.data().destino === 'galeria' || docSnap.data().destino === 'texto' ? 'curtidas' : 'amaram';
+                        txtContagem.innerText = `${listaLikes.length} ${sufixo}`;
+                    }
+                    await updateDoc(docRef, { curtidas: listaLikes });
+                }
+            } catch (error) { console.error(error); }
+        };
+
+        window.adicionarComentarioFirebase = async function(secaoId) {
+            const input = document.getElementById(`input-${secaoId}`);
+            const texto = input?.value.trim();
+            if (!texto) return;
+            try {
+                await addDoc(collection(db, "comentarios"), { secaoId, texto, autor: usuarioLogado, dataHora: obterDataHoraAtual(), criadoEm: Date.now() });
+                if (input) input.value = '';
+            } catch (error) { console.error(error); }
+        };
+        document.getElementById('btn-comentar-cronometro').addEventListener('click', function() { window.adicionarComentarioFirebase('cronometro'); });
+
+        window.excluirComentarioFirebase = async function(id) { 
+            if (verificarPinSeguranca()) { await deleteDoc(doc(db, "comentarios", id)); alert("Comentário removido! 👍"); }
+        };
+
+        window.verificarEnter = function(event, id) {
+            if (event.key === 'Enter') { event.preventDefault(); window.adicionarComentarioFirebase(id); }
+        };
+        document.getElementById('input-cronometro').addEventListener('keypress', function(e) { window.verificarEnter(e, 'cronometro'); });
+
+        function renderizarHistoricoDOM() {
+            const containerHist = document.getElementById('lista-historico-container');
+            const btnVerMais = document.getElementById('btn-ver-mais-historico');
+            if (!containerHist) return;
+            containerHist.innerHTML = '';
+            
+            let historicosExibidos = limiteHistorico ? todosHistoricos.slice(0, 5) : todosHistoricos;
+
+            historicosExibidos.forEach(post => {
+                const itemHist = document.createElement('div');
+                itemHist.className = 'item-comentario';
+                itemHist.innerHTML = `
+                    <div class="meta-comentario"><span class="autor-comentario">👤 ${post.autor}</span><span>⏱️ ${post.data}</span></div>
+                    <div class="corpo-comentario"><div class="texto-comentario" style="color: #666;">${sanitizarHTML(post.corpo)}</div><button class="btn-excluir-comentario" onclick="removerPostagemFirebase('${post.id}')">Excluir</button></div>
+                `;
+                containerHist.appendChild(itemHist);
+            });
+            btnVerMais.style.display = (limiteHistorico && todosHistoricos.length > 5) ? 'block' : 'none';
+        }
+
+        document.getElementById('btn-ver-mais-historico').addEventListener('click', function() { limiteHistorico = false; renderizarHistoricoDOM(); });
+
+        window.abrirLightbox = function(src) {
+            if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) return;
+            const modal = document.getElementById('lightbox-galeria');
+            const img = document.getElementById('lightbox-img-source');
+            img.src = src; img.style.transform = 'scale(1)'; modal.classList.add('ativo');
+        };
+
+        window.fecharLightbox = function() { document.getElementById('lightbox-galeria').classList.remove('ativo'); };
+
+        window.alternarZoomInterno = function(event) {
+            const img = event.target;
+            if (img.style.transform === 'scale(2)') { img.style.transform = 'scale(1)'; img.style.cursor = 'zoom-in'; } 
+            else { img.style.transform = 'scale(2)'; img.style.cursor = 'zoom-out'; }
+        };
+
+        window.virarPolaroidCard = function(idCard) {
+            const card = document.getElementById(idCard);
+            if (card) card.classList.toggle('flipped');
+        };
+
+        let cliqueTimer = null;
+        window.lidarCliqueFoto = function(event, src, cardId) {
+            event.stopPropagation(); event.preventDefault(); 
+            if (src.match(/\.(mp4|webm|ogg)/i) || extrairIDYouTube(src)) { window.virarPolaroidCard(cardId); return; }
+            if (!cliqueTimer) {
+                cliqueTimer = setTimeout(() => { cliqueTimer = null; window.abrirLightbox(src); }, 300); 
+            } else { clearTimeout(cliqueTimer); cliqueTimer = null; window.virarPolaroidCard(cardId); }
+        };
+
+        let ultimoSnapshotPosts = null;
+        let ultimoSnapshotComentarios = null;
+
+        const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
+        onSnapshot(qCards, (snapshot) => {
+            ultimoSnapshotPosts = snapshot;
+            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
+
+            const containers = {
+                dela: document.getElementById('novos-cards-dela'),
+                meu: document.getElementById('novos-cards-meu'),
+                galeria: document.getElementById('novos-cards-galeria'),
+                texto: document.getElementById('novos-cards-textos'),
+                playlist: document.getElementById('novos-cards-playlist')
+            };
+
+            Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
+            todosHistoricos = [];
+            
+            let itensDela = []; let itensMeu = []; let itensGaleria = []; let itensTextos = []; let itensPlaylist = [];
+
+            snapshot.forEach((docSnap) => {
+                const post = { id: docSnap.id, ...docSnap.data() };
+                if (post.destino === 'historico') { todosHistoricos.push(post); }
+                else if (post.destino === 'dela') { itensDela.push(post); }
+                else if (post.destino === 'meu') { itensMeu.push(post); }
+                else if (post.destino === 'galeria') { itensGaleria.push(post); }
+                else if (post.destino === 'texto') {
+                    // O registro técnico das estatísticas do WhatsApp usa exatamente
+                    // o mesmo destino/permissão das cartas e declarações, mas não é
+                    // exibido na lista de cartas.
+                    if (post.tipo !== 'whatsapp_estatisticas') itensTextos.push(post);
+                }
+                else if (post.destino === 'playlist') { itensPlaylist.push(post); }
+            });
+
+            todosHistoricos.reverse();
+
+            // Lógica de Limite da Playlist Principal (Exibe apenas as 5 primeiras)
+            const playlistExibida = itensPlaylist.slice(0, 5);
+            const btnPlaylistRestante = document.getElementById('btn-ver-restante-playlist');
+            if(itensPlaylist.length > 5 && btnPlaylistRestante) { btnPlaylistRestante.style.display = 'block'; } 
+            else if(btnPlaylistRestante) { btnPlaylistRestante.style.display = 'none'; }
+
+            playlistExibida.forEach((post) => {
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoMusica = document.createElement('div');
+                let classesCartao = 'card-musica';
+                if (post.destaque) { classesCartao += ' destaque'; }
+
+                const menuTresPontosPlaylist = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick='prepararEdicaoPlaylist(${argsEdicao(post.id, post.titulo, post.link, post.imagem, post.destaque)})'>Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
+                    </div>
+                ` : '';
+
+                blocoMusica.className = classesCartao;
+                blocoMusica.innerHTML = `
+                    ${menuTresPontosPlaylist}
+                    <div class="musica-layout">
+                        <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
+                        <div class="musica-info">
+                            <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
+                            <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
+                            <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
+                        </div>
+                    </div>
+                    <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
+                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                        <span class="contagem-likes">${curtidasArray.length} amaram</span>
+                    </div>
+                `;
+                if (post.destaque) { containers.playlist.prepend(blocoMusica); } else { containers.playlist.appendChild(blocoMusica); }
+            });
+
+            // Apresentações Coisinhas Dela - Lógica de Limite (Apenas as 5 primeiras)
+            const delaExibida = itensDela.slice(0, 5);
+            const btnDelaRestante = document.getElementById('btn-ver-restante-dela');
+            if(itensDela.length > 5 && btnDelaRestante) { btnDelaRestante.style.display = 'block'; } 
+            else if(btnDelaRestante) { btnDelaRestante.style.display = 'none'; }
+
+            delaExibida.forEach((post, index) => {
+                const numeroProgressivo = index + 1;
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick='prepararEdicaoFirebase(${argsEdicao(post.id, post.destino, post.titulo, post.subtitulo, post.imagem, post.link, post.data)})'>Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                    </div>
+                ` : '';
+
+                const bloco = document.createElement('div');
+                bloco.className = 'card-separador-interno';
+                bloco.innerHTML = `
+                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <a href="${post.link}" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">${numeroProgressivo}</div>
+                            <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                            <div class="contador-titulo">${post.titulo}</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">${post.subtitulo}</div>
+                        </div>
+                    </a>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
+                        </div>
+                        <div id="lista-${post.id}" class="lista-comentarios"></div>
+                    </div>
+                    ${controleModificacao}
+                `;
+                containers.dela.appendChild(bloco);
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
+            });
+
+            // Apresentações Coisas Minhas - Lógica de Limite (Apenas as 5 primeiras)
+            const meuExibido = itensMeu.slice(0, 5);
+            const btnMeuRestante = document.getElementById('btn-ver-restante-meu');
+            if(itensMeu.length > 5 && btnMeuRestante) { btnMeuRestante.style.display = 'block'; } 
+            else if(btnMeuRestante) { btnMeuRestante.style.display = 'none'; }
+
+            meuExibido.forEach((post, index) => {
+                const numeroProgressivo = index + 1;
+                const controleModificacao = (post.autor === usuarioLogado) ? `
+                    <div class="acoes-card-custom">
+                        <button class="btn-acao-card btn-editar" onclick='prepararEdicaoFirebase(${argsEdicao(post.id, post.destino, post.titulo, post.subtitulo, post.imagem, post.link, post.data)})'>Editar ✏️</button>
+                        <button class="btn-acao-card btn-excluir" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                    </div>
+                ` : '';
+
+                const bloco = document.createElement('div');
+                bloco.className = 'card-separador-interno';
+                bloco.innerHTML = `
+                    <div class="data-card"><span>🗓️ ${post.data}</span> <span class="autor-tag">Postado por: ${post.autor || 'Anônimo'}</span></div>
+                    <a href="${post.link}" target="_blank" class="pdf-link">
+                        <div class="pdf-bloco">
+                            <div class="numero-card">${numeroProgressivo}</div>
+                            <div class="moldura-imagem"><img src="${post.imagem}" alt="${post.titulo}" loading="lazy"></div>
+                            <div class="contador-titulo">${post.titulo}</div>
+                            <div class="contador-tempo">Clique para abrir 📂</div>
+                            <div class="pdf-subtitulo">${post.subtitulo}</div>
+                        </div>
+                    </a>
+                    <div class="secao-comentarios">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Comente algo...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">❤️ Enviar</button>
+                        </div>
+                        <div id="lista-${post.id}" class="lista-comentarios"></div>
+                    </div>
+                    ${controleModificacao}
+                `;
+                containers.meu.appendChild(bloco);
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
+            });
+
+            // Varal de Fotos e Vídeos da Galeria
+            itensGaleria.forEach((post) => {
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoFoto = document.createElement('div');
+                blocoFoto.className = 'quadro-polaroid'; blocoFoto.id = `polaroid-${post.id}`;
+
+                const menuTresPontosHtml = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick='prepararEdicaoGaleria(${argsEdicao(post.id, post.titulo, post.subtitulo, post.imagem, post.dataCaptura || post.data)})'>Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
+                    </div>
+                ` : '';
+
+                let midiaHtml = '';
+                const idYT = extrairIDYouTube(post.imagem);
+
+                if (idYT) { midiaHtml = `<iframe class="polaroid-video" src="https://www.youtube.com/embed/${idYT}" allowfullscreen></iframe>`; } 
+                else if (post.imagem.match(/\.(mp4|webm|ogg)/i)) { midiaHtml = `<video class="polaroid-video" src="${post.imagem}" controls preload="metadata"></video>`; } 
+                else { midiaHtml = `<img src="${post.imagem}" class="polaroid-imagem" alt="Foto" loading="lazy" onclick="lidarCliqueFoto(event, '${post.imagem}', 'polaroid-${post.id}')" onerror="this.src='https://placehold.co/400x400?text=Link+Invalido'">`; }
+
+                blocoFoto.innerHTML = `
+                    <div class="polaroid-inner" ondblclick="virarPolaroidCard('polaroid-${post.id}')">
+                        <div class="polaroid-frente">
+                            ${menuTresPontosHtml}
+                            <div class="data-card" style="align-items: flex-start; text-align: left; padding-left:5px; margin-bottom:12px; font-size: 0.75rem;">
+                                <span>🗓️ Publicado: ${post.data}</span>
+                            </div>
+                            ${midiaHtml}
+                            <div class="data-card" style="align-items: center; text-align: center; margin-top:12px; margin-bottom:0;">
+                                <span style="font-size:0.75rem; font-weight:normal; color:var(--secondary);">✨ Dê 2 cliques na moldura para girar</span>
+                            </div>
+                            <div class="polaroid-legenda-box">
+                                ${post.titulo ? `<div class="polaroid-titulo-txt">${post.titulo}</div>` : ''}
+                                ${post.subtitulo ? `<div class="polaroid-desc-txt">${post.subtitulo}</div>` : ''}
+                            </div>
+                            <div class="barra-reacoes-polaroid">
+                                <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                                <span class="contagem-likes">${curtidasArray.length} curtidas</span>
+                            </div>
+                            <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
+                                <div class="form-comentario">
+                                    <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Escreva algo...">
+                                    <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">✨ Enviar</button>
+                                </div>
+                                <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
+                            </div>
+                        </div>
+                        <div class="polaroid-verso">
+                            <div class="polaroid-verso-titulo">🎞️ Nosso Registro</div>
+                            <div class="polaroid-verso-info"><strong>Dia tirado:</strong> ${post.dataCaptura || post.data}</div>
+                            <div class="polaroid-verso-info"><strong>Guardado por:</strong> ${post.autor}</div>
+                            <div style="font-size: 0.8rem; margin-top:25px; color: var(--secondary);">Dê 2 cliques para voltar ↩️</div>
+                        </div>
+                    </div>
+                `;
+                containers.galeria.appendChild(blocoFoto);
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
+            });
+
+            //   Cartas & Declarações
+            itensTextos.forEach((post) => {
+                const curtidasArray = post.curtidas || [];
+                const jaCurtido = curtidasArray.includes(usuarioLogado);
+                const blocoTexto = document.createElement('div'); blocoTexto.className = 'card-declaracao-texto';
+
+                const menuTresPontosTextHtml = (post.autor === usuarioLogado) ? `
+                    <div class="menu-acoes-container">
+                        <button class="btn-tres-pontos" onclick="alternarMenuTresPontos('${post.id}')">⋮</button>
+                        <div class="opcoes-tres-pontos" id="opcoes-${post.id}">
+                            <button onclick='prepararEdicaoTexto(${argsEdicao(post.id, post.titulo, post.corpo, post.data)})'>Editar ✏️</button>
+                            <button style="color:#d9534f;" onclick="removerPostagemFirebase('${post.id}')">Excluir 🗑️</button>
+                        </div>
+                    </div>
+                ` : '';
+
+                blocoTexto.innerHTML = `
+                    ${menuTresPontosTextHtml}
+                    <div class="data-card" style="align-items: flex-start; text-align: left;">
+                        <span>🗓️ ${post.data} ${post.editado ? '<span class="tag-editado">(editado)</span>' : ''}</span>
+                        <span class="autor-tag">Escrito por: ${post.autor}</span>
+                    </div>
+                    ${post.titulo ? `<div class="declaracao-titulo-render">${post.titulo}</div>` : ''}
+                    <div class="declaracao-wrapper">
+                        <div class="declaracao-corpo-render" id="corpo-carta-${post.id}" style="max-height: 95px; overflow: hidden;">${sanitizarHTML(post.corpo)}</div>
+                    </div>
+                    <button class="btn-ler-mais" id="btn-ler-${post.id}" onclick="alternarLeituraCarta(this, 'corpo-carta-${post.id}')">Ler mais... 📖</button>
+                    <div class="barra-reacoes-polaroid" style="border-bottom: 1px dashed #f5e4e1; padding-bottom:10px; margin-top:0;">
+                        <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
+                        <span class="contagem-likes">${curtidasArray.length} curtidas</span>
+                    </div>
+                    <div class="secao-comentarios" style="margin-top:10px; padding-top:10px;">
+                        <div class="form-comentario">
+                            <input type="text" id="input-${post.id}" class="input-comentario" placeholder="Deixar recado...">
+                            <button class="btn-comentar" onclick="adicionarComentarioFirebase('${post.id}')">💬 Enviar</button>
+                        </div>
+                        <div id="lista-${post.id}" class="lista-comentarios" style="max-height:130px;"></div>
+                    </div>
+                `;
+                containers.texto.appendChild(blocoTexto);
+                
+                setTimeout(() => {
+                    const elementoCorpo = document.getElementById(`corpo-carta-${post.id}`);
+                    const botaoLerMais = document.getElementById(`btn-ler-${post.id}`);
+                    if (elementoCorpo && elementoCorpo.scrollHeight <= 95) {
+                        if(botaoLerMais) botaoLerMais.style.display = 'none';
+                        if(elementoCorpo.parentElement) elementoCorpo.parentElement.style.marginBottom = '15px';
+                    }
+                }, 100);
+
+                setTimeout(() => {
+                    const inp = document.getElementById(`input-${post.id}`);
+                    if(inp) inp.addEventListener('keypress', function(e) { window.verificarEnter(e, post.id); });
+                }, 500);
+            });
+
+            renderizarHistoricoDOM();
+            if(ultimoSnapshotComentarios) renderizarComentariosDOM(ultimoSnapshotComentarios);
+        });
+
+        window.alternarLeituraCarta = function(btn, idCorpo) {
+            const el = document.getElementById(idCorpo);
+            if(!el) return;
+            if(el.style.maxHeight === 'none') {
+                el.style.maxHeight = '95px';
+                el.style.overflow = 'hidden';
+                btn.textContent = 'Ler mais... 📖';
+            } else {
+                el.style.maxHeight = 'none';
+                el.style.overflow = 'visible';
+                btn.textContent = 'Ler menos... 📖';
+            }
+        };
+
+        function renderizarComentariosDOM(snapshot) {
+            document.querySelectorAll('.lista-comentarios').forEach(l => { if(l.id !== 'lista-historico-container') l.innerHTML = ''; });
+            snapshot.forEach((docSnap) => {
+                const com = { id: docSnap.id, ...docSnap.data() };
+                const containerLista = document.getElementById(`lista-${com.secaoId}`);
+                if (!containerLista) return;
+                if (containerLista.querySelector(`[data-comment-id="${com.id}"]`)) return;
+
+                const botaoExcluir = (com.autor === usuarioLogado) ? `<button class="btn-excluir-comentario" onclick="excluirComentarioFirebase('${com.id}')">Excluir</button>` : '';
+                const item = document.createElement('div');
+                item.className = 'item-comentario'; item.setAttribute('data-comment-id', com.id);
+                item.innerHTML = `
+                    <div class="meta-comentario"><span class="autor-comentario">👤 ${com.autor || 'Alguém'}</span><span>⏱️ ${com.dataHora || 'Recentemente'}</span></div>
+                    <div class="corpo-comentario"><div class="texto-comentario">${sanitizarHTML(com.texto)}</div>${botaoExcluir}</div>
+                `;
+                containerLista.appendChild(item);
+            });
+        }
+
+        const qComentariosCorreto = query(collection(db, "comentarios"), orderBy("criadoEm", "asc"));
+        onSnapshot(qComentariosCorreto, (snapshot) => {
+            ultimoSnapshotComentarios = snapshot;
+            calcularArmazenamento(ultimoSnapshotPosts, ultimoSnapshotComentarios);
+            renderizarComentariosDOM(snapshot);
+        });
+
+        verificarSessao();
+    </script>
+
+    <script>
+        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2029, 7, 12, 0, 0, 0) };
+        function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
+        function renderizarTempo(dataAlvo, elementoId) {
+            const elemento = document.getElementById(elementoId); if (!elemento) return;
+            const diferenca = new Date().getTime() - dataAlvo.getTime();
+            if (diferenca < 0) { elemento.innerHTML = "Contando as horas... ✨"; return; }
+            elemento.className = "contador-tempo ativo";
+            const dias = Math.floor(diferenca / 86400000);
+            const horas = Math.floor((diferenca % 86400000) / 3600000).toString().padStart(2, '0');
+            const minutes = Math.floor((diferenca % 3600000) / 60000).toString().padStart(2, '0');
+            const segundos = Math.floor((diferenca % 60000) / 1000).toString().padStart(2, '0');
+            elemento.innerHTML = `<strong>${dias}</strong> dias <strong>${horas}</strong>h <strong>${minutes}</strong>m <strong>${segundos}</strong>s`;
+        }
+        setInterval(atualizarContadores, 1000); atualizarContadores();
+
+    </script>
+</body>
+</html>
