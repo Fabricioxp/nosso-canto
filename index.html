@@ -176,6 +176,117 @@
         }
         .item-opcao-flutuante:hover { background-color: #fff0ee; }
 
+
+        /* Menu flutuante de postagem */
+        .modal-postagem {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 150000;
+            background: rgba(74, 62, 61, 0.42);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-postagem.aberto { display: flex; }
+        .modal-postagem-conteudo {
+            width: 100%;
+            max-width: 520px;
+            max-height: min(88vh, 820px);
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(74, 62, 61, 0.28);
+            padding: 20px;
+            position: relative;
+            animation: entradaModalPostagem .22s ease-out;
+        }
+        @keyframes entradaModalPostagem {
+            from { opacity: 0; transform: translateY(18px) scale(.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-postagem-topo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .modal-postagem-topo h2 {
+            font-family: var(--font-title);
+            color: var(--primary);
+            font-size: 1.45rem;
+        }
+        .btn-fechar-postagem {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #fffafa;
+            color: var(--primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .abas-postagem {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px;
+            margin-bottom: 16px;
+        }
+        .aba-postagem {
+            border: 1px solid var(--border-color);
+            background: #fff8f7;
+            color: var(--secondary);
+            padding: 9px 5px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: .78rem;
+            font-weight: bold;
+            transition: .2s;
+        }
+        .aba-postagem.ativa, .aba-postagem:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .form-postagem-aba { display: none; }
+        .form-postagem-aba.ativo { display: block; }
+        .form-postagem-aba .painel-upload {
+            margin: 0;
+            box-shadow: none;
+            border: 0;
+            padding: 4px 0 0;
+            background: transparent;
+        }
+        .seletor-destino-postagem {
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 14px;
+            background: #fff5f3;
+            border: 1px solid rgba(230, 179, 168, .55);
+        }
+        .seletor-destino-postagem label {
+            display: block;
+            font-size: .78rem;
+            color: var(--secondary);
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        body.dark-mode .modal-postagem { background: rgba(0,0,0,.62); }
+        body.dark-mode .modal-postagem-conteudo { background: #242022; }
+        body.dark-mode .btn-fechar-postagem { background: #302a2d; color: #eee6e4; }
+        body.dark-mode .aba-postagem { background: #302a2d; color: #d8ced0; }
+        body.dark-mode .aba-postagem.ativa, body.dark-mode .aba-postagem:hover { background: var(--primary); color: #fff; }
+        body.dark-mode .seletor-destino-postagem { background: #302a2d; border-color: #514448; }
+        @media (max-width: 420px) {
+            .modal-postagem { padding: 10px; }
+            .modal-postagem-conteudo { max-height: 92vh; padding: 16px; border-radius: 20px; }
+            .abas-postagem { grid-template-columns: repeat(2, 1fr); }
+        }
+
         header {
             text-align: center;
             padding: 30px 20px 35px 20px;
@@ -674,7 +785,7 @@
         body.dark-mode .box-login, body.dark-mode .bloco-separado, body.dark-mode .painel-upload,
         body.dark-mode .card-declaracao-texto, body.dark-mode .card-musica, body.dark-mode .armazenamento-container,
         body.dark-mode .polaroid-frente, body.dark-mode .polaroid-verso, body.dark-mode .item-opcao-flutuante,
-        body.dark-mode .header-status-bar, body.dark-mode .opcoes-tres-pontos { background-color: #242022 !important; color: #eee6e4; }
+        body.dark-mode .header-status-bar, body.dark-mode .opcoes-tres-pontos, body.dark-mode .modal-postagem-conteudo { background-color: #242022 !important; color: #eee6e4; }
         body.dark-mode .header-status-bar { border-bottom-color: #514448; }
         body.dark-mode #bloco-dias-amando { background-color: #38272b !important; }
         body.dark-mode #bloco-playlist { background-color: #332925 !important; }
@@ -739,6 +850,7 @@
 
         <div class="menu-flutuante-container">
             <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
+                <button class="item-opcao-flutuante" id="btn-abrir-postagem">➕ Postar / Adicionar</button>
                 <a href="#bloco-dias-amando" class="item-opcao-flutuante" id="lnk-tempo">⏳ Nosso Tempo</a>
                 <a href="playlist.html" class="item-opcao-flutuante" id="lnk-playlist">🎧 Nossa Playlist</a>
                 <a href="#bloco-galeria-momentos" class="item-opcao-flutuante" id="lnk-galeria">🖼️ Galeria</a>
@@ -746,7 +858,79 @@
                 <a href="#bloco-coisinhas-dela" class="item-opcao-flutuante" id="lnk-apresentacoes">✨ Apresentações</a>
                 <div class="item-opcao-flutuante" id="lnk-historico">📜 Histórico (PIN)</div>
             </div>
-            <button class="botao-flutuante-principal" id="btn-flutuante-click">📌</button>
+            <button class="botao-flutuante-principal" id="btn-flutuante-click" aria-label="Abrir menu">📌</button>
+        </div>
+
+
+        <!-- MENU FLUTUANTE CENTRAL DE POSTAGEM -->
+        <div id="modal-postagem" class="modal-postagem" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-postagem">
+            <div class="modal-postagem-conteudo">
+                <div class="modal-postagem-topo">
+                    <h2 id="titulo-modal-postagem">➕ O que você quer postar?</h2>
+                    <button type="button" class="btn-fechar-postagem" id="btn-fechar-postagem" aria-label="Fechar">✕</button>
+                </div>
+
+                <div class="abas-postagem">
+                    <button type="button" class="aba-postagem ativa" data-form-postagem="playlist">🎧 Música</button>
+                    <button type="button" class="aba-postagem" data-form-postagem="apresentacoes">✨ Cards</button>
+                    <button type="button" class="aba-postagem" data-form-postagem="galeria">📸 Galeria</button>
+                    <button type="button" class="aba-postagem" data-form-postagem="cartas">✍️ Cartas</button>
+                </div>
+
+                <div id="form-postagem-playlist" class="form-postagem-aba ativo">
+                    <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
+                <input type="hidden" id="editando-playlist-id" value="">
+                
+                <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
+                <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
+                <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
+                
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
+                    <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
+                    <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
+                </div>
+                
+                <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
+                </div>
+                <div id="form-postagem-apresentacoes" class="form-postagem-aba">
+                    <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card (Apresentações)</div>
+                <input type="hidden" id="editando-id" value="">
+                
+                <select id="post-destino" class="select-custom">
+                    <option value="dela">Postar em: Coisinhas Dela</option>
+                    <option value="meu">Postar em: Coisas Minhas</option>
+                </select>
+                <input type="text" id="post-titulo" class="input-custom" placeholder="Título">
+                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link">
+                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem">
+                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
+                <input type="date" id="post-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
+                </div>
+                <div id="form-postagem-galeria" class="form-postagem-aba">
+                    <div class="titulo-secao" id="titulo-painel-galeria" style="margin-bottom: 15px;">📸 Postar Novo Momento na Galeria / Varal</div>
+                <input type="hidden" id="editando-galeria-id" value="">
+                
+                <input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
+                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
+                <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem OU do Vídeo (MP4, YouTube, etc)">
+                <label for="galeria-data" style="font-size:0.85rem; color:var(--secondary); font-weight:bold; display:block; margin:4px 0 6px;">📸 Dia em que a foto/vídeo foi capturado</label>
+                <input type="date" id="galeria-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-galeria">Publicar no Varal ✨</button>
+                </div>
+                <div id="form-postagem-cartas" class="form-postagem-aba">
+                    <div class="titulo-secao" id="titulo-painel-texto" style="margin-bottom: 15px;">✍️ Escrever Nova Declaração</div>
+                <input type="hidden" id="editando-texto-id" value="">
+                
+                <input type="text" id="texto-titulo" class="input-custom" placeholder="Título da Carta/Declaração (Opcional)">
+                <textarea id="texto-corpo" class="textarea-custom" placeholder="Escreva aqui tudo o que seu coração sente... ❤️"></textarea>
+                <input type="date" id="texto-data" class="input-custom">
+                
+                <button class="btn-postar" id="btn-salvar-texto">Eternizar Declaração 🌹</button>
+                </div>
+            </div>
         </div>
 
         <div class="container-blocos">
@@ -799,23 +983,6 @@
                 <div id="lista-historico-container" class="lista-comentarios" style="max-height: none; overflow-y: visible;"></div>
                 <button id="btn-ver-mais-historico" class="btn-ver-mais-hist" style="display: none;">Ver mais históricos 🔽</button>
             </section>
-
-            <section class="painel-upload" id="painel-playlist-posts">
-                <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
-                <input type="hidden" id="editando-playlist-id" value="">
-                
-                <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
-                <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
-                <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
-                
-                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
-                    <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
-                    <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
-                </div>
-                
-                <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
-            </section>
-
             <section class="bloco-separado" id="bloco-playlist">
                 <div class="titulo-secao">
                     <span>🎶 Nossa Playlist</span>
@@ -824,24 +991,6 @@
                 <div id="novos-cards-playlist"></div>
                 <a href="playlist.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-playlist">Ver o restante da playlist 🔽</a>
             </section>
-
-            <section class="painel-upload" id="painel-de-postagem">
-                <div class="titulo-secao" id="painel-titulo-acao" style="margin-bottom: 15px;">✨ Adicionar Novo Card (Apresentações)</div>
-                <input type="hidden" id="editando-id" value="">
-                
-                <select id="post-destino" class="select-custom">
-                    <option value="dela">Postar em: Coisinhas Dela</option>
-                    <option value="meu">Postar em: Coisas Minhas</option>
-                </select>
-                <input type="text" id="post-titulo" class="input-custom" placeholder="Título">
-                <input type="text" id="post-subtitulo" class="input-custom" placeholder="Subtítulo do link">
-                <input type="text" id="post-imagem" class="input-custom" placeholder="Link da Imagem">
-                <input type="text" id="post-link" class="input-custom" placeholder="Link do arquivo">
-                <input type="date" id="post-data" class="input-custom">
-                
-                <button class="btn-postar" id="btn-salvar-post">Publicar Apresentação ❤️</button>
-            </section>
-
             <section class="bloco-separado" id="bloco-coisinhas-dela">
                 <div class="titulo-secao">
                     <span>✨ coisinhas dela</span>
@@ -859,36 +1008,10 @@
                 <div id="novos-cards-meu"></div>
                 <a href="cardsmeu.html" class="btn-ver-mais-hist" style="display: none; text-decoration: none;" id="btn-ver-restante-meu">Ver todos os Cards Meus ➡️</a>
             </section>
-
-            <section class="painel-upload" id="painel-galeria-posts">
-                <div class="titulo-secao" id="titulo-painel-galeria" style="margin-bottom: 15px;">📸 Postar Novo Momento na Galeria / Varal</div>
-                <input type="hidden" id="editando-galeria-id" value="">
-                
-                <input type="text" id="galeria-titulo" class="input-custom" placeholder="Título do Momento (Opcional)">
-                <input type="text" id="galeria-subtitulo" class="input-custom" placeholder="Legenda / Descrição curta (Opcional)">
-                <input type="text" id="galeria-imagem" class="input-custom" placeholder="Link Direto da Imagem OU do Vídeo (MP4, YouTube, etc)">
-                <label for="galeria-data" style="font-size:0.85rem; color:var(--secondary); font-weight:bold; display:block; margin:4px 0 6px;">📸 Dia em que a foto/vídeo foi capturado</label>
-                <input type="date" id="galeria-data" class="input-custom">
-                
-                <button class="btn-postar" id="btn-salvar-galeria">Publicar no Varal ✨</button>
-            </section>
-
             <section class="bloco-separado" id="bloco-galeria-momentos">
                 <div class="titulo-secao">🖼️ Nosso Varal de Fotos & Vídeos</div>
                 <div id="novos-cards-galeria"></div>
             </section>
-
-            <section class="painel-upload" id="painel-texto-posts">
-                <div class="titulo-secao" id="titulo-painel-texto" style="margin-bottom: 15px;">✍️ Escrever Nova Declaração</div>
-                <input type="hidden" id="editando-texto-id" value="">
-                
-                <input type="text" id="texto-titulo" class="input-custom" placeholder="Título da Carta/Declaração (Opcional)">
-                <textarea id="texto-corpo" class="textarea-custom" placeholder="Escreva aqui tudo o que seu coração sente... ❤️"></textarea>
-                <input type="date" id="texto-data" class="input-custom">
-                
-                <button class="btn-postar" id="btn-salvar-texto">Eternizar Declaração 🌹</button>
-            </section>
-
             <section class="bloco-separado" id="bloco-nossos-textos">
                 <div class="titulo-secao">✍️ Cartas & Declarações</div>
                 <div id="novos-cards-textos"></div>
@@ -1031,6 +1154,47 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         aplicarTema(localStorage.getItem('tema_canto') || 'light');
         botaoTema.addEventListener('click', () => aplicarTema(document.body.classList.contains('dark-mode') ? 'light' : 'dark'));
 
+
+        window.abrirMenuPostagem = function(tipo = 'playlist') {
+            const modal = document.getElementById('modal-postagem');
+            if (!modal) return;
+            modal.classList.add('aberto');
+            document.body.style.overflow = 'hidden';
+            document.querySelectorAll('.aba-postagem').forEach(aba => {
+                aba.classList.toggle('ativa', aba.dataset.formPostagem === tipo);
+            });
+            document.querySelectorAll('.form-postagem-aba').forEach(form => {
+                form.classList.toggle('ativo', form.id === `form-postagem-${tipo}`);
+            });
+        };
+
+        window.fecharMenuPostagem = function() {
+            const modal = document.getElementById('modal-postagem');
+            if (!modal) return;
+            modal.classList.remove('aberto');
+            document.body.style.overflow = '';
+        };
+
+        document.getElementById('btn-abrir-postagem').addEventListener('click', function() {
+            window.alternarMenuBalao();
+            window.abrirMenuPostagem('playlist');
+        });
+        document.getElementById('btn-fechar-postagem').addEventListener('click', window.fecharMenuPostagem);
+
+        document.querySelectorAll('.aba-postagem').forEach(aba => {
+            aba.addEventListener('click', function() {
+                window.abrirMenuPostagem(this.dataset.formPostagem);
+            });
+        });
+
+        document.getElementById('modal-postagem').addEventListener('click', function(e) {
+            if (e.target === this) window.fecharMenuPostagem();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') window.fecharMenuPostagem();
+        });
+
         window.alternarMenuBalao = function() {
             const menu = document.getElementById('opcoes-menu-balao');
             if(menu.classList.contains('aberto')) {
@@ -1107,6 +1271,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     alert('Música dedicada com sucesso! ❤️');
                 }
                 resetarFormularioPlaylist();
+                window.fecharMenuPostagem();
             } catch (error) { console.error(error); }
         };
         document.getElementById('btn-salvar-playlist').addEventListener('click', window.salvarMusicaFirebase);
@@ -1119,7 +1284,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             document.getElementById('playlist-destaque').checked = (destaque === 'true' || destaque === true);
             document.getElementById('titulo-painel-playlist').innerText = '✏️ Editar Música Dedicada';
             document.getElementById('btn-salvar-playlist').innerText = 'Atualizar Música 🎧';
-            document.getElementById('painel-playlist-posts').scrollIntoView({ behavior: 'smooth' });
+            window.abrirMenuPostagem('playlist');
         };
 
         window.removerPostagemFirebase = async function(id) {
@@ -1179,6 +1344,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     alert('Card publicado! ❤️');
                 }
                 resetarFormulario();
+                window.fecharMenuPostagem();
             } catch (error) { console.error(error); }
         };
         document.getElementById('btn-salvar-post').addEventListener('click', window.salvarPostagemFirebase);
@@ -1194,7 +1360,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             document.getElementById('post-data').value = `${ano}-${mes}-${dia}`;
             document.getElementById('painel-titulo-acao').innerText = '✏️ Editar Card Selecionado';
             document.getElementById('btn-salvar-post').innerText = 'Atualizar Card ❤️';
-            document.getElementById('painel-de-postagem').scrollIntoView({ behavior: 'smooth' });
+            window.abrirMenuPostagem('apresentacoes');
         };
 
         function resetarFormularioGaleria() {
@@ -1228,6 +1394,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     alert('Momento guardado no nosso varal! 💞');
                 }
                 resetarFormularioGaleria();
+                window.fecharMenuPostagem();
             } catch (error) { console.error(error); }
         };
         document.getElementById('btn-salvar-galeria').addEventListener('click', window.salvarFotoGaleriaFirebase);
@@ -1241,7 +1408,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             if (dataParaEdicao) { const [dia, mes, ano] = dataParaEdicao.split('/'); document.getElementById('galeria-data').value = `${ano}-${mes}-${dia}`; }
             document.getElementById('titulo-painel-galeria').innerText = '✏️ Editar Momento do Varal';
             document.getElementById('btn-salvar-galeria').innerText = 'Atualizar Mídia ❤️';
-            document.getElementById('painel-galeria-posts').scrollIntoView({ behavior: 'smooth' });
+            window.abrirMenuPostagem('galeria');
         };
 
         function resetarFormularioTexto() {
@@ -1272,6 +1439,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     alert('Sua declaração foi guardada! 📝');
                 }
                 resetarFormularioTexto();
+                window.fecharMenuPostagem();
             } catch (error) { console.error(error); }
         };
         document.getElementById('btn-salvar-texto').addEventListener('click', window.salvarTextoFirebase);
@@ -1284,7 +1452,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             document.getElementById('texto-data').value = `${ano}-${mes}-${dia}`;
             document.getElementById('titulo-painel-texto').innerText = '✏️ Editar Declaração Escritura';
             document.getElementById('btn-salvar-texto').innerText = 'Atualizar Carta ❤️';
-            document.getElementById('painel-texto-posts').scrollIntoView({ behavior: 'smooth' });
+            window.abrirMenuPostagem('cartas');
         };
 
         window.alternarLeituraCarta = function(botao, idElemento) {
@@ -1434,8 +1602,13 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
             todosHistoricos.reverse();
 
-            // Playlist: a música dedicada mais recentemente aparece primeiro, de cima para baixo.
-            const playlistOrdenada = [...itensPlaylist].sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+            // Playlist: a música destacada SEMPRE fica no topo. Depois dela, vêm as mais recentes.
+            const playlistOrdenada = [...itensPlaylist].sort((a, b) => {
+                const destaqueA = a.destaque === true ? 1 : 0;
+                const destaqueB = b.destaque === true ? 1 : 0;
+                if (destaqueA !== destaqueB) return destaqueB - destaqueA;
+                return (b.criadoEm || 0) - (a.criadoEm || 0);
+            });
             // Lógica de Limite da Playlist Principal (Exibe apenas as 5 mais recentes)
             const playlistExibida = playlistOrdenada.slice(0, 5);
             const btnPlaylistRestante = document.getElementById('btn-ver-restante-playlist');
