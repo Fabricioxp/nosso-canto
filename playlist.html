@@ -712,6 +712,25 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         function mostrarBarraPlayer(musica,statusTexto){ const barra=document.getElementById('player-musica-barra'),capa=document.getElementById('player-musica-capa'),titulo=document.getElementById('player-musica-titulo'),status=document.getElementById('player-musica-status'),controle=document.getElementById('player-musica-controle'); if(capa){capa.src=musica.capa||`https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`;capa.alt=musica.titulo||'Capa da música';} if(titulo)titulo.textContent=musica.titulo||'Música'; if(status)status.textContent=statusTexto||'Tocando agora • YouTube'; if(controle){controle.textContent=statusTexto==='Pausada'?'▶':'Ⅱ';controle.setAttribute('aria-label',statusTexto==='Pausada'?'Continuar':'Pausar');} if(barra)barra.classList.add('ativo');document.body.classList.add('player-musica-ativo'); }
         async function restaurarPlayerCompartilhado(){ let estado;try{estado=JSON.parse(localStorage.getItem(CHAVE_PLAYER_COMPARTILHADO)||'null')}catch(e){estado=null} if(!estado?.musica?.id)return;musicaAtualYouTube=estado.musica;mostrarBarraPlayer(musicaAtualYouTube,estado.tocando?'Retomando música…':'Pausada');if(!estado.tocando)return;try{await carregarYouTubeAPI();const host=document.getElementById('youtube-player-host');const iniciar=player=>{try{player.seekTo(Number(estado.tempo)||0,true);player.playVideo()}catch(e){}};if(!youtubePlayer)youtubePlayer=new YT.Player(host,{width:'1',height:'1',videoId:musicaAtualYouTube.id,playerVars:{autoplay:1,controls:0,playsinline:1,rel:0,modestbranding:1},events:{onReady:e=>iniciar(e.target),onStateChange:atualizarEstadoPlayerYouTube}});else{youtubePlayer.loadVideoById({videoId:musicaAtualYouTube.id,startSeconds:Number(estado.tempo)||0});youtubePlayer.playVideo()}iniciarSalvamentoPosicao()}catch(e){console.warn('Não foi possível retomar automaticamente:',e)}}
         window.addEventListener('pagehide',()=>{try{if(musicaAtualYouTube){const tocando=window.YT&&youtubePlayer&&youtubePlayer.getPlayerState()===YT.PlayerState.PLAYING;salvarEstadoPlayerCompartilhado(tocando)}}catch(e){}});
+        // Garante que o estado seja salvo ANTES de navegar para outra página.
+        function salvarEstadoAntesDeNavegar() {
+            try {
+                if (!musicaAtualYouTube) return;
+                let tocando = true;
+                if (window.YT && youtubePlayer && typeof youtubePlayer.getPlayerState === 'function') {
+                    const estado = youtubePlayer.getPlayerState();
+                    tocando = estado === YT.PlayerState.PLAYING || estado === YT.PlayerState.BUFFERING;
+                }
+                salvarEstadoPlayerCompartilhado(tocando);
+            } catch (e) { console.warn('Não foi possível salvar a música antes de navegar:', e); }
+        }
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest && e.target.closest('a[href]');
+            if (!link) return;
+            const href = link.getAttribute('href') || '';
+            if (/^(index|playlist)\.html(?:[?#].*)?$/i.test(href)) salvarEstadoAntesDeNavegar();
+        }, true);
+
         let musicaAtualYouTube = null;
         let youtubePlayer = null;
         let youtubeApiPronta = false;
