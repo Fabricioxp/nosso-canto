@@ -1120,7 +1120,13 @@
         body.dark-mode .meta-comentario { color: #d8ced0; }
         body.dark-mode .autor-comentario { color: #ffffff; }
 
-    </style>
+    
+/* Busca global inteligente */
+.busca-global{max-width:450px;margin:0 auto 18px;padding:0 15px;position:relative;z-index:50}.busca-linha{display:flex;gap:8px;align-items:center;background:var(--bg-card,#fff);border:1px solid var(--border-color);border-radius:16px;padding:7px 9px;box-shadow:0 8px 22px rgba(140,98,93,.10)}.busca-icone{font-size:1.1rem;padding-left:3px}.busca-global input{border:0;outline:0;background:transparent;color:var(--text-color);font:inherit;flex:1;min-width:0;padding:7px 0}.busca-global select{border:0;border-left:1px solid var(--border-color);outline:0;background:transparent;color:var(--primary);font-weight:700;max-width:125px;padding:7px 4px}.resultados-busca{display:none;margin-top:7px;background:var(--bg-card,#fff);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;box-shadow:0 14px 32px rgba(0,0,0,.12);max-height:360px;overflow-y:auto}.resultado-busca{width:100%;display:flex;align-items:center;gap:11px;text-align:left;border:0;border-bottom:1px solid rgba(140,98,93,.12);background:transparent;padding:10px;cursor:pointer;color:var(--text-color);font:inherit}.resultado-busca:last-child{border-bottom:0}.resultado-busca:hover{background:rgba(140,98,93,.08)}.resultado-thumb{width:42px;height:42px;border-radius:10px;object-fit:cover;background:#f4e9e7;display:grid;place-items:center;flex:0 0 42px}.resultado-info{min-width:0;flex:1}.resultado-titulo{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resultado-sub{font-size:.78rem;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resultado-vazio{padding:16px;text-align:center;opacity:.7;font-size:.9rem}.destino-destaque{outline:3px solid rgba(230,179,168,.9)!important;outline-offset:5px;transition:outline .3s ease}body.dark-mode .busca-linha,body.dark-mode .resultados-busca{background:#242022!important;color:#eee6e4}body.dark-mode .busca-global input,body.dark-mode .busca-global select{color:#eee6e4;background:transparent}body.dark-mode .resultado-busca{color:#eee6e4}body.dark-mode .resultado-busca:hover{background:#342d30}
+
+
+.theme-toggle{background:none;border:1px solid var(--border-color);border-radius:18px;padding:6px 10px;cursor:pointer;font-size:1.05rem}body.dark-mode{background:#161415!important;color:#eee6e4}body.dark-mode .header-status-bar,body.dark-mode .bloco-separado,body.dark-mode .painel-upload,body.dark-mode .card-separador-interno,body.dark-mode .card-musica{background:#242022!important;color:#eee6e4}body.dark-mode .input-custom{background:#302a2d!important;color:#eee6e4;border-color:#66575b}body.dark-mode .status-nome-parceiro,body.dark-mode header h1{color:#f0c7c0!important}
+</style>
 </head>
 <body>
 
@@ -1154,6 +1160,9 @@
             <h1>Nosso Lugar no Mundo</h1>
             <p>Onde a gente guarda todos os "eu te amo" que já dissemos. ✨</p>
         </header>
+
+<div class="busca-global" id="busca-global"><div class="busca-linha"><span class="busca-icone">🔎</span><input id="campo-busca-global" autocomplete="off" placeholder="Encontre qualquer coisa no nosso canto..."><select id="filtro-busca-global" aria-label="Filtrar busca"><option value="todos">Tudo</option><option value="playlist">🎵 Músicas</option><option value="cards">✨ Cards</option><option value="galeria">🖼️ Galeria</option><option value="texto">✍️ Declarações</option></select></div><div class="resultados-busca" id="resultados-busca-global"></div></div>
+
 
         <div class="menu-flutuante-container">
             <div id="opcoes-menu-balao" class="menu-opcoes-flutuantes">
@@ -2187,7 +2196,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     </div>
                 ` : '';
 
-                blocoMusica.className = classesCartao;
+                blocoMusica.className = classesCartao; blocoMusica.id = post.id;
                 blocoMusica.dataset.musicaLink = post.link || '';
                 blocoMusica.dataset.musicaTitulo = post.titulo || '';
                 blocoMusica.dataset.musicaCapa = post.imagem || '';
@@ -2468,7 +2477,24 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         });
 
         verificarSessao();
-    </script>
+    
+
+/* Busca global: lê todos os posts do Firebase, inclusive os que não estão visíveis nesta página */
+const campoBuscaGlobal=document.getElementById('campo-busca-global');
+const filtroBuscaGlobal=document.getElementById('filtro-busca-global');
+const resultadosBuscaGlobal=document.getElementById('resultados-busca-global');
+let indiceBuscaGlobal=[];
+const normalizarBusca=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const destinoMeta={playlist:{pagina:'playlist.html',secao:'🎵 Música',icone:'🎵'},dela:{pagina:'cardsdela.html',secao:'✨ Card dela',icone:'✨'},meu:{pagina:'cardsmeu.html',secao:'✨ Card',icone:'✨'},galeria:{pagina:'index.html',secao:'🖼️ Galeria',icone:'🖼️'},texto:{pagina:'index.html',secao:'✍️ Declaração',icone:'✍️'}};
+function categoriaBusca(p){return p.destino==='playlist'?'playlist':(p.destino==='dela'||p.destino==='meu'?'cards':p.destino);}
+function pontuarBusca(item,q){if(!q)return 0;const t=normalizarBusca(item.titulo), resto=normalizarBusca([item.subtitulo,item.corpo,item.autor,item.data].join(' '));if(t===q)return 1000;if(t.startsWith(q))return 850;if(t.includes(q))return 700;if(resto.includes(q))return 500;const tokens=q.split(/\s+/).filter(Boolean);let ok=0;for(const token of tokens){if(t.includes(token))ok+=90;else if(resto.includes(token))ok+=45;else return -1;}return ok;}
+function mostrarResultadosBusca(){if(!campoBuscaGlobal||!resultadosBuscaGlobal)return;const q=normalizarBusca(campoBuscaGlobal.value);const filtro=filtroBuscaGlobal.value;if(!q){resultadosBuscaGlobal.style.display='none';resultadosBuscaGlobal.innerHTML='';return;}const achados=indiceBuscaGlobal.map(p=>({p,score:pontuarBusca(p,q)})).filter(x=>x.score>=0&&(filtro==='todos'||categoriaBusca(x.p)===filtro)).sort((a,b)=>b.score-a.score||String(a.p.titulo||'').localeCompare(String(b.p.titulo||''),'pt-BR')).slice(0,12);resultadosBuscaGlobal.style.display='block';if(!achados.length){resultadosBuscaGlobal.innerHTML='<div class="resultado-vazio">Ainda não encontrei isso 🤍 Tente apenas uma parte do título.</div>';return;}resultadosBuscaGlobal.innerHTML='';achados.forEach(({p})=>{const meta=destinoMeta[p.destino]||{pagina:'index.html',secao:'Conteúdo',icone:'🤍'};const b=document.createElement('button');b.className='resultado-busca';const thumb=p.imagem?`<img class="resultado-thumb" src="${p.imagem}" alt="">`:`<span class="resultado-thumb">${meta.icone}</span>`;b.innerHTML=`${thumb}<span class="resultado-info"><span class="resultado-titulo">${p.titulo||p.subtitulo||meta.secao}</span><span class="resultado-sub">${meta.secao}${p.subtitulo?' · '+p.subtitulo:''}</span></span>`;b.onclick=()=>{window.location.href=(p.destino==='galeria'?'index.html#bloco-galeria-momentos':(p.destino==='texto'?'index.html#bloco-nossos-textos':`${meta.pagina}#${p.id}`))};resultadosBuscaGlobal.appendChild(b);});}
+if(campoBuscaGlobal){campoBuscaGlobal.addEventListener('input',mostrarResultadosBusca);filtroBuscaGlobal.addEventListener('change',mostrarResultadosBusca);document.addEventListener('click',e=>{if(!document.getElementById('busca-global').contains(e.target))resultadosBuscaGlobal.style.display='none';});}
+const qBuscaGlobal=query(collection(db,'posts'));
+onSnapshot(qBuscaGlobal,snap=>{indiceBuscaGlobal=[];snap.forEach(d=>{const p={id:d.id,...d.data()};if(['playlist','dela','meu','galeria','texto'].includes(p.destino)&&p.tipo!=='whatsapp_estatisticas')indiceBuscaGlobal.push(p);});if(campoBuscaGlobal&&campoBuscaGlobal.value)mostrarResultadosBusca();});
+function aplicarDestinoDaURL(){const id=decodeURIComponent(location.hash.replace(/^#/,'')).trim();if(!id)return;let tentativas=0;const procurar=()=>{const alvo=document.getElementById(id);if(alvo){alvo.scrollIntoView({behavior:'smooth',block:'center'});alvo.classList.add('destino-destaque');setTimeout(()=>alvo.classList.remove('destino-destaque'),2200);return;}if(++tentativas<12)setTimeout(procurar,300);};procurar();}
+window.addEventListener('load',aplicarDestinoDaURL);
+</script>
 
     <script>
         const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2029, 7, 12, 0, 0, 0) };
@@ -2488,4 +2514,4 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
     </script>
 </body>
-                    </html>
+</html>
