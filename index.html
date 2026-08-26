@@ -112,6 +112,15 @@
             position: fixed;
             bottom: 25px;
             right: 25px;
+            transition: bottom 0.3s ease;
+        }
+
+        /* Quando a barra da música aparece, o menu de navegação sobe acima dela */
+        body.player-musica-ativo .menu-flutuante-container {
+            bottom: 105px;
+        }
+
+        .menu-flutuante-container {
             z-index: 99995;
             display: flex;
             flex-direction: column;
@@ -1717,6 +1726,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     controle.setAttribute('aria-label', 'Pausar');
                 }
                 if (barra) barra.classList.add('ativo');
+                document.body.classList.add('player-musica-ativo');
 
                 musicaAtualYouTube = musica;
             } catch (erro) {
@@ -1769,6 +1779,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
             const barra = document.getElementById('player-musica-barra');
             if (barra) barra.classList.remove('ativo');
+            document.body.classList.remove('player-musica-ativo');
 
             musicaAtualYouTube = null;
         }
@@ -2477,4 +2488,4 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
     </script>
 </body>
-</html>
+                    </html>
