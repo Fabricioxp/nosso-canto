@@ -198,11 +198,9 @@
 
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
     
-/* Busca global inteligente */
-.busca-global{max-width:450px;margin:0 auto 18px;padding:0 15px;position:relative;z-index:50}.busca-linha{display:flex;gap:8px;align-items:center;background:var(--bg-card,#fff);border:1px solid var(--border-color);border-radius:16px;padding:7px 9px;box-shadow:0 8px 22px rgba(140,98,93,.10)}.busca-icone{font-size:1.1rem;padding-left:3px}.busca-global input{border:0;outline:0;background:transparent;color:var(--text-color);font:inherit;flex:1;min-width:0;padding:7px 0}.busca-global select{border:0;border-left:1px solid var(--border-color);outline:0;background:transparent;color:var(--primary);font-weight:700;max-width:125px;padding:7px 4px}.resultados-busca{display:none;margin-top:7px;background:var(--bg-card,#fff);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;box-shadow:0 14px 32px rgba(0,0,0,.12);max-height:360px;overflow-y:auto}.resultado-busca{width:100%;display:flex;align-items:center;gap:11px;text-align:left;border:0;border-bottom:1px solid rgba(140,98,93,.12);background:transparent;padding:10px;cursor:pointer;color:var(--text-color);font:inherit}.resultado-busca:last-child{border-bottom:0}.resultado-busca:hover{background:rgba(140,98,93,.08)}.resultado-thumb{width:42px;height:42px;border-radius:10px;object-fit:cover;background:#f4e9e7;display:grid;place-items:center;flex:0 0 42px}.resultado-info{min-width:0;flex:1}.resultado-titulo{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resultado-sub{font-size:.78rem;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resultado-vazio{padding:16px;text-align:center;opacity:.7;font-size:.9rem}.destino-destaque{outline:3px solid rgba(230,179,168,.9)!important;outline-offset:5px;transition:outline .3s ease}body.dark-mode .busca-linha,body.dark-mode .resultados-busca{background:#242022!important;color:#eee6e4}body.dark-mode .busca-global input,body.dark-mode .busca-global select{color:#eee6e4;background:transparent}body.dark-mode .resultado-busca{color:#eee6e4}body.dark-mode .resultado-busca:hover{background:#342d30}
+/* Visual integrado ao index */
+.theme-toggle{background:transparent;border:1px solid rgba(140,98,93,.25);border-radius:18px;padding:6px 10px;cursor:pointer}.busca-local{max-width:680px;margin:15px auto;padding:0 15px;position:relative;z-index:10}.busca-local-box{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(140,98,93,.18);border-radius:22px;padding:9px 13px;box-shadow:0 8px 20px rgba(140,98,93,.08)}.busca-local input{border:0;outline:0;flex:1;background:transparent;font:inherit}.resultados-local{display:none;background:#fff;margin-top:7px;border-radius:14px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.12)}.res-local{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:0;background:#fff;text-align:left;cursor:pointer;font:inherit;border-bottom:1px solid rgba(0,0,0,.06)}.res-local img,.res-ico{width:38px;height:38px;border-radius:10px;object-fit:cover;background:#f4e9e7;display:grid;place-items:center}.menu-criar{position:fixed;right:18px;bottom:22px;z-index:90}.btn-criar{border:0;border-radius:50px;padding:13px 18px;background:var(--primary,#8c625d);color:#fff;font-weight:bold;box-shadow:0 8px 22px rgba(0,0,0,.18);cursor:pointer}.painel-upload{display:none}.painel-upload.aberto{display:block;animation:aparece .25s ease}@keyframes aparece{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}body.dark-mode{background:#161415!important;color:#eee6e4}body.dark-mode .header-status-bar,body.dark-mode .bloco-separado,body.dark-mode .painel-upload,body.dark-mode .busca-local-box,body.dark-mode .resultados-local,body.dark-mode .res-local{background:#242022!important;color:#eee6e4}body.dark-mode .input-custom,body.dark-mode .busca-local input{background:#302a2d!important;color:#eee6e4;border-color:#66575b}
 
-
-.theme-toggle{background:none;border:1px solid var(--border-color);border-radius:18px;padding:6px 10px;cursor:pointer;font-size:1.05rem}body.dark-mode{background:#161415!important;color:#eee6e4}body.dark-mode .header-status-bar,body.dark-mode .bloco-separado,body.dark-mode .painel-upload,body.dark-mode .card-separador-interno,body.dark-mode .card-musica{background:#242022!important;color:#eee6e4}body.dark-mode .input-custom{background:#302a2d!important;color:#eee6e4;border-color:#66575b}body.dark-mode .status-nome-parceiro,body.dark-mode header h1{color:#f0c7c0!important}
 </style>
 </head>
 <body>
@@ -211,8 +209,8 @@
         <div class="status-usuario-container">
             <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
         </div>
-        <div style="display:flex;gap:8px;align-items:center"><button class="theme-toggle" id="btn-theme-toggle" title="Alternar modo noturno">☀️</button><a href="index.html" class="btn-voltar">⬅ Voltar ao Canto</a></div>
-    </div>
+        <a href="index.html" class="btn-voltar">⬅ Voltar ao Canto</a>
+    <button class="theme-toggle" id="btn-theme-toggle" title="Modo noturno">🌙</button></div>
 
     <canvas id="canvas-hearts"></canvas>
 
@@ -221,10 +219,8 @@
         <p>Onde todas as nossas melodias e momentos musicais ficam guardados sem limites. ✨</p>
     </header>
 
-<div class="busca-global" id="busca-global"><div class="busca-linha"><span class="busca-icone">🔎</span><input id="campo-busca-global" autocomplete="off" placeholder="Encontre qualquer coisa no nosso canto..."><select id="filtro-busca-global" aria-label="Filtrar busca"><option value="todos">Tudo</option><option value="playlist">🎵 Músicas</option><option value="cards">✨ Cards</option><option value="galeria">🖼️ Galeria</option><option value="texto">✍️ Declarações</option></select></div><div class="resultados-busca" id="resultados-busca-global"></div></div>
-
-
-    <div class="container-blocos">
+    <div class="busca-local"><div class="busca-local-box">🔎 <input id="campo-busca-local" placeholder="Pesquisar 🎶 nossa playlist..."></div><div class="resultados-local" id="resultados-local"></div></div>
+<div class="container-blocos">
         
         <section class="painel-upload" id="painel-playlist-posts">
             <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
@@ -249,7 +245,8 @@
 
     </div>
 
-    <script type="module">
+    <div class="menu-criar"><button class="btn-criar" id="btn-abrir-criacao">➕ Criar</button></div>
+<script type="module">
         // TRAVA INSTANTÂNEA: Redireciona na hora sem alerta prévio para evitar brechas visuais
         let usuarioLogado = sessionStorage.getItem('user_canto');
         if (!usuarioLogado) {
@@ -272,9 +269,6 @@
         const db = getFirestore(app);
 
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
-const botaoTemaPagina=document.getElementById('btn-theme-toggle');
-if(botaoTemaPagina){const aplicarTemaPagina=m=>{const dark=m==='dark';document.body.classList.toggle('dark-mode',dark);botaoTemaPagina.textContent=dark?'🌙':'☀️';localStorage.setItem('tema_canto',dark?'dark':'light');};aplicarTemaPagina(localStorage.getItem('tema_canto')||'light');botaoTemaPagina.addEventListener('click',()=>aplicarTemaPagina(document.body.classList.contains('dark-mode')?'light':'dark'));}
-
 
         function verificarPinSeguranca() {
             const pinDigitado = prompt("⚠️ Para realizar esta ação, digite o PIN de segurança:");
@@ -408,7 +402,7 @@ if(botaoTemaPagina){const aplicarTemaPagina=m=>{const dark=m==='dark';document.b
                     </div>
                 ` : '';
 
-                blocoMusica.className = classesCartao; blocoMusica.id = post.id;
+                blocoMusica.className = classesCartao;
                 blocoMusica.innerHTML = `
                     ${menuTresPontosPlaylist}
                     <div class="musica-layout">
@@ -427,24 +421,7 @@ if(botaoTemaPagina){const aplicarTemaPagina=m=>{const dark=m==='dark';document.b
                 if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
             });
         });
-    
-
-/* Busca global: lê todos os posts do Firebase, inclusive os que não estão visíveis nesta página */
-const campoBuscaGlobal=document.getElementById('campo-busca-global');
-const filtroBuscaGlobal=document.getElementById('filtro-busca-global');
-const resultadosBuscaGlobal=document.getElementById('resultados-busca-global');
-let indiceBuscaGlobal=[];
-const normalizarBusca=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-const destinoMeta={playlist:{pagina:'playlist.html',secao:'🎵 Música',icone:'🎵'},dela:{pagina:'cardsdela.html',secao:'✨ Card dela',icone:'✨'},meu:{pagina:'cardsmeu.html',secao:'✨ Card',icone:'✨'},galeria:{pagina:'index.html',secao:'🖼️ Galeria',icone:'🖼️'},texto:{pagina:'index.html',secao:'✍️ Declaração',icone:'✍️'}};
-function categoriaBusca(p){return p.destino==='playlist'?'playlist':(p.destino==='dela'||p.destino==='meu'?'cards':p.destino);}
-function pontuarBusca(item,q){if(!q)return 0;const t=normalizarBusca(item.titulo), resto=normalizarBusca([item.subtitulo,item.corpo,item.autor,item.data].join(' '));if(t===q)return 1000;if(t.startsWith(q))return 850;if(t.includes(q))return 700;if(resto.includes(q))return 500;const tokens=q.split(/\s+/).filter(Boolean);let ok=0;for(const token of tokens){if(t.includes(token))ok+=90;else if(resto.includes(token))ok+=45;else return -1;}return ok;}
-function mostrarResultadosBusca(){if(!campoBuscaGlobal||!resultadosBuscaGlobal)return;const q=normalizarBusca(campoBuscaGlobal.value);const filtro=filtroBuscaGlobal.value;if(!q){resultadosBuscaGlobal.style.display='none';resultadosBuscaGlobal.innerHTML='';return;}const achados=indiceBuscaGlobal.map(p=>({p,score:pontuarBusca(p,q)})).filter(x=>x.score>=0&&(filtro==='todos'||categoriaBusca(x.p)===filtro)).sort((a,b)=>b.score-a.score||String(a.p.titulo||'').localeCompare(String(b.p.titulo||''),'pt-BR')).slice(0,12);resultadosBuscaGlobal.style.display='block';if(!achados.length){resultadosBuscaGlobal.innerHTML='<div class="resultado-vazio">Ainda não encontrei isso 🤍 Tente apenas uma parte do título.</div>';return;}resultadosBuscaGlobal.innerHTML='';achados.forEach(({p})=>{const meta=destinoMeta[p.destino]||{pagina:'index.html',secao:'Conteúdo',icone:'🤍'};const b=document.createElement('button');b.className='resultado-busca';const thumb=p.imagem?`<img class="resultado-thumb" src="${p.imagem}" alt="">`:`<span class="resultado-thumb">${meta.icone}</span>`;b.innerHTML=`${thumb}<span class="resultado-info"><span class="resultado-titulo">${p.titulo||p.subtitulo||meta.secao}</span><span class="resultado-sub">${meta.secao}${p.subtitulo?' · '+p.subtitulo:''}</span></span>`;b.onclick=()=>{window.location.href=`${meta.pagina}#${p.id}`};resultadosBuscaGlobal.appendChild(b);});}
-if(campoBuscaGlobal){campoBuscaGlobal.addEventListener('input',mostrarResultadosBusca);filtroBuscaGlobal.addEventListener('change',mostrarResultadosBusca);document.addEventListener('click',e=>{if(!document.getElementById('busca-global').contains(e.target))resultadosBuscaGlobal.style.display='none';});}
-const qBuscaGlobal=query(collection(db,'posts'));
-onSnapshot(qBuscaGlobal,snap=>{indiceBuscaGlobal=[];snap.forEach(d=>{const p={id:d.id,...d.data()};if(['playlist','dela','meu','galeria','texto'].includes(p.destino)&&p.tipo!=='whatsapp_estatisticas')indiceBuscaGlobal.push(p);});if(campoBuscaGlobal&&campoBuscaGlobal.value)mostrarResultadosBusca();});
-function aplicarDestinoDaURL(){const id=decodeURIComponent(location.hash.replace(/^#/,'')).trim();if(!id)return;let tentativas=0;const procurar=()=>{const alvo=document.getElementById(id);if(alvo){alvo.scrollIntoView({behavior:'smooth',block:'center'});alvo.classList.add('destino-destaque');setTimeout(()=>alvo.classList.remove('destino-destaque'),2200);return;}if(++tentativas<12)setTimeout(procurar,300);};procurar();}
-window.addEventListener('load',aplicarDestinoDaURL);
-</script>
+    </script>
 
     <script>
         const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
@@ -475,6 +452,9 @@ window.addEventListener('load',aplicarDestinoDaURL);
             requestAnimationFrame(animarLoop);
         }
         document.addEventListener('DOMContentLoaded', () => { animarLoop(); });
-    </script>
+    
+const painelCriacao=document.querySelector('.painel-upload'),btnCriacao=document.getElementById('btn-abrir-criacao');btnCriacao.onclick=()=>{painelCriacao.classList.toggle('aberto');if(painelCriacao.classList.contains('aberto'))painelCriacao.scrollIntoView({behavior:'smooth',block:'start'})};const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
+onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});const temaSalvo=localStorage.getItem('tema-nosso-canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');document.getElementById('btn-theme-toggle').onclick=()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema-nosso-canto',document.body.classList.contains('dark-mode')?'dark':'light')};
+</script>
 </body>
 </html>
