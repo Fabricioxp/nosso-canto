@@ -954,7 +954,7 @@
             position: fixed;
             left: 12px;
             right: 12px;
-            bottom: 78px;
+            bottom: 12px;
             z-index: 205000;
             display: none;
             align-items: center;
@@ -969,25 +969,6 @@
         }
 
         .player-musica-barra.ativo { display: flex; }
-
-        /* Quando o player estiver aberto, sobe o botão flutuante de navegação
-           para não ficar sobre a barra da música. Ao fechar, volta ao lugar original. */
-        body.player-musica-ativo .menu-flutuante-container {
-            bottom: 92px;
-            transition: bottom .22s ease;
-        }
-
-        .menu-flutuante-container {
-            transition: bottom .22s ease;
-        }
-
-        @media (max-width: 420px) {
-            body.player-musica-ativo .menu-flutuante-container {
-                bottom: 86px;
-            }
-        }
-
-
 
         .player-musica-icone {
             width: 38px;
@@ -1056,7 +1037,7 @@
         @media (max-width: 420px) {
             .menu-musica-opcoes { padding: 10px; }
             .menu-musica-opcoes-conteudo { border-radius: 20px; padding: 15px; }
-            .player-musica-barra { left: 8px; right: 8px; bottom: 76px; }
+            .player-musica-barra { left: 8px; right: 8px; bottom: 8px; }
         }
 
         /* Estilos da nova barra de progresso de espaço */
@@ -1735,10 +1716,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     controle.textContent = 'Ⅱ';
                     controle.setAttribute('aria-label', 'Pausar');
                 }
-                if (barra) {
-                    barra.classList.add('ativo');
-                    barra.setAttribute('aria-hidden', 'false');
-                }
+                if (barra) barra.classList.add('ativo');
 
                 musicaAtualYouTube = musica;
             } catch (erro) {
@@ -1790,10 +1768,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             }
 
             const barra = document.getElementById('player-musica-barra');
-            if (barra) {
-                barra.classList.remove('ativo');
-                barra.setAttribute('aria-hidden', 'true');
-            }
+            if (barra) barra.classList.remove('ativo');
 
             musicaAtualYouTube = null;
         }
