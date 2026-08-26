@@ -946,13 +946,35 @@ body.modal-criacao-aberta .menu-criar{z-index:2147483647!important}
             menu.setAttribute('aria-hidden', 'true');
         }
 
+        let audioPreview = null;
+        let musicaPreviewAtual = null;
+
+        function tocarPreviewNoSite(link, titulo, capa) {
+            if (!audioPreview) audioPreview = new Audio();
+            musicaPreviewAtual = { link, titulo, capa };
+            if (audioPreview.src !== link) audioPreview.src = link;
+            audioPreview.play().catch(err => { console.warn('Não foi possível iniciar a prévia:', err); alert('Não foi possível reproduzir esta prévia agora.'); });
+            const barra=document.getElementById('player-musica-barra'), img=document.getElementById('player-musica-capa'), t=document.getElementById('player-musica-titulo'), st=document.getElementById('player-musica-status'), c=document.getElementById('player-musica-controle');
+            if(img){img.src=capa||'';img.alt=titulo||'Capa da música';}
+            if(t)t.textContent=titulo||'Música';
+            if(st)st.textContent='Tocando prévia aqui no Nosso Canto';
+            if(c){c.textContent='Ⅱ';c.setAttribute('aria-label','Pausar');}
+            if(barra)barra.classList.add('ativo');
+            document.body.classList.add('player-musica-ativo');
+            audioPreview.onended=()=>{ if(c)c.textContent='▶'; if(st)st.textContent='Prévia finalizada'; };
+        }
+
         window.abrirOpcoesMusica = function(link, titulo, capa) {
             if (!link) return;
 
             const idYT = extrairIDYouTube(link);
 
-            // Links que não são YouTube continuam abrindo normalmente.
+            // Prévia de áudio (vinda das sugestões) toca diretamente no site.
             if (!idYT) {
+                if (/\.(m4a|mp3|aac)(?:\?|$)/i.test(link) || /audio-ssl\.itunes\.apple\.com/i.test(link)) {
+                    tocarPreviewNoSite(link, titulo, capa);
+                    return;
+                }
                 window.open(link, '_blank', 'noopener,noreferrer');
                 return;
             }
@@ -1076,6 +1098,12 @@ body.modal-criacao-aberta .menu-criar{z-index:2147483647!important}
         }
 
         function alternarPlayerYouTube() {
+            if (audioPreview && musicaPreviewAtual && !audioPreview.paused || (audioPreview && musicaPreviewAtual && audioPreview.currentTime > 0)) {
+                const status=document.getElementById('player-musica-status'),controle=document.getElementById('player-musica-controle');
+                if(audioPreview.paused){audioPreview.play(); if(status)status.textContent='Tocando prévia aqui no Nosso Canto'; if(controle)controle.textContent='Ⅱ';}
+                else {audioPreview.pause(); if(status)status.textContent='Prévia pausada'; if(controle)controle.textContent='▶';}
+                return;
+            }
             if (!youtubePlayer || !window.YT) return;
 
             const estado = youtubePlayer.getPlayerState();
@@ -1088,6 +1116,7 @@ body.modal-criacao-aberta .menu-criar{z-index:2147483647!important}
         }
 
         function pararPlayerYouTube() {
+            if (audioPreview) { audioPreview.pause(); audioPreview.currentTime=0; musicaPreviewAtual=null; }
             if (youtubePlayer && window.YT) {
                 youtubePlayer.stopVideo();
             }
@@ -1252,7 +1281,7 @@ btnCriacao.onclick=alternarModalPostagem;
  function escolher(item){
    const titulo=[item.trackName,item.artistName].filter(Boolean).join(' — ');
    document.getElementById('playlist-nome').value=titulo;
-   document.getElementById('playlist-link').value='https://www.youtube.com/results?search_query='+encodeURIComponent(titulo);
+   document.getElementById('playlist-link').value=item.previewUrl||'https://www.youtube.com/results?search_query='+encodeURIComponent(titulo);
    document.getElementById('playlist-capa').value=(item.artworkUrl100||'').replace('100x100bb','600x600bb');
    termo.value=titulo;
    resultados.innerHTML='';
