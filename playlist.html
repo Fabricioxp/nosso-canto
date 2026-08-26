@@ -1301,7 +1301,19 @@ btnCriacao.onclick=alternarModalPostagem;
  let timer=null,seq=0,videos=[];
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const capa=v=>v.thumbnail||v.videoThumbnails?.[0]?.url||v.thumbnailUrl||v.thumb||'';
- async function consultar(url){const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}finally{clearTimeout(t)}}
+ async function consultar(url){
+ const c=new AbortController(),t=setTimeout(()=>c.abort(),12000);
+ try{
+   const r=await fetch(url,{signal:c.signal,cache:'no-store'});
+   const dados=await r.json().catch(()=>({}));
+   if(!r.ok){
+     const erro=dados?.error?.message||('HTTP '+r.status);
+     const codigo=dados?.error?.errors?.[0]?.reason||'';
+     throw Object.assign(new Error(erro),{status:r.status,reason:codigo});
+   }
+   return dados;
+ } finally { clearTimeout(t); }
+}
  function selecionar(v){
    const id=v.videoId||v.id||'', link=v.url||(id?'https://www.youtube.com/watch?v='+id:'');
    if(!link)return;
@@ -1330,7 +1342,7 @@ btnCriacao.onclick=alternarModalPostagem;
    const apiKey='AIzaSyDqRjaqWGyLFTmgvp_2DP1qZw-gmpNW0s0';
    let lista=[];
    try {
-     const url='https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&q='+enc+'&key='+encodeURIComponent(apiKey);
+     const url='https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=15&q='+enc+'&key='+encodeURIComponent(apiKey);
      const dados=await consultar(url);
      lista=(dados.items||[]).map(item=>({
        videoId:item.id?.videoId||'',
@@ -1341,7 +1353,19 @@ btnCriacao.onclick=alternarModalPostagem;
    } catch(e) {
      console.error('Erro na busca oficial do YouTube:',e);
      if(meu!==seq)return;
-     status.textContent='Não foi possível pesquisar agora. Confira se a YouTube Data API v3 está ativada e tente novamente.';
+     if(e.reason==='accessNotConfigured' || /has not been used|not enabled|API.*disabled/i.test(e.message)){
+       status.textContent='A busca está configurada, mas a YouTube Data API v3 ainda não está ativada neste projeto Google.';
+     } else if(e.reason==='keyInvalid' || /API key not valid/i.test(e.message)){
+       status.textContent='A chave da API não foi aceita. Confira se ela foi copiada corretamente.';
+     } else if(e.reason==='ipRefererBlocked' || /referer|referrer/i.test(e.message)){
+       status.textContent='A chave está bloqueada pelas restrições do Google. Para testar, remova temporariamente a restrição de aplicativo.';
+     } else if(e.reason==='quotaExceeded' || /quota/i.test(e.message)){
+       status.textContent='A cota diária da API do YouTube foi atingida. Tente novamente mais tarde.';
+     } else if(e.name==='AbortError'){
+       status.textContent='A pesquisa demorou demais. Verifique sua conexão e tente novamente.';
+     } else {
+       status.textContent='Não foi possível pesquisar: '+(e.message||'erro desconhecido')+'.';
+     }
      return;
    }
    if(meu!==seq)return;
