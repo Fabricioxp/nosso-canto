@@ -978,27 +978,27 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
 
             const idYT = extrairIDYouTube(link);
 
-            // Prévia de áudio (vinda das sugestões) toca diretamente no site.
-            if (!idYT) {
-                if (/\.(m4a|mp3|aac)(?:\?|$)/i.test(link) || /audio-ssl\.itunes\.apple\.com/i.test(link)) {
-                    tocarPreviewNoSite(link, titulo, capa);
-                    return;
-                }
-                window.open(link, '_blank', 'noopener,noreferrer');
-                return;
-            }
-
+            // Músicas vindas das sugestões também usam o mesmo menu de opções.
+            // Elas podem ter uma prévia de áudio, enquanto links do YouTube podem tocar completas no player interno.
             const menu = document.getElementById('menu-opcoes-musica');
             const img = document.getElementById('menu-musica-capa');
             const tituloEl = document.getElementById('menu-musica-titulo');
 
-            musicaAtualYouTube = { id: idYT, link, titulo, capa };
+            musicaAtualYouTube = { id: idYT, link, titulo, capa, preview: !idYT && (/\.(m4a|mp3|aac)(?:\?|$)/i.test(link) || /audio-ssl\.itunes\.apple\.com/i.test(link)) };
 
             if (img) {
                 img.src = capa || `https://img.youtube.com/vi/${idYT}/hqdefault.jpg`;
                 img.alt = titulo || 'Capa da música';
             }
             if (tituloEl) tituloEl.textContent = titulo || 'Música';
+            const btnYT = document.getElementById('btn-ouvir-youtube');
+            const btnAgora = document.getElementById('btn-escutar-agora');
+            if (btnYT) btnYT.querySelector('strong').textContent = idYT ? 'Escutar no YouTube' : 'Procurar no YouTube';
+            if (btnAgora) {
+                btnAgora.querySelector('strong').textContent = idYT ? 'Escutar agora' : 'Escutar prévia aqui';
+                const small = btnAgora.querySelector('small');
+                if (small) small.textContent = idYT ? 'Toca aqui mesmo, sem mostrar o vídeo.' : 'Esta sugestão oferece uma prévia de áudio no site.';
+            }
 
             if (menu) {
                 menu.classList.add('aberto');
@@ -1010,8 +1010,11 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
             if (!musicaAtualYouTube) return;
             fecharOpcoesMusica();
 
-            // A URL normal do YouTube permite que Android/iOS entregue a abertura ao app instalado.
-            window.open(musicaAtualYouTube.link, '_blank', 'noopener,noreferrer');
+            // Para músicas sugeridas, o link é a prévia; abrimos uma busca pelo título no YouTube.
+            const destino = musicaAtualYouTube.preview
+                ? 'https://www.youtube.com/results?search_query=' + encodeURIComponent(musicaAtualYouTube.titulo || '')
+                : musicaAtualYouTube.link;
+            window.open(destino, '_blank', 'noopener,noreferrer');
         }
 
         async function escutarYouTubeAgora() {
@@ -1019,6 +1022,17 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
 
             const musica = { ...musicaAtualYouTube };
             fecharOpcoesMusica();
+
+            // Sugestões de catálogo fornecem apenas prévia. Tocamos a prévia no site;
+            // músicas com ID real do YouTube continuam usando o player interno completo.
+            if (musica.preview) {
+                tocarPreviewNoSite(musica.link, musica.titulo, musica.capa);
+                return;
+            }
+            if (!musica.id) {
+                alert('Esta música ainda não possui um link direto de vídeo para tocar completa aqui.');
+                return;
+            }
 
             try {
                 await carregarYouTubeAPI();
@@ -1294,7 +1308,7 @@ btnCriacao.onclick=alternarModalPostagem;
    document.getElementById('playlist-capa').value=(item.artworkUrl100||'').replace('100x100bb','600x600bb');
    termo.value=titulo;
    resultados.innerHTML='';
-   status.textContent='✓ Música selecionada! Os campos foram preenchidos automaticamente. Você pode editar o título e tocar em “Adicionar à Playlist”.';
+   status.textContent='✓ Música selecionada! Os campos foram preenchidos automaticamente. Ao ouvir, você terá as opções de tocar aqui ou procurar no YouTube.';
    document.getElementById('playlist-nome').focus();
  }
  async function buscar(q){
