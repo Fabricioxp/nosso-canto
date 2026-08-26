@@ -1605,6 +1605,63 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         }
 
 
+        /* ================= PLAYER COMPARTILHADO ENTRE PÁGINAS ================= */
+        const CHAVE_PLAYER_COMPARTILHADO = 'nosso_canto_player_compartilhado_v1';
+        let intervaloSalvarPosicao = null;
+        function salvarEstadoPlayerCompartilhado(tocando) {
+            if (!musicaAtualYouTube) return;
+            let tempo = 0;
+            try { if (youtubePlayer && typeof youtubePlayer.getCurrentTime === 'function') tempo = youtubePlayer.getCurrentTime() || 0; } catch (e) {}
+            localStorage.setItem(CHAVE_PLAYER_COMPARTILHADO, JSON.stringify({ musica: musicaAtualYouTube, tempo, tocando: !!tocando, atualizadoEm: Date.now() }));
+        }
+        function limparEstadoPlayerCompartilhado() { localStorage.removeItem(CHAVE_PLAYER_COMPARTILHADO); }
+        function iniciarSalvamentoPosicao() {
+            if (intervaloSalvarPosicao) clearInterval(intervaloSalvarPosicao);
+            intervaloSalvarPosicao = setInterval(() => salvarEstadoPlayerCompartilhado(true), 1000);
+        }
+        function pararSalvamentoPosicao() { if (intervaloSalvarPosicao) { clearInterval(intervaloSalvarPosicao); intervaloSalvarPosicao = null; } }
+        function mostrarBarraPlayer(musica, statusTexto) {
+            const barra=document.getElementById('player-musica-barra'), capa=document.getElementById('player-musica-capa'), titulo=document.getElementById('player-musica-titulo'), status=document.getElementById('player-musica-status'), controle=document.getElementById('player-musica-controle');
+            if (capa) { capa.src=musica.capa || `https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`; capa.alt=musica.titulo || 'Capa da música'; }
+            if (titulo) titulo.textContent=musica.titulo || 'Música';
+            if (status) status.textContent=statusTexto || 'Tocando agora • YouTube';
+            if (controle) { controle.textContent='Ⅱ'; controle.setAttribute('aria-label','Pausar'); }
+            if (barra) barra.classList.add('ativo'); document.body.classList.add('player-musica-ativo');
+        }
+        async function restaurarPlayerCompartilhado() {
+            let estado; try { estado=JSON.parse(localStorage.getItem(CHAVE_PLAYER_COMPARTILHADO)||'null'); } catch(e) { estado=null; }
+            if (!estado || !estado.musica || !estado.musica.id) return;
+            musicaAtualYouTube=estado.musica; mostrarBarraPlayer(musicaAtualYouTube, estado.tocando ? 'Retomando música…' : 'Pausada');
+            if (!estado.tocando) return;
+            try {
+                await carregarYouTubeAPI(); const host=document.getElementById('youtube-player-host');
+                const iniciar=(player)=>{ try { player.seekTo(Number(estado.tempo)||0,true); player.playVideo(); } catch(e) {} };
+                if (!youtubePlayer) youtubePlayer=new YT.Player(host,{width:'1',height:'1',videoId:musicaAtualYouTube.id,playerVars:{autoplay:1,controls:0,playsinline:1,rel:0,modestbranding:1},events:{onReady:e=>iniciar(e.target),onStateChange:atualizarEstadoPlayerYouTube}});
+                else { youtubePlayer.loadVideoById({videoId:musicaAtualYouTube.id,startSeconds:Number(estado.tempo)||0}); youtubePlayer.playVideo(); }
+                iniciarSalvamentoPosicao();
+            } catch(e) { console.warn('Não foi possível retomar automaticamente:', e); }
+        }
+        window.addEventListener('pagehide', () => { try { if (musicaAtualYouTube) { const tocando=window.YT&&youtubePlayer&&youtubePlayer.getPlayerState()===YT.PlayerState.PLAYING; salvarEstadoPlayerCompartilhado(tocando); } } catch(e) {} });
+        // Garante que o estado seja salvo ANTES de navegar para outra página.
+        function salvarEstadoAntesDeNavegar() {
+            try {
+                if (!musicaAtualYouTube) return;
+                let tocando = true;
+                if (window.YT && youtubePlayer && typeof youtubePlayer.getPlayerState === 'function') {
+                    const estado = youtubePlayer.getPlayerState();
+                    tocando = estado === YT.PlayerState.PLAYING || estado === YT.PlayerState.BUFFERING;
+                }
+                salvarEstadoPlayerCompartilhado(tocando);
+            } catch (e) { console.warn('Não foi possível salvar a música antes de navegar:', e); }
+        }
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest && e.target.closest('a[href]');
+            if (!link) return;
+            const href = link.getAttribute('href') || '';
+            if (/^(index|playlist)\.html(?:[?#].*)?$/i.test(href)) salvarEstadoAntesDeNavegar();
+        }, true);
+
+
         /* ================= PLAYER YOUTUBE DA PLAYLIST ================= */
         let youtubePlayer = null;
         let musicaAtualYouTube = null;
@@ -1738,6 +1795,8 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                 document.body.classList.add('player-musica-ativo');
 
                 musicaAtualYouTube = musica;
+                salvarEstadoPlayerCompartilhado(true);
+                iniciarSalvamentoPosicao();
             } catch (erro) {
                 console.error('Não foi possível iniciar o player do YouTube:', erro);
                 alert('Não foi possível tocar essa música aqui. Você pode abrir no YouTube. 🎧');
@@ -1754,12 +1813,16 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     controle.textContent = 'Ⅱ';
                     controle.setAttribute('aria-label', 'Pausar');
                 }
+                salvarEstadoPlayerCompartilhado(true);
+                iniciarSalvamentoPosicao();
             } else if (event.data === YT.PlayerState.PAUSED) {
                 if (status) status.textContent = 'Pausada';
                 if (controle) {
                     controle.textContent = '▶';
                     controle.setAttribute('aria-label', 'Continuar');
                 }
+                salvarEstadoPlayerCompartilhado(false);
+                pararSalvamentoPosicao();
             } else if (event.data === YT.PlayerState.ENDED) {
                 if (status) status.textContent = 'Finalizada';
                 if (controle) {
@@ -1791,11 +1854,14 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             document.body.classList.remove('player-musica-ativo');
 
             musicaAtualYouTube = null;
+            pararSalvamentoPosicao();
+            limparEstadoPlayerCompartilhado();
         }
 
         // Pré-carrega a API para que o botão "Escutar agora" possa iniciar o áudio
         // diretamente após o toque, inclusive em celulares.
         carregarYouTubeAPI().catch(() => console.warn('API do YouTube não carregada ainda.'));
+        setTimeout(restaurarPlayerCompartilhado, 0);
 
         document.getElementById('btn-ouvir-youtube').addEventListener('click', abrirYouTubeAplicativo);
         document.getElementById('btn-escutar-agora').addEventListener('click', escutarYouTubeAgora);
@@ -2500,4 +2566,4 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
     </script>
 </body>
-</html>
+    </html>
