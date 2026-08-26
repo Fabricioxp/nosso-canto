@@ -843,7 +843,6 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                     alert('Música dedicada com sucesso! ❤️');
                 }
                 resetarFormularioPlaylist();
-                if (modalPostagem && modalPostagem.classList.contains('aberto')) alternarModalPostagem();
             } catch (error) { console.error(error); }
         };
         document.getElementById('btn-salvar-playlist').addEventListener('click', window.salvarMusicaFirebase);
@@ -1296,81 +1295,18 @@ function alternarModalPostagem(){
 }
 btnCriacao.onclick=alternarModalPostagem;
 
-(function iniciarSugestoesMusicais(){
- const termo=document.getElementById('youtube-busca-termo'),resultados=document.getElementById('youtube-busca-resultados'),status=document.getElementById('youtube-busca-status');
+(function iniciarBuscaDeVideosYouTube(){
+ const termo=document.getElementById('youtube-busca-termo'), resultados=document.getElementById('youtube-busca-resultados'), status=document.getElementById('youtube-busca-status');
  if(!termo||!resultados||!status)return;
- let timer=null,ultimaBusca=0,cache=[];
- const esc=v=>String(v||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const limpar=()=>{resultados.innerHTML='';status.textContent='';cache=[];};
- async function resolverVideoYouTube(titulo) {
-   // Procuramos um VÍDEO real do YouTube. Nunca usamos preview de catálogo como link da música.
-   const consultas=[
-     'https://piped.video/api/v1/search?q='+encodeURIComponent(titulo)+'&region=BR&filter=videos',
-     'https://pipedapi.kavin.rocks/search?q='+encodeURIComponent(titulo)+'&region=BR&filter=videos',
-     'https://pipedapi.reallyaweso.me/search?q='+encodeURIComponent(titulo)+'&region=BR&filter=videos'
-   ];
-   for(const url of consultas){
-     try{
-       const r=await fetch(url,{signal:AbortSignal.timeout(6500)});
-       if(!r.ok) continue;
-       const d=await r.json();
-       const a=Array.isArray(d)?d:(d.items||[]);
-       const v=a.find(x=>x.type==='video'||x.id||x.videoId||x.url);
-       if(v){
-         const raw=v.id||v.videoId||(String(v.url||'').match(/(?:watch\?v=|\/)([\w-]{11})/)||[])[1];
-         const id=String(raw||'').match(/^[\w-]{11}$/)?raw:null;
-         if(id) return 'https://www.youtube.com/watch?v='+id;
-       }
-     }catch(e){ console.warn('Fonte de vídeo indisponível:',e); }
-   }
-   return null;
- }
- async function escolher(item){
-   const titulo=[item.trackName,item.artistName].filter(Boolean).join(' — ');
-   status.textContent='Localizando a versão completa no YouTube...';
-   resultados.innerHTML='';
-   const linkYT=await resolverVideoYouTube(titulo);
-   if(!linkYT){
-     // Importante: não salvamos preview. O usuário pode tentar novamente sem criar uma música parcial.
-     status.textContent='⚠️ Não consegui localizar o vídeo completo agora. Tente selecionar novamente ou pesquise de novo. Nenhuma prévia será adicionada.';
-     termo.value=titulo;
-     document.getElementById('playlist-link').value='';
-     return;
-   }
-   document.getElementById('playlist-nome').value=titulo;
-   document.getElementById('playlist-link').value=linkYT;
-   document.getElementById('playlist-capa').value=(item.artworkUrl100||'').replace('100x100bb','600x600bb');
-   termo.value=titulo;
-   status.textContent='✓ Música completa encontrada! Agora é só tocar em Adicionar.';
-   document.getElementById('playlist-nome').focus();
- }
-
- async function buscar(q){
-   if(q.length<2){limpar();return;}
-   const id=++ultimaBusca;
-   status.textContent='Procurando músicas...';
-   try{
-     // Catálogo musical com CORS público e estável; a seleção gera automaticamente a busca correspondente no YouTube.
-     const url='https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&entity=song&limit=10&country=BR';
-     const r=await fetch(url); if(!r.ok)throw new Error('Falha na busca');
-     const d=await r.json(); if(id!==ultimaBusca)return;
-     cache=Array.isArray(d.results)?d.results:[];
-     if(!cache.length){status.textContent='Não encontrei músicas com esse nome. Tente artista ou outro trecho.';resultados.innerHTML='';return;}
-     status.textContent='Toque na música desejada:';
-     resultados.innerHTML=cache.map((m,i)=>{
-       const titulo=esc(m.trackName||'Música'), artista=esc(m.artistName||'Artista'), img=esc((m.artworkUrl100||'').replace('100x100bb','200x200bb'));
-       return `<button type="button" class="youtube-resultado" data-musica="${i}"><img src="${img}" alt=""><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${titulo}</span><span class="youtube-resultado-canal">${artista}</span></span></button>`;
-     }).join('');
-     resultados.querySelectorAll('[data-musica]').forEach(el=>el.addEventListener('click',()=>escolher(cache[Number(el.dataset.musica)])));
-   }catch(e){
-     if(id!==ultimaBusca)return;
-     status.textContent='Não foi possível carregar sugestões agora. Verifique sua conexão e tente novamente.';
-     resultados.innerHTML='';
-   }
- }
- termo.addEventListener('input',()=>{clearTimeout(timer);const q=termo.value.trim();timer=setTimeout(()=>buscar(q),350);});
- termo.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const primeira=resultados.querySelector('[data-musica]');if(primeira)primeira.click();}});
-})();;;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
+ let timer,seq=0,videos=[];
+ const esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const capa=v=>v.thumbnail||v.thumbnailUrl||(v.videoThumbnails&&v.videoThumbnails[0]&&v.videoThumbnails[0].url)||'';
+ function selecionar(v){const id=v.videoId||v.id||'',link=v.url||(id?'https://www.youtube.com/watch?v='+id:'');if(!link)return;document.getElementById('playlist-nome').value=v.title||'Vídeo do YouTube';document.getElementById('playlist-link').value=link;document.getElementById('playlist-capa').value=capa(v)||(id?'https://img.youtube.com/vi/'+id+'/hqdefault.jpg':'');termo.value=v.title||'';resultados.innerHTML='';status.textContent='✓ Vídeo selecionado! Os campos foram preenchidos. Agora é só tocar em Adicionar.';}
+ function mostrar(lista){videos=lista.slice(0,15);if(!videos.length){status.textContent='Nenhum vídeo encontrado.';return;}status.textContent='Resultados do YouTube — escolha o vídeo desejado:';resultados.innerHTML=videos.map((v,i)=>`<button type="button" class="youtube-resultado" data-video="${i}"><img src="${esc(capa(v))}" alt="" loading="lazy"><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(v.title||'Vídeo do YouTube')}</span><span class="youtube-resultado-canal">${esc(v.author||v.authorName||v.uploaderName||'YouTube')}</span></span></button>`).join('');resultados.querySelectorAll('[data-video]').forEach(b=>b.onclick=()=>selecionar(videos[+b.dataset.video]));}
+ async function consultar(url){const r=await fetch(url,{signal:AbortSignal.timeout(6500)});if(!r.ok)throw Error();return r.json();}
+ async function buscar(q){if(q.length<2){resultados.innerHTML='';status.textContent='';return;}const meu=++seq;status.textContent='Pesquisando vídeos do YouTube...';resultados.innerHTML='';const fontes=['https://yewtu.be/api/v1/search?q='+encodeURIComponent(q)+'&type=video','https://inv.nadeko.net/api/v1/search?q='+encodeURIComponent(q)+'&type=video','https://invidious.nerdvpn.de/api/v1/search?q='+encodeURIComponent(q)+'&type=video'];let lista=[];for(const u of fontes){try{const d=await consultar(u);lista=Array.isArray(d)?d.filter(v=>v.videoId||v.type==='video'):[];if(lista.length)break;}catch(e){}}if(meu!==seq)return;if(lista.length)mostrar(lista);else status.textContent='A busca de vídeos não respondeu agora. Tente novamente em alguns segundos.';}
+ termo.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>buscar(termo.value.trim()),400);});
+})();;;;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
 onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
 </script>
 </body>
