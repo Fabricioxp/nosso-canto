@@ -736,7 +736,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                         </div>
                         <div id="youtube-busca-status" class="youtube-busca-status"></div>
                         <div id="youtube-busca-resultados" class="youtube-busca-resultados"></div>
-                        <small class="youtube-busca-ajuda">As sugestões aparecem enquanto você digita. Toque em uma música para preencher tudo automaticamente. ✨</small>
+                        <small class="youtube-busca-ajuda">Os vídeos aparecem enquanto você digita. Toque em um resultado para preencher tudo automaticamente. ✨</small>
                     </div>
                     <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
                     <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
@@ -1298,15 +1298,49 @@ btnCriacao.onclick=alternarModalPostagem;
 (function iniciarBuscaDeVideosYouTube(){
  const termo=document.getElementById('youtube-busca-termo'), resultados=document.getElementById('youtube-busca-resultados'), status=document.getElementById('youtube-busca-status');
  if(!termo||!resultados||!status)return;
- let timer,seq=0,videos=[];
- const esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const capa=v=>v.thumbnail||v.thumbnailUrl||(v.videoThumbnails&&v.videoThumbnails[0]&&v.videoThumbnails[0].url)||'';
- function selecionar(v){const id=v.videoId||v.id||'',link=v.url||(id?'https://www.youtube.com/watch?v='+id:'');if(!link)return;document.getElementById('playlist-nome').value=v.title||'Vídeo do YouTube';document.getElementById('playlist-link').value=link;document.getElementById('playlist-capa').value=capa(v)||(id?'https://img.youtube.com/vi/'+id+'/hqdefault.jpg':'');termo.value=v.title||'';resultados.innerHTML='';status.textContent='✓ Vídeo selecionado! Os campos foram preenchidos. Agora é só tocar em Adicionar.';}
- function mostrar(lista){videos=lista.slice(0,15);if(!videos.length){status.textContent='Nenhum vídeo encontrado.';return;}status.textContent='Resultados do YouTube — escolha o vídeo desejado:';resultados.innerHTML=videos.map((v,i)=>`<button type="button" class="youtube-resultado" data-video="${i}"><img src="${esc(capa(v))}" alt="" loading="lazy"><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(v.title||'Vídeo do YouTube')}</span><span class="youtube-resultado-canal">${esc(v.author||v.authorName||v.uploaderName||'YouTube')}</span></span></button>`).join('');resultados.querySelectorAll('[data-video]').forEach(b=>b.onclick=()=>selecionar(videos[+b.dataset.video]));}
- async function consultar(url){const r=await fetch(url,{signal:AbortSignal.timeout(6500)});if(!r.ok)throw Error();return r.json();}
- async function buscar(q){if(q.length<2){resultados.innerHTML='';status.textContent='';return;}const meu=++seq;status.textContent='Pesquisando vídeos do YouTube...';resultados.innerHTML='';const fontes=['https://yewtu.be/api/v1/search?q='+encodeURIComponent(q)+'&type=video','https://inv.nadeko.net/api/v1/search?q='+encodeURIComponent(q)+'&type=video','https://invidious.nerdvpn.de/api/v1/search?q='+encodeURIComponent(q)+'&type=video'];let lista=[];for(const u of fontes){try{const d=await consultar(u);lista=Array.isArray(d)?d.filter(v=>v.videoId||v.type==='video'):[];if(lista.length)break;}catch(e){}}if(meu!==seq)return;if(lista.length)mostrar(lista);else status.textContent='A busca de vídeos não respondeu agora. Tente novamente em alguns segundos.';}
- termo.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>buscar(termo.value.trim()),400);});
-})();;;;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
+ let timer=null,seq=0,videos=[];
+ const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const capa=v=>v.thumbnail||v.videoThumbnails?.[0]?.url||v.thumbnailUrl||v.thumb||'';
+ async function consultar(url){const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}finally{clearTimeout(t)}}
+ function selecionar(v){
+   const id=v.videoId||v.id||'', link=v.url||(id?'https://www.youtube.com/watch?v='+id:'');
+   if(!link)return;
+   document.getElementById('playlist-nome').value=v.title||'Vídeo do YouTube';
+   document.getElementById('playlist-link').value=link;
+   document.getElementById('playlist-capa').value=capa(v)||(id?'https://img.youtube.com/vi/'+id+'/hqdefault.jpg':'');
+   termo.value=v.title||''; resultados.innerHTML='';
+   status.textContent='✓ Vídeo selecionado! Os campos foram preenchidos. Agora é só tocar em Adicionar.';
+ }
+ function mostrar(lista){
+   videos=lista.slice(0,15);
+   if(!videos.length){status.textContent='Nenhum vídeo encontrado.';return;}
+   status.textContent='Resultados — escolha o vídeo desejado:';
+   resultados.innerHTML=videos.map((v,i)=>`<button type="button" class="youtube-resultado" data-video="${i}"><img src="${esc(capa(v))}" alt="" loading="lazy"><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(v.title||'Vídeo do YouTube')}</span><span class="youtube-resultado-canal">${esc(v.author||v.authorName||v.uploaderName||v.channel?.name||'YouTube')}</span></span></button>`).join('');
+   resultados.querySelectorAll('[data-video]').forEach(b=>b.onclick=()=>selecionar(videos[+b.dataset.video]));
+ }
+ function normalizarLista(d){
+   if(Array.isArray(d))return d.filter(v=>v.videoId||v.type==='video'||v.id);
+   if(Array.isArray(d?.items))return d.items.filter(v=>v.videoId||v.type==='video'||v.id);
+   return [];
+ }
+ async function buscar(q){
+   if(q.length<2){resultados.innerHTML='';status.textContent='';return;}
+   const meu=++seq; status.textContent='Pesquisando vídeos...'; resultados.innerHTML='';
+   const enc=encodeURIComponent(q);
+   const fontes=[
+     'https://piped.video/api/v1/search?q='+enc+'&filter=videos',
+     'https://pipedapi.kavin.rocks/search?q='+enc+'&filter=videos',
+     'https://yewtu.be/api/v1/search?q='+enc+'&type=video',
+     'https://invidious.nerdvpn.de/api/v1/search?q='+enc+'&type=video'
+   ];
+   let lista=[];
+   for(const u of fontes){try{lista=normalizarLista(await consultar(u));if(lista.length)break;}catch(e){console.warn('Fonte de busca indisponível:',u,e.message)}}
+   if(meu!==seq)return;
+   if(lista.length)mostrar(lista);
+   else status.textContent='Não foi possível buscar vídeos agora. Verifique sua internet e tente novamente.';
+ }
+ termo.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>buscar(termo.value.trim()),450);});
+})();;;;;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
 onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
 </script>
 </body>
