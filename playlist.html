@@ -85,6 +85,128 @@
         }
         .btn-voltar:hover { background: rgba(230, 179, 168, 0.15); }
 
+        .modal-postagem {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 150000;
+            background: rgba(74, 62, 61, 0.42);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-postagem.aberto { display: flex; }
+        .modal-postagem-conteudo {
+            width: 100%;
+            max-width: 520px;
+            max-height: min(88vh, 820px);
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(74, 62, 61, 0.28);
+            padding: 20px;
+            position: relative;
+            animation: entradaModalPostagem .22s ease-out;
+        }
+        @keyframes entradaModalPostagem {
+            from { opacity: 0; transform: translateY(18px) scale(.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-postagem-topo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .modal-postagem-topo h2 {
+            font-family: var(--font-title);
+            color: var(--primary);
+            font-size: 1.45rem;
+        }
+        .btn-fechar-postagem {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #fffafa;
+            color: var(--primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .abas-postagem {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px;
+            margin-bottom: 16px;
+        }
+        .aba-postagem {
+            border: 1px solid var(--border-color);
+            background: #fff8f7;
+            color: var(--secondary);
+            padding: 9px 5px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: .78rem;
+            font-weight: bold;
+            transition: .2s;
+        }
+        .aba-postagem.ativa, .aba-postagem:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .form-postagem-aba { display: none; }
+        .form-postagem-aba.ativo { display: block; }
+        .form-postagem-aba .painel-upload {
+            margin: 0;
+            box-shadow: none;
+            border: 0;
+            padding: 4px 0 0;
+            background: transparent;
+        }
+        .seletor-destino-postagem {
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 14px;
+            background: #fff5f3;
+            border: 1px solid rgba(230, 179, 168, .55);
+        }
+        .seletor-destino-postagem label {
+            display: block;
+            font-size: .78rem;
+            color: var(--secondary);
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        body.dark-mode .modal-postagem { background: rgba(0,0,0,.62); }
+        body.dark-mode .modal-postagem-conteudo { background: #242022; }
+        body.dark-mode .btn-fechar-postagem { background: #302a2d; color: #eee6e4; }
+        body.dark-mode .aba-postagem { background: #302a2d; color: #d8ced0; }
+        body.dark-mode .aba-postagem.ativa, body.dark-mode .aba-postagem:hover { background: var(--primary); color: #fff; }
+        body.dark-mode .seletor-destino-postagem { background: #302a2d; border-color: #514448; }
+        @media (max-width: 420px) {
+            .modal-postagem { padding: 10px; }
+            .modal-postagem-conteudo { max-height: 92vh; padding: 16px; border-radius: 20px; }
+            .abas-postagem { grid-template-columns: repeat(2, 1fr); }
+        }
+
+
+        /* Busca de músicas do YouTube dentro do modal Criar */
+        .youtube-busca{margin-bottom:14px;padding:14px;border:1px solid rgba(230,179,168,.65);border-radius:16px;background:#fff8f7}
+        .youtube-busca-label{display:block;font-size:.88rem;font-weight:bold;color:var(--primary);margin-bottom:8px}
+        .youtube-busca-linha{display:flex;gap:8px;align-items:flex-start}.youtube-busca-linha .input-custom{margin-bottom:0;flex:1}
+        .youtube-busca-btn{border:0;border-radius:14px;padding:12px 14px;background:var(--secondary);color:#fff;font-weight:bold;cursor:pointer;white-space:nowrap}
+        .youtube-busca-status{font-size:.78rem;color:var(--secondary);margin-top:8px;min-height:18px}
+        .youtube-busca-resultados{display:flex;flex-direction:column;gap:7px;margin-top:10px;max-height:300px;overflow:auto}
+        .youtube-resultado{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:1px solid rgba(230,179,168,.45);border-radius:12px;background:#fff;text-align:left;cursor:pointer;font-family:inherit}
+        .youtube-resultado:hover{background:#fff2f0}.youtube-resultado img{width:58px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0}.youtube-resultado-info{min-width:0;flex:1}.youtube-resultado-titulo{font-size:.83rem;font-weight:bold;color:var(--text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.youtube-resultado-canal{font-size:.72rem;color:var(--secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}.youtube-busca-ajuda{display:block;color:var(--secondary);font-size:.72rem;margin-top:9px;line-height:1.35}
+        body.dark-mode .youtube-busca{background:#302a2d;border-color:#514448}body.dark-mode .youtube-resultado{background:#242022;border-color:#514448}body.dark-mode .youtube-resultado-titulo{color:#eee6e4}
+        @media(max-width:420px){.youtube-busca-linha{flex-direction:column}.youtube-busca-btn{width:100%}}
+
         header {
             text-align: center;
             padding: 90px 20px 35px 20px;
@@ -550,32 +672,36 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
     <div class="busca-local"><div class="busca-local-box">🔎 <input id="campo-busca-local" placeholder="Pesquisar 🎶 nossa playlist..."></div><div class="resultados-local" id="resultados-local"></div></div>
 <div class="container-blocos">
         
-        <section class="painel-upload" id="painel-playlist-posts">
-            <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
-            <input type="hidden" id="editando-playlist-id" value="">
-
-            <!-- Busca opcional no YouTube: preenche os campos normais sem alterar a lógica da playlist -->
-            <div class="busca-youtube-musica" style="margin:0 0 15px;padding:12px;border:1px solid var(--border-color);border-radius:14px;background:rgba(255,255,255,.45)">
-                <div style="font-weight:bold;margin-bottom:8px;">🔎 Encontrar uma música no YouTube</div>
-                <div style="display:flex;gap:8px;">
-                    <input type="search" id="youtube-busca-input" class="input-custom" placeholder="Digite o nome da música ou artista" autocomplete="off" style="margin-bottom:0;flex:1;min-width:0;">
-                    <button type="button" id="youtube-busca-btn" class="btn-postar" style="width:auto;padding:10px 14px;white-space:nowrap;">Buscar</button>
+        <div id="modal-postagem" class="modal-postagem" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-postagem">
+            <div class="modal-postagem-conteudo">
+                <div class="modal-postagem-topo">
+                    <h2 id="titulo-modal-postagem">➕ Adicionar música</h2>
+                    <button type="button" class="btn-fechar-postagem" id="btn-fechar-postagem" aria-label="Fechar">✕</button>
                 </div>
-                <div id="youtube-busca-status" style="font-size:.82rem;margin-top:8px;"></div>
-                <div id="youtube-busca-resultados" style="display:grid;gap:8px;margin-top:10px;"></div>
+                <section class="painel-upload" id="painel-playlist-posts" style="display:block">
+                    <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
+                    <input type="hidden" id="editando-playlist-id" value="">
+                    <div class="youtube-busca" id="youtube-busca-playlist">
+                        <label class="youtube-busca-label">🔎 Encontrar música no YouTube</label>
+                        <div class="youtube-busca-linha">
+                            <input type="search" id="youtube-busca-termo" class="input-custom" placeholder="Digite o título ou artista..." autocomplete="off">
+                            <button type="button" class="youtube-busca-btn" id="btn-buscar-youtube">Buscar</button>
+                        </div>
+                        <div id="youtube-busca-status" class="youtube-busca-status"></div>
+                        <div id="youtube-busca-resultados" class="youtube-busca-resultados"></div>
+                        <small class="youtube-busca-ajuda">Escolha uma música e os campos abaixo serão preenchidos automaticamente. Depois você pode editar o título livremente. ✨</small>
+                    </div>
+                    <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
+                    <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
+                    <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
+                    <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
+                        <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
+                        <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
+                    </div>
+                    <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
+                </section>
             </div>
-            
-            <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
-            <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
-            <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
-            
-            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: #fffafa; padding: 10px; border-radius: 10px; border: 1px solid #ffe6e6;">
-                <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
-                <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
-            </div>
-            
-            <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist 🎶</button>
-        </section>
+        </div>
 
         <section class="bloco-separado" id="bloco-playlist">
             <div class="titulo-secao">🎶 Todas as Músicas da Playlist</div>
@@ -1067,74 +1193,21 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         }
         document.addEventListener('DOMContentLoaded', () => { animarLoop(); });
     
-const painelCriacao=document.querySelector('.painel-upload'),btnCriacao=document.getElementById('btn-abrir-criacao');btnCriacao.onclick=()=>{painelCriacao.classList.toggle('aberto');if(painelCriacao.classList.contains('aberto'))painelCriacao.scrollIntoView({behavior:'smooth',block:'start'})};const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
+const modalPostagem=document.getElementById('modal-postagem'),btnCriacao=document.getElementById('btn-abrir-criacao'),btnFecharPostagem=document.getElementById('btn-fechar-postagem');
+function abrirModalPostagem(){ modalPostagem.classList.add('aberto'); document.body.style.overflow='hidden'; setTimeout(()=>document.getElementById('youtube-busca-termo')?.focus(),100); }
+function fecharModalPostagem(){ modalPostagem.classList.remove('aberto'); document.body.style.overflow=''; }
+btnCriacao.onclick=abrirModalPostagem; btnFecharPostagem.onclick=fecharModalPostagem;
+modalPostagem.addEventListener('click',e=>{if(e.target===modalPostagem)fecharModalPostagem()}); document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalPostagem.classList.contains('aberto'))fecharModalPostagem()});
+
+(function iniciarBuscaYouTube(){
+ const termo=document.getElementById('youtube-busca-termo'),btn=document.getElementById('btn-buscar-youtube'),resultados=document.getElementById('youtube-busca-resultados'),status=document.getElementById('youtube-busca-status');
+ if(!termo||!btn||!resultados||!status)return;
+ const esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const escolher=v=>{document.getElementById('playlist-nome').value=v.title||'';document.getElementById('playlist-link').value='https://www.youtube.com/watch?v='+v.id;document.getElementById('playlist-capa').value=v.thumbnail||('https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg');resultados.innerHTML='';status.textContent='✓ Música selecionada! Você pode editar o título antes de salvar.';document.getElementById('playlist-nome').focus();};
+ async function buscar(){const q=termo.value.trim();if(!q){termo.focus();return;}btn.disabled=true;btn.textContent='Buscando...';status.textContent='Procurando músicas...';resultados.innerHTML='';try{const endpoints=['https://pipedapi.kavin.rocks/search?q='+encodeURIComponent(q)+'&filter=videos','https://pipedapi.adminforge.de/search?q='+encodeURIComponent(q)+'&filter=videos'];let dados=null;for(const url of endpoints){try{const r=await fetch(url,{headers:{Accept:'application/json'}});const d=await r.json();if(r.ok&&Array.isArray(d)&&d.length){dados=d;break;}}catch(_){}}if(!dados)throw new Error('Busca indisponível');const itens=dados.slice(0,10).map(x=>({id:x.id||x.videoId,title:x.title,channel:x.uploaderName||x.uploader||x.author||'YouTube',thumbnail:x.thumbnail||x.thumbnailUrl})).filter(x=>x.id&&x.title);if(!itens.length){status.textContent='Nenhuma música encontrada. Tente outro título ou artista.';return;}status.textContent=itens.length+' resultado(s) encontrado(s). Toque em uma música para selecionar.';resultados.innerHTML=itens.map((v,i)=>`<button type="button" class="youtube-resultado" data-youtube-result="${i}"><img src="${esc(v.thumbnail||'https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg')}" alt=""><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(v.title)}</span><span class="youtube-resultado-canal">${esc(v.channel)}</span></span></button>`).join('');resultados.querySelectorAll('[data-youtube-result]').forEach(el=>el.addEventListener('click',()=>escolher(itens[Number(el.dataset.youtubeResult)])));}catch(e){console.error(e);status.textContent='Não foi possível pesquisar agora. Você ainda pode colar o link manualmente.';}finally{btn.disabled=false;btn.textContent='Buscar';}}
+ btn.addEventListener('click',buscar);termo.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();buscar();}});
+})();const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
 onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
-
-
-        // Busca de músicas no YouTube (isolada para não interferir no restante da página)
-        (function configurarBuscaYouTube() {
-            const input = document.getElementById('youtube-busca-input');
-            const botao = document.getElementById('youtube-busca-btn');
-            const status = document.getElementById('youtube-busca-status');
-            const resultados = document.getElementById('youtube-busca-resultados');
-            if (!input || !botao || !status || !resultados) return;
-
-            function limparResultados() { resultados.replaceChildren(); }
-            function selecionarMusica(item) {
-                const titulo = item.title || item.name || '';
-                const id = item.id || item.videoId || '';
-                const url = item.url || item.link || (id ? `https://www.youtube.com/watch?v=${id}` : '');
-                if (!titulo || !url) return;
-                document.getElementById('playlist-nome').value = titulo;
-                document.getElementById('playlist-link').value = url;
-                const capa = document.getElementById('playlist-capa');
-                if (!capa.value && id) capa.value = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-                status.textContent = '✓ Música selecionada! Você pode editar o título antes de salvar.';
-                limparResultados();
-            }
-
-            async function buscar() {
-                const termo = input.value.trim();
-                if (!termo) { status.textContent = 'Digite o nome de uma música ou artista para pesquisar.'; return; }
-                botao.disabled = true;
-                botao.textContent = 'Buscando...';
-                status.textContent = 'Procurando músicas...';
-                limparResultados();
-                try {
-                    // Serviço público de pesquisa. Se estiver indisponível, o cadastro manual continua funcionando normalmente.
-                    const resposta = await fetch(`https://piped.video/api/v1/search?q=${encodeURIComponent(termo)}&filter=videos`, { signal: AbortSignal.timeout(10000) });
-                    if (!resposta.ok) throw new Error('Busca indisponível');
-                    const dados = await resposta.json();
-                    const lista = Array.isArray(dados) ? dados.slice(0, 8) : [];
-                    if (!lista.length) { status.textContent = 'Nenhuma música encontrada. Tente outro termo ou adicione manualmente.'; return; }
-                    status.textContent = 'Selecione uma música:';
-                    lista.forEach(item => {
-                        const titulo = item.title || item.name || 'Sem título';
-                        const canal = item.uploaderName || item.channel || item.uploader || '';
-                        const id = item.id || item.videoId || '';
-                        const thumb = item.thumbnail || (item.thumbnailUrl) || (id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : '');
-                        const card = document.createElement('button');
-                        card.type = 'button';
-                        card.style.cssText = 'display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--border-color);border-radius:10px;padding:8px;background:transparent;cursor:pointer;color:inherit;';
-                        if (thumb) { const img=document.createElement('img'); img.src=thumb; img.alt=''; img.style.cssText='width:70px;height:44px;object-fit:cover;border-radius:7px;flex:0 0 auto;'; card.appendChild(img); }
-                        const texto=document.createElement('span'); texto.style.minWidth='0';
-                        const nome=document.createElement('strong'); nome.textContent=titulo; nome.style.cssText='display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
-                        const autor=document.createElement('small'); autor.textContent=canal; autor.style.cssText='display:block;opacity:.72;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
-                        texto.append(nome, autor); card.appendChild(texto);
-                        card.addEventListener('click', () => selecionarMusica(item));
-                        resultados.appendChild(card);
-                    });
-                } catch (erro) {
-                    console.warn('Busca do YouTube indisponível:', erro);
-                    status.textContent = 'Não foi possível pesquisar agora. Você ainda pode colar o link manualmente abaixo.';
-                } finally {
-                    botao.disabled = false;
-                    botao.textContent = 'Buscar';
-                }
-            }
-            botao.addEventListener('click', buscar);
-            input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); buscar(); } });
-        })();
 </script>
 </body>
 </html>
