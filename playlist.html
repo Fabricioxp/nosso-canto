@@ -628,6 +628,14 @@ body.modal-criacao-aberta .resultados-local { display: none !important; }
 #modal-postagem .modal-postagem-conteudo { z-index: 2147483001 !important; }
 #modal-postagem.aberto { display: flex !important; align-items: flex-start !important; padding: 16px !important; box-sizing: border-box !important; }
 #modal-postagem .modal-postagem-conteudo { width: min(680px, 100%) !important; max-height: calc(100vh - 32px) !important; overflow-y: auto !important; }
+
+/* Sugestões em tempo real e modal da playlist */
+#modal-postagem{z-index:2147483000!important}
+body.modal-criacao-aberta .busca-local{visibility:hidden!important;pointer-events:none!important}
+.menu-criar{z-index:2147483002!important}
+.youtube-sugestao .res-ico{flex-shrink:0}
+.youtube-sugestao{min-height:58px}
+
 </style>
 </head>
 <body>
@@ -693,7 +701,6 @@ body.modal-criacao-aberta .resultados-local { display: none !important; }
             <div class="modal-postagem-conteudo">
                 <div class="modal-postagem-topo">
                     <h2 id="titulo-modal-postagem">➕ Adicionar música</h2>
-                    <button type="button" class="btn-fechar-postagem" id="btn-fechar-postagem" aria-label="Fechar">✕</button>
                 </div>
                 <section class="painel-upload" id="painel-playlist-posts" style="display:block">
                     <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
@@ -702,7 +709,7 @@ body.modal-criacao-aberta .resultados-local { display: none !important; }
                         <label class="youtube-busca-label">🔎 Encontrar música no YouTube</label>
                         <div class="youtube-busca-linha">
                             <input type="search" id="youtube-busca-termo" class="input-custom" placeholder="Digite o título ou artista..." autocomplete="off">
-                            <button type="button" class="youtube-busca-btn" id="btn-buscar-youtube">Buscar</button>
+                            <button type="button" class="youtube-busca-btn" id="btn-buscar-youtube">Ver no YouTube</button>
                         </div>
                         <div id="youtube-busca-status" class="youtube-busca-status"></div>
                         <div id="youtube-busca-resultados" class="youtube-busca-resultados"></div>
@@ -1210,41 +1217,55 @@ body.modal-criacao-aberta .resultados-local { display: none !important; }
         }
         document.addEventListener('DOMContentLoaded', () => { animarLoop(); });
     
-const modalPostagem=document.getElementById('modal-postagem'),btnCriacao=document.getElementById('btn-abrir-criacao'),btnFecharPostagem=document.getElementById('btn-fechar-postagem');
-function abrirModalPostagem(){ modalPostagem.classList.add('aberto'); document.body.classList.add('modal-criacao-aberta'); document.body.style.overflow='hidden'; const rl=document.getElementById('resultados-local'); if(rl)rl.style.display='none'; setTimeout(()=>document.getElementById('youtube-busca-termo')?.focus(),100); }
-function fecharModalPostagem(){ modalPostagem.classList.remove('aberto'); document.body.classList.remove('modal-criacao-aberta'); document.body.style.overflow=''; const rl=document.getElementById('resultados-local'); if(rl)rl.style.display='none'; }
-btnCriacao.onclick=abrirModalPostagem; btnFecharPostagem.onclick=fecharModalPostagem;
-modalPostagem.addEventListener('click',e=>{if(e.target===modalPostagem)fecharModalPostagem()}); document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalPostagem.classList.contains('aberto'))fecharModalPostagem()});
+const modalPostagem=document.getElementById('modal-postagem'),btnCriacao=document.getElementById('btn-abrir-criacao');
+function alternarModalPostagem(){
+ const abrindo=!modalPostagem.classList.contains('aberto');
+ modalPostagem.classList.toggle('aberto',abrindo);
+ document.body.classList.toggle('modal-criacao-aberta',abrindo);
+ document.body.style.overflow=abrindo?'hidden':'';
+ const rl=document.getElementById('resultados-local'); if(rl)rl.style.display='none';
+ btnCriacao.textContent=abrindo?'✕ Fechar':'➕ Criar';
+ if(abrindo)setTimeout(()=>document.getElementById('youtube-busca-termo')?.focus(),100);
+}
+btnCriacao.onclick=alternarModalPostagem;
 
-(function iniciarBuscaYouTube(){
+(function iniciarSugestoesYouTube(){
  const termo=document.getElementById('youtube-busca-termo'),btn=document.getElementById('btn-buscar-youtube'),resultados=document.getElementById('youtube-busca-resultados'),status=document.getElementById('youtube-busca-status');
  if(!termo||!btn||!resultados||!status)return;
+ let timer=null,ultima='';
  const esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const escolher=v=>{document.getElementById('playlist-nome').value=v.title||'';document.getElementById('playlist-link').value='https://www.youtube.com/watch?v='+v.id;document.getElementById('playlist-capa').value=v.thumbnail||('https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg');resultados.innerHTML='';status.textContent='✓ Música selecionada! Você pode editar o título antes de salvar.';document.getElementById('playlist-nome').focus();};
- const buscarJSON=async url=>{const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),8000);try{const r=await fetch(url,{headers:{Accept:'application/json'},signal:ctrl.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}finally{clearTimeout(timer)}};
- function normalizar(d){
-  if(!Array.isArray(d)) return [];
-  return d.map(x=>({id:x.id||x.videoId||x.video_id,title:x.title||x.name,channel:x.uploaderName||x.uploader||x.author||x.author_name||'YouTube',thumbnail:x.thumbnail||x.thumbnailUrl||x.thumbnail_url||x.videoThumbnails?.[0]?.url||''})).filter(x=>x.id&&x.title);
+ function limpar(){resultados.innerHTML='';status.textContent='';}
+ function escolherSugestao(titulo){
+   termo.value=titulo;
+   document.getElementById('playlist-nome').value=titulo;
+   // Link de busca oficial: funciona sem depender de APIs externas instáveis.
+   document.getElementById('playlist-link').value='https://www.youtube.com/results?search_query='+encodeURIComponent(titulo);
+   document.getElementById('playlist-capa').value='';
+   resultados.innerHTML='';
+   status.textContent='✓ Sugestão escolhida! Você pode editar o título e salvar. Ao abrir a música, o YouTube mostrará essa busca.';
  }
- async function buscar(){const q=termo.value.trim();if(!q){termo.focus();return;}btn.disabled=true;btn.textContent='Buscando...';status.textContent='Procurando músicas...';resultados.innerHTML='';
-  const endpoints=[
-   'https://pipedapi.kavin.rocks/search?q='+encodeURIComponent(q)+'&filter=videos',
-   'https://pipedapi.adminforge.de/search?q='+encodeURIComponent(q)+'&filter=videos',
-   'https://pipedapi.reallyaweso.me/search?q='+encodeURIComponent(q)+'&filter=videos',
-   'https://inv.nadeko.net/api/v1/search?q='+encodeURIComponent(q)+'&page=1&type=video',
-   'https://invidious.nerdvpn.de/api/v1/search?q='+encodeURIComponent(q)+'&page=1&type=video'
-  ];
-  try{
-   let itens=[];
-   for(const url of endpoints){try{itens=normalizar(await buscarJSON(url));if(itens.length)break;}catch(e){console.warn('Fonte de busca indisponível:',e)}}
-   if(!itens.length) throw new Error('Sem resultados');
-   itens=itens.slice(0,12);status.textContent=itens.length+' resultado(s) encontrado(s). Toque em uma música para selecionar.';
-   resultados.innerHTML=itens.map((v,i)=>`<button type="button" class="youtube-resultado" data-youtube-result="${i}"><img src="${esc(v.thumbnail||('https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg'))}" alt=""><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(v.title)}</span><span class="youtube-resultado-canal">${esc(v.channel)}</span></span></button>`).join('');
-   resultados.querySelectorAll('[data-youtube-result]').forEach(el=>el.addEventListener('click',()=>escolher(itens[Number(el.dataset.youtubeResult)])));
-  }catch(e){console.error(e);status.textContent='Não foi possível carregar os resultados agora. Tente novamente em alguns segundos ou pesquise no YouTube e cole o link abaixo.';}
-  finally{btn.disabled=false;btn.textContent='Buscar';}
+ async function buscarSugestoes(q){
+   if(q.length<2){limpar();return;}
+   status.textContent='Procurando sugestões...';
+   try{
+     // Endpoint de autocomplete usado pelas sugestões do YouTube/Google. Não precisa de chave de API.
+     const url='https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q='+encodeURIComponent(q);
+     const r=await fetch(url); if(!r.ok)throw new Error('HTTP '+r.status);
+     const d=await r.json(); const lista=Array.isArray(d?.[1])?d[1].slice(0,8):[];
+     if(q!==ultima)return;
+     if(!lista.length){status.textContent='Nenhuma sugestão encontrada.';resultados.innerHTML='';return;}
+     status.textContent='Sugestões enquanto você digita:';
+     resultados.innerHTML=lista.map((t,i)=>`<button type="button" class="youtube-resultado youtube-sugestao" data-sugestao="${i}"><span class="res-ico">🎵</span><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(t)}</span><span class="youtube-resultado-canal">Pesquisar esta música no YouTube</span></span></button>`).join('');
+     resultados.querySelectorAll('[data-sugestao]').forEach(el=>el.addEventListener('click',()=>escolherSugestao(lista[Number(el.dataset.sugestao)])));
+   }catch(e){
+     if(q!==ultima)return;
+     // A página continua útil mesmo se o autocomplete estiver bloqueado pela rede.
+     status.textContent='Digite o nome completo da música e toque em “Ver no YouTube”.'; resultados.innerHTML='';
+   }
  }
- btn.addEventListener('click',buscar);termo.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();buscar();}});
+ termo.addEventListener('input',()=>{ultima=termo.value.trim();clearTimeout(timer);timer=setTimeout(()=>buscarSugestoes(ultima),280);});
+ btn.addEventListener('click',()=>{const q=termo.value.trim();if(!q)return termo.focus();window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank','noopener');});
+ termo.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const primeira=resultados.querySelector('[data-sugestao]');if(primeira)primeira.click();else btn.click();}});
 })();;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
 onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
 </script>
