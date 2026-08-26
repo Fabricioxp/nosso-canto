@@ -704,6 +704,25 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         let musicaAtualYouTube = null;
         let youtubePlayer = null;
         let youtubeApiPronta = false;
+        const CHAVE_PLAYER_COMPARTILHADO = 'player_canto_compartilhado';
+        let restaurandoPlayerCompartilhado = false;
+
+        function salvarPlayerCompartilhado() {
+            if (!musicaAtualYouTube) return;
+            let tempo = 0;
+            try { if (youtubePlayer && youtubePlayer.getCurrentTime) tempo = youtubePlayer.getCurrentTime() || 0; } catch(e) {}
+            sessionStorage.setItem(CHAVE_PLAYER_COMPARTILHADO, JSON.stringify({
+                musica: musicaAtualYouTube,
+                tempo,
+                ativo: true,
+                salvoEm: Date.now()
+            }));
+        }
+
+        function limparPlayerCompartilhado() {
+            sessionStorage.removeItem(CHAVE_PLAYER_COMPARTILHADO);
+        }
+
 
         window.onYouTubeIframeAPIReady = function() {
             youtubeApiPronta = true;
@@ -825,6 +844,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
                 }
                 if (titulo) titulo.textContent = musica.titulo || 'Música';
                 if (status) status.textContent = 'Tocando agora • YouTube';
+                salvarPlayerCompartilhado();
                 if (controle) {
                     controle.textContent = 'Ⅱ';
                     controle.setAttribute('aria-label', 'Pausar');
@@ -833,6 +853,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
                 document.body.classList.add('player-musica-ativo');
 
                 musicaAtualYouTube = musica;
+                salvarPlayerCompartilhado();
             } catch (erro) {
                 console.error('Não foi possível iniciar o player do YouTube:', erro);
                 alert('Não foi possível tocar essa música aqui. Você pode abrir no YouTube. 🎧');
@@ -851,6 +872,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
                 }
             } else if (event.data === YT.PlayerState.PAUSED) {
                 if (status) status.textContent = 'Pausada';
+                salvarPlayerCompartilhado();
                 if (controle) {
                     controle.textContent = '▶';
                     controle.setAttribute('aria-label', 'Continuar');
@@ -886,11 +908,58 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
             document.body.classList.remove('player-musica-ativo');
 
             musicaAtualYouTube = null;
+            limparPlayerCompartilhado();
+        }
+
+
+        window.addEventListener('pagehide', salvarPlayerCompartilhado);
+
+        async function restaurarPlayerCompartilhado() {
+            if (restaurandoPlayerCompartilhado) return;
+            let salvo;
+            try { salvo = JSON.parse(sessionStorage.getItem(CHAVE_PLAYER_COMPARTILHADO) || 'null'); } catch(e) { salvo = null; }
+            if (!salvo || !salvo.ativo || !salvo.musica || !salvo.musica.id) return;
+
+            restaurandoPlayerCompartilhado = true;
+            musicaAtualYouTube = salvo.musica;
+            try {
+                await carregarYouTubeAPI();
+                const host = document.getElementById('youtube-player-host');
+                const iniciar = () => {
+                    const tempo = Math.max(0, Number(salvo.tempo) || 0);
+                    if (tempo) youtubePlayer.seekTo(tempo, true);
+                    youtubePlayer.playVideo();
+                };
+                if (!youtubePlayer) {
+                    youtubePlayer = new YT.Player(host, {
+                        width:'1', height:'1', videoId: salvo.musica.id,
+                        playerVars:{autoplay:1,controls:0,playsinline:1,rel:0,modestbranding:1},
+                        events:{
+                            onReady: iniciar,
+                            onStateChange: atualizarEstadoPlayerYouTube
+                        }
+                    });
+                } else {
+                    youtubePlayer.loadVideoById(salvo.musica.id, Math.max(0, Number(salvo.tempo) || 0));
+                    iniciar();
+                }
+
+                const barra = document.getElementById('player-musica-barra');
+                const capa = document.getElementById('player-musica-capa');
+                const titulo = document.getElementById('player-musica-titulo');
+                if (capa) capa.src = salvo.musica.capa || `https://img.youtube.com/vi/${salvo.musica.id}/hqdefault.jpg`;
+                if (titulo) titulo.textContent = salvo.musica.titulo || 'Música';
+                if (barra) barra.classList.add('ativo');
+                document.body.classList.add('player-musica-ativo');
+            } catch(e) {
+                console.warn('Não foi possível restaurar automaticamente a música:', e);
+            }
         }
 
         // Pré-carrega a API para que o botão "Escutar agora" possa iniciar o áudio
         // diretamente após o toque, inclusive em celulares.
         carregarYouTubeAPI().catch(() => console.warn('API do YouTube não carregada ainda.'));
+        restaurarPlayerCompartilhado();
 
         document.getElementById('btn-ouvir-youtube').addEventListener('click', abrirYouTubeAplicativo);
         document.getElementById('btn-escutar-agora').addEventListener('click', escutarYouTubeAgora);
@@ -936,7 +1005,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
                         <div class="musica-info">
                             <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
                             <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
-                            <button type="button" class="musica-link-btn" onclick="abrirOpcoesMusica(${JSON.stringify(post.link)}, ${JSON.stringify(post.titulo)}, ${JSON.stringify(post.imagem)})">▶️ Ouvir Música</button>
+                            <button type="button" class="musica-link-btn btn-ouvir-musica" data-link="${String(post.link || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" data-titulo="${String(post.titulo || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" data-capa="${String(post.imagem || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">▶️ Ouvir Música</button>
                         </div>
                     </div>
                     <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
@@ -979,8 +1048,33 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         }
         document.addEventListener('DOMContentLoaded', () => { animarLoop(); });
     
+document.addEventListener('click', function(event) {
+    const botao = event.target.closest('.btn-ouvir-musica');
+    if (!botao) return;
+    window.abrirOpcoesMusica(
+        botao.dataset.link || '',
+        botao.dataset.titulo || 'Música',
+        botao.dataset.capa || ''
+    );
+});
+
 const painelCriacao=document.querySelector('.painel-upload'),btnCriacao=document.getElementById('btn-abrir-criacao');btnCriacao.onclick=()=>{painelCriacao.classList.toggle('aberto');if(painelCriacao.classList.contains('aberto'))painelCriacao.scrollIntoView({behavior:'smooth',block:'start'})};const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
-onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
+onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(modo){
+    const escuro = modo === 'dark';
+    const btn = document.getElementById('btn-theme-toggle');
+    document.body.classList.toggle('dark-mode', escuro);
+    if (btn) {
+        btn.textContent = escuro ? '☀️' : '🌙';
+        btn.title = escuro ? 'Modo noturno ativo — tocar para modo claro' : 'Modo claro ativo — tocar para modo noturno';
+        btn.setAttribute('aria-label', btn.title);
+    }
+    localStorage.setItem('tema_canto', escuro ? 'dark' : 'light');
+}
+const btnTemaPlaylist = document.getElementById('btn-theme-toggle');
+aplicarTemaPlaylist(localStorage.getItem('tema_canto') || 'light');
+if (btnTemaPlaylist) btnTemaPlaylist.addEventListener('click', () => {
+    aplicarTemaPlaylist(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
+});
 </script>
 </body>
 </html>
