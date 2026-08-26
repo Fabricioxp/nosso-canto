@@ -636,6 +636,20 @@ body.modal-criacao-aberta .busca-local{visibility:hidden!important;pointer-event
 .youtube-sugestao .res-ico{flex-shrink:0}
 .youtube-sugestao{min-height:58px}
 
+
+/* Modal de criação — otimizado exclusivamente para celular */
+#modal-postagem{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;z-index:2147483647!important;display:none!important;isolation:isolate!important;background:rgba(35,25,28,.52)!important;padding:12px!important;box-sizing:border-box!important;overflow:hidden!important}
+#modal-postagem.aberto{display:flex!important;align-items:flex-end!important;justify-content:center!important}
+#modal-postagem .modal-postagem-conteudo{position:relative!important;width:100%!important;max-width:520px!important;max-height:calc(100dvh - 24px)!important;margin:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;border-radius:22px!important;box-sizing:border-box!important;padding:16px!important;z-index:1!important}
+body.modal-criacao-aberta{overflow:hidden!important;touch-action:none!important}
+body.modal-criacao-aberta .busca-local,body.modal-criacao-aberta .resultados-local{display:none!important!important;visibility:hidden!important;pointer-events:none!important}
+body.modal-criacao-aberta .menu-criar{z-index:2147483647!important}
+.youtube-busca-linha{display:block!important}.youtube-busca-btn{display:none!important}
+.youtube-busca-resultados{max-height:42dvh!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;position:relative!important;z-index:2!important}
+.youtube-resultado{min-height:64px!important}.youtube-resultado img{width:54px!important;height:54px!important;border-radius:10px!important}
+.youtube-busca-status{min-height:20px!important}
+@media(max-width:520px){#modal-postagem{padding:8px!important}#modal-postagem .modal-postagem-conteudo{max-height:calc(100dvh - 16px)!important;border-radius:20px 20px 14px 14px!important;padding:14px!important}.youtube-busca{padding:11px!important}.youtube-busca-resultados{max-height:36dvh!important}}
+
 </style>
 </head>
 <body>
@@ -706,14 +720,14 @@ body.modal-criacao-aberta .busca-local{visibility:hidden!important;pointer-event
                     <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
                     <input type="hidden" id="editando-playlist-id" value="">
                     <div class="youtube-busca" id="youtube-busca-playlist">
-                        <label class="youtube-busca-label">🔎 Encontrar música no YouTube</label>
+                        <label class="youtube-busca-label">🔎 Encontrar uma música</label>
                         <div class="youtube-busca-linha">
-                            <input type="search" id="youtube-busca-termo" class="input-custom" placeholder="Digite o título ou artista..." autocomplete="off">
-                            <button type="button" class="youtube-busca-btn" id="btn-buscar-youtube">Ver no YouTube</button>
+                            <input type="search" id="youtube-busca-termo" class="input-custom" placeholder="Comece a digitar o nome ou artista..." autocomplete="off">
+                            
                         </div>
                         <div id="youtube-busca-status" class="youtube-busca-status"></div>
                         <div id="youtube-busca-resultados" class="youtube-busca-resultados"></div>
-                        <small class="youtube-busca-ajuda">Escolha uma música e os campos abaixo serão preenchidos automaticamente. Depois você pode editar o título livremente. ✨</small>
+                        <small class="youtube-busca-ajuda">As sugestões aparecem enquanto você digita. Toque em uma música para preencher tudo automaticamente. ✨</small>
                     </div>
                     <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
                     <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
@@ -1224,49 +1238,53 @@ function alternarModalPostagem(){
  document.body.classList.toggle('modal-criacao-aberta',abrindo);
  document.body.style.overflow=abrindo?'hidden':'';
  const rl=document.getElementById('resultados-local'); if(rl)rl.style.display='none';
- btnCriacao.textContent=abrindo?'✕ Fechar':'➕ Criar';
+ btnCriacao.textContent=abrindo?'Fechar':'➕ Criar';
  if(abrindo)setTimeout(()=>document.getElementById('youtube-busca-termo')?.focus(),100);
 }
 btnCriacao.onclick=alternarModalPostagem;
 
-(function iniciarSugestoesYouTube(){
- const termo=document.getElementById('youtube-busca-termo'),btn=document.getElementById('btn-buscar-youtube'),resultados=document.getElementById('youtube-busca-resultados'),status=document.getElementById('youtube-busca-status');
- if(!termo||!btn||!resultados||!status)return;
- let timer=null,ultima='';
- const esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function limpar(){resultados.innerHTML='';status.textContent='';}
- function escolherSugestao(titulo){
-   termo.value=titulo;
+(function iniciarSugestoesMusicais(){
+ const termo=document.getElementById('youtube-busca-termo'),resultados=document.getElementById('youtube-busca-resultados'),status=document.getElementById('youtube-busca-status');
+ if(!termo||!resultados||!status)return;
+ let timer=null,ultimaBusca=0,cache=[];
+ const esc=v=>String(v||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const limpar=()=>{resultados.innerHTML='';status.textContent='';cache=[];};
+ function escolher(item){
+   const titulo=[item.trackName,item.artistName].filter(Boolean).join(' — ');
    document.getElementById('playlist-nome').value=titulo;
-   // Link de busca oficial: funciona sem depender de APIs externas instáveis.
    document.getElementById('playlist-link').value='https://www.youtube.com/results?search_query='+encodeURIComponent(titulo);
-   document.getElementById('playlist-capa').value='';
+   document.getElementById('playlist-capa').value=(item.artworkUrl100||'').replace('100x100bb','600x600bb');
+   termo.value=titulo;
    resultados.innerHTML='';
-   status.textContent='✓ Sugestão escolhida! Você pode editar o título e salvar. Ao abrir a música, o YouTube mostrará essa busca.';
+   status.textContent='✓ Música selecionada! Os campos foram preenchidos automaticamente. Você pode editar o título e tocar em “Adicionar à Playlist”.';
+   document.getElementById('playlist-nome').focus();
  }
- async function buscarSugestoes(q){
+ async function buscar(q){
    if(q.length<2){limpar();return;}
-   status.textContent='Procurando sugestões...';
+   const id=++ultimaBusca;
+   status.textContent='Procurando músicas...';
    try{
-     // Endpoint de autocomplete usado pelas sugestões do YouTube/Google. Não precisa de chave de API.
-     const url='https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q='+encodeURIComponent(q);
-     const r=await fetch(url); if(!r.ok)throw new Error('HTTP '+r.status);
-     const d=await r.json(); const lista=Array.isArray(d?.[1])?d[1].slice(0,8):[];
-     if(q!==ultima)return;
-     if(!lista.length){status.textContent='Nenhuma sugestão encontrada.';resultados.innerHTML='';return;}
-     status.textContent='Sugestões enquanto você digita:';
-     resultados.innerHTML=lista.map((t,i)=>`<button type="button" class="youtube-resultado youtube-sugestao" data-sugestao="${i}"><span class="res-ico">🎵</span><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(t)}</span><span class="youtube-resultado-canal">Pesquisar esta música no YouTube</span></span></button>`).join('');
-     resultados.querySelectorAll('[data-sugestao]').forEach(el=>el.addEventListener('click',()=>escolherSugestao(lista[Number(el.dataset.sugestao)])));
+     // Catálogo musical com CORS público e estável; a seleção gera automaticamente a busca correspondente no YouTube.
+     const url='https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&entity=song&limit=10&country=BR';
+     const r=await fetch(url); if(!r.ok)throw new Error('Falha na busca');
+     const d=await r.json(); if(id!==ultimaBusca)return;
+     cache=Array.isArray(d.results)?d.results:[];
+     if(!cache.length){status.textContent='Não encontrei músicas com esse nome. Tente artista ou outro trecho.';resultados.innerHTML='';return;}
+     status.textContent='Toque na música desejada:';
+     resultados.innerHTML=cache.map((m,i)=>{
+       const titulo=esc(m.trackName||'Música'), artista=esc(m.artistName||'Artista'), img=esc((m.artworkUrl100||'').replace('100x100bb','200x200bb'));
+       return `<button type="button" class="youtube-resultado" data-musica="${i}"><img src="${img}" alt=""><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${titulo}</span><span class="youtube-resultado-canal">${artista}</span></span></button>`;
+     }).join('');
+     resultados.querySelectorAll('[data-musica]').forEach(el=>el.addEventListener('click',()=>escolher(cache[Number(el.dataset.musica)])));
    }catch(e){
-     if(q!==ultima)return;
-     // A página continua útil mesmo se o autocomplete estiver bloqueado pela rede.
-     status.textContent='Digite o nome completo da música e toque em “Ver no YouTube”.'; resultados.innerHTML='';
+     if(id!==ultimaBusca)return;
+     status.textContent='Não foi possível carregar sugestões agora. Verifique sua conexão e tente novamente.';
+     resultados.innerHTML='';
    }
  }
- termo.addEventListener('input',()=>{ultima=termo.value.trim();clearTimeout(timer);timer=setTimeout(()=>buscarSugestoes(ultima),280);});
- btn.addEventListener('click',()=>{const q=termo.value.trim();if(!q)return termo.focus();window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank','noopener');});
- termo.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const primeira=resultados.querySelector('[data-sugestao]');if(primeira)primeira.click();else btn.click();}});
-})();;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
+ termo.addEventListener('input',()=>{clearTimeout(timer);const q=termo.value.trim();timer=setTimeout(()=>buscar(q),350);});
+ termo.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const primeira=resultados.querySelector('[data-musica]');if(primeira)primeira.click();}});
+})();;;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
 onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
 </script>
 </body>
