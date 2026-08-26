@@ -26,33 +26,32 @@
       --maria-text: #f8fafc;
     }
 
-    body.theme-whatsapp {
-      --primary: #075e54;
-      --secondary: #128c7e;
-      --border-color: #25d366;
-      --bg-card: #ffffff;
-      --text-color: #111b21;
-      --text-muted: #667781;
-      --bg-main: #efeae2;
+    /* Tema escuro no mesmo estilo da página principal */
+    body.dark-mode {
+      --primary: #8c625d;
+      --secondary: #a68580;
+      --border-color: #514448;
+      --bg-card: #242022;
+      --text-color: #eee6e4;
+      --text-muted: #b9aaa8;
+      --bg-main: #161415;
+      --fabricio-bg: #3a2c31;
+      --fabricio-border: #66575b;
+      --fabricio-text: #ffffff;
+      --maria-bg: #302a2d;
+      --maria-border: #514448;
+      --maria-text: #f8fafc;
     }
-    body.theme-dark {
-      --primary: #38bdf8;
-      --secondary: #0284c7;
-      --border-color: #1e293b;
-      --bg-card: #0f172a;
-      --text-color: #f8fafc;
-      --text-muted: #94a3b8;
-      --bg-main: #020617;
+    body.dark-mode .card,
+    body.dark-mode .top-header,
+    body.dark-mode .tabs-nav,
+    body.dark-mode .tab-btn,
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      border-color: #514448;
     }
-    body.theme-neon {
-      --primary: #a855f7;
-      --secondary: #c084fc;
-      --border-color: #581c87;
-      --bg-card: #1e1b4b;
-      --text-color: #f3e8ff;
-      --text-muted: #c084fc;
-      --bg-main: #0f0728;
-    }
+
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -68,6 +67,12 @@
       -webkit-font-smoothing: antialiased;
       transition: background-color 0.3s, color 0.3s;
     }
+    .theme-toggle {
+      background: none; border: 1px solid var(--border-color); border-radius: 18px;
+      padding: 6px 10px; cursor: pointer; font-size: 1.05rem; line-height: 1;
+      color: var(--text-color);
+    }
+    .theme-toggle:hover { transform: scale(1.04); }
     .container { max-width: 900px; width: 100%; }
     .card {
       background-color: var(--bg-card);
@@ -194,10 +199,8 @@
     .wrap-square { width: 420px; min-height: 420px; }
     .wrap-landscape { width: 550px; min-height: 310px; }
 
-    .theme-romantic { background: linear-gradient(135deg, #4a154b, #1e293b); color: #ffffff; }
-    .theme-dark { background: linear-gradient(135deg, #0f172a, #020617); color: #f8fafc; }
-    .theme-neon { background: linear-gradient(135deg, #2e1065, #3b0764); color: #38bdf8; }
-    .theme-gold { background: linear-gradient(135deg, #451a03, #78350f); color: #fef08a; }
+    .theme-light { background: linear-gradient(135deg, #fff3f2, #f6e8e5); color: #4a3e3d; }
+    .theme-dark { background: linear-gradient(135deg, #242022, #161415); color: #eee6e4; }
 
     #exportCard {
       border-radius: 20px; padding: 24px; text-align: center;
@@ -253,19 +256,12 @@
   <div class="container">
     <header class="top-header">
       <div><div class="brand-title">💖 Nosso Histórico de Amor</div><div class="brand-subtitle">Explore, compare e transforme as conversas em lembranças.</div></div>
-      <a class="btn home-btn" href="index.html">← Página inicial</a>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="theme-toggle" id="btn-theme-toggle" aria-label="Alternar modo claro e noturno" title="Modo noturno">☀️</button>
+        <a class="btn home-btn" href="index.html">← Página inicial</a>
+      </div>
     </header>
     <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span style="font-size: 0.75rem; font-weight: bold; color: var(--primary);">🎨 Tema do Site:</span>
-        <div style="display: flex; gap: 6px;">
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('default')">🌸 Padrão</button>
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('whatsapp')">💬 Whats</button>
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('dark')">🌙 Dark</button>
-          <button class="btn" style="padding: 2px 8px;" onclick="setSiteTheme('neon')">⚡ Neon</button>
-        </div>
-      </div>
-
       <div style="background: rgba(140, 98, 93, 0.08); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 10px; font-size: 0.75rem; text-align: center; margin-bottom: 12px;">
         💖 <b>Estatísticas:</b> Algumas estatísticas de nossas conversas.
       </div>
@@ -448,10 +444,8 @@
 
           <label style="font-size: 0.8rem; font-weight: bold;">Estilo Visual:
             <select id="wrapTheme" onchange="updateWrappedPreview()" style="width:100%; padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); margin-top:4px;">
-              <option value="romantic">💖 Romântico Pastel</option>
-              <option value="dark">🌙 Dark Midnight</option>
-              <option value="neon">⚡ Neon Cyberpunk</option>
-              <option value="gold">✨ Elegante Dourado</option>
+              <option value="light">☀️ Tema claro</option>
+              <option value="dark">🌙 Tema escuro</option>
             </select>
           </label>
 
@@ -482,7 +476,7 @@
         <button class="btn btn-primary" onclick="downloadWrappedImage()" style="margin: 0 auto 16px auto;">📥 Baixar Imagem do Card</button>
 
         <div id="exportCardWrapper" style="display: flex; justify-content: center; overflow-x: auto; padding: 10px 0;">
-          <div id="exportCard" class="wrap-story theme-romantic">
+          <div id="exportCard" class="wrap-story theme-light">
             <img id="wrapBgImage" alt="" style="display:none;">
             <div>
               <h2 id="wrapTitle">Nosso Histórico de Amor ❤️</h2>
@@ -544,8 +538,22 @@
 
     const sleep = (ms = 10) => new Promise(resolve => setTimeout(resolve, ms));
 
-    function setSiteTheme(theme) {
-      document.body.className = theme === 'default' ? '' : `theme-${theme}`;
+    // Mesmo sistema de tema da página principal: somente claro e escuro.
+    const botaoTema = document.getElementById('btn-theme-toggle');
+    function aplicarTema(modo) {
+      const escuro = modo === 'dark';
+      document.body.classList.toggle('dark-mode', escuro);
+      if (botaoTema) {
+        botaoTema.textContent = escuro ? '🌙' : '☀️';
+        botaoTema.title = escuro ? 'Modo noturno ativo — trocar para modo claro' : 'Modo claro ativo — trocar para modo noturno';
+      }
+      localStorage.setItem('tema_canto', escuro ? 'dark' : 'light');
+    }
+    aplicarTema(localStorage.getItem('tema_canto') || 'light');
+    if (botaoTema) {
+      botaoTema.addEventListener('click', () => {
+        aplicarTema(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
+      });
     }
 
     async function updateProgress(percent, label = "") {
