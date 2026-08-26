@@ -1327,17 +1327,26 @@ btnCriacao.onclick=alternarModalPostagem;
    if(q.length<2){resultados.innerHTML='';status.textContent='';return;}
    const meu=++seq; status.textContent='Pesquisando vídeos...'; resultados.innerHTML='';
    const enc=encodeURIComponent(q);
-   const fontes=[
-     'https://piped.video/api/v1/search?q='+enc+'&filter=videos',
-     'https://pipedapi.kavin.rocks/search?q='+enc+'&filter=videos',
-     'https://yewtu.be/api/v1/search?q='+enc+'&type=video',
-     'https://invidious.nerdvpn.de/api/v1/search?q='+enc+'&type=video'
-   ];
+   const apiKey='AIzaSyDqRjaqWGyLFTmgvp_2DP1qZw-gmpNW0s0';
    let lista=[];
-   for(const u of fontes){try{lista=normalizarLista(await consultar(u));if(lista.length)break;}catch(e){console.warn('Fonte de busca indisponível:',u,e.message)}}
+   try {
+     const url='https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&q='+enc+'&key='+encodeURIComponent(apiKey);
+     const dados=await consultar(url);
+     lista=(dados.items||[]).map(item=>({
+       videoId:item.id?.videoId||'',
+       title:item.snippet?.title||'Vídeo do YouTube',
+       author:item.snippet?.channelTitle||'YouTube',
+       thumbnail:item.snippet?.thumbnails?.medium?.url||item.snippet?.thumbnails?.default?.url||''
+     })).filter(v=>v.videoId);
+   } catch(e) {
+     console.error('Erro na busca oficial do YouTube:',e);
+     if(meu!==seq)return;
+     status.textContent='Não foi possível pesquisar agora. Confira se a YouTube Data API v3 está ativada e tente novamente.';
+     return;
+   }
    if(meu!==seq)return;
    if(lista.length)mostrar(lista);
-   else status.textContent='Não foi possível buscar vídeos agora. Verifique sua internet e tente novamente.';
+   else status.textContent='Nenhum vídeo encontrado para essa pesquisa.';
  }
  termo.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>buscar(termo.value.trim()),450);});
 })();;;;;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
