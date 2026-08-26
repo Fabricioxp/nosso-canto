@@ -1124,7 +1124,16 @@
 /* Busca do Nosso Canto — integrada sem alterar o restante do visual */
 .busca-global{max-width:720px;margin:18px auto 24px;padding:0 15px;position:relative;z-index:20}.busca-linha{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid rgba(140,98,93,.18);border-radius:22px;padding:8px 12px;box-shadow:0 8px 22px rgba(140,98,93,.08)}.busca-icone{font-size:1.05rem}.busca-global input{border:0;outline:0;background:transparent;font:inherit;flex:1;min-width:0;padding:8px}.busca-global select{border:0;border-left:1px solid rgba(140,98,93,.15);background:transparent;padding:7px;color:inherit;font:inherit}.resultados-busca{display:none;margin-top:8px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.12);max-height:330px;overflow:auto}.resultado-busca{display:flex;width:100%;align-items:center;gap:11px;padding:10px;border:0;border-bottom:1px solid rgba(0,0,0,.06);background:#fff;text-align:left;font:inherit;cursor:pointer}.resultado-busca:hover{background:#fff7f5}.resultado-thumb{width:42px;height:42px;border-radius:11px;object-fit:cover;background:#f6e8e5;display:grid;place-items:center;flex:0 0 42px}.resultado-info{min-width:0}.resultado-titulo{display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resultado-sub{font-size:.78rem;opacity:.7}.resultado-vazio{padding:15px;text-align:center}.destino-destaque{outline:3px solid rgba(230,179,168,.8)!important;outline-offset:5px}@media(max-width:520px){.busca-global select{max-width:120px;font-size:.82rem}}body.dark-mode .busca-linha,body.dark-mode .resultados-busca,body.dark-mode .resultado-busca{background:#242022;color:#eee6e4}body.dark-mode .resultado-busca:hover{background:#342d30}
 
-    </style>
+    
+/* Busca oficial de vídeos do YouTube no formulário de música */
+.youtube-busca{margin-bottom:14px;padding:14px;border:1px solid rgba(230,179,168,.65);border-radius:16px;background:#fff8f7}
+.youtube-busca-label{display:block;font-size:.88rem;font-weight:bold;color:var(--primary);margin-bottom:8px}
+.youtube-busca-status{font-size:.78rem;color:var(--secondary);margin-top:8px;min-height:18px}
+.youtube-busca-resultados{display:flex;flex-direction:column;gap:7px;margin-top:10px;max-height:300px;overflow:auto;position:relative;z-index:2}
+.youtube-resultado{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:1px solid rgba(230,179,168,.45);border-radius:12px;background:#fff;text-align:left;cursor:pointer;font-family:inherit}
+.youtube-resultado img{width:58px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0}.youtube-resultado-info{min-width:0;flex:1}.youtube-resultado-titulo{display:block;font-size:.83rem;font-weight:bold;color:var(--text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.youtube-resultado-canal{display:block;font-size:.72rem;color:var(--secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}.youtube-busca-ajuda{display:block;color:var(--secondary);font-size:.72rem;margin-top:9px;line-height:1.35}
+body.dark-mode .youtube-busca{background:#302a2d;border-color:#514448}body.dark-mode .youtube-resultado{background:#242022;border-color:#514448}body.dark-mode .youtube-resultado-titulo{color:#eee6e4}
+</style>
 </head>
 <body>
 
@@ -1192,6 +1201,13 @@
                     <div class="titulo-secao" id="titulo-painel-playlist" style="margin-bottom: 15px;">🎧 Dedicar uma Música</div>
                 <input type="hidden" id="editando-playlist-id" value="">
                 
+                                    <div class="youtube-busca" id="youtube-busca-playlist">
+                        <label class="youtube-busca-label" for="youtube-busca-termo">🔎 Pesquisar no YouTube</label>
+                        <input type="search" id="youtube-busca-termo" class="input-custom" placeholder="Comece a digitar música, artista ou vídeo..." autocomplete="off">
+                        <div id="youtube-busca-status" class="youtube-busca-status"></div>
+                        <div id="youtube-busca-resultados" class="youtube-busca-resultados"></div>
+                        <small class="youtube-busca-ajuda">Os vídeos aparecem enquanto você digita. Toque em um resultado para preencher tudo automaticamente. ✨</small>
+                    </div>
                 <input type="text" id="playlist-nome" class="input-custom" placeholder="Nome da Música (Obrigatório)">
                 <input type="text" id="playlist-link" class="input-custom" placeholder="Link da Música (Spotify ou YouTube)">
                 <input type="text" id="playlist-capa" class="input-custom" placeholder="Link da Foto (Deixe vazio para auto-capa do YouTube)">
@@ -2546,7 +2562,42 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         const campoBuscaGlobal=document.getElementById('campo-busca-global'),filtroBuscaGlobal=document.getElementById('filtro-busca-global'),resultadosBuscaGlobal=document.getElementById('resultados-busca-global');let indiceBuscaGlobal=[];const normalizarBusca=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();const metaBusca={playlist:['playlist.html','🎵 Música','🎵'],dela:['cardsdela.html','✨ Card dela','✨'],meu:['cardsmeu.html','✨ Card meu','✨'],galeria:['index.html','🖼️ Galeria','🖼️'],texto:['index.html','✍️ Declaração','✍️']};function cat(p){return p.destino==='playlist'?'playlist':['dela','meu'].includes(p.destino)?'cards':p.destino}function score(p,q){let t=normalizarBusca(p.titulo),o=normalizarBusca([p.subtitulo,p.corpo,p.conteudo,p.autor].join(' '));if(t===q)return 1000;if(t.startsWith(q))return 850;if(t.includes(q))return 700;if(o.includes(q))return 450;return q.split(/\s+/).every(x=>t.includes(x)||o.includes(x))?300:-1}function mostrarBusca(){let q=normalizarBusca(campoBuscaGlobal.value),f=filtroBuscaGlobal.value;if(!q){resultadosBuscaGlobal.style.display='none';return}let a=indiceBuscaGlobal.map(p=>[p,score(p,q)]).filter(x=>x[1]>=0&&(f==='todos'||cat(x[0])===f)).sort((a,b)=>b[1]-a[1]).slice(0,12);resultadosBuscaGlobal.style.display='block';resultadosBuscaGlobal.innerHTML=a.length?'':'<div class="resultado-vazio">Não encontrei ainda 🤍 Tente uma parte do título.</div>';a.forEach(([p])=>{let m=metaBusca[p.destino]||['index.html','Conteúdo','🤍'],b=document.createElement('button');b.className='resultado-busca';b.innerHTML=(p.imagem?`<img class="resultado-thumb" src="${p.imagem}" alt="">`:`<span class="resultado-thumb">${m[2]}</span>`)+`<span class="resultado-info"><span class="resultado-titulo">${p.titulo||p.subtitulo||m[1]}</span><span class="resultado-sub">${m[1]}</span></span>`;b.onclick=()=>{ if(p.destino==='playlist' && typeof window.abrirOpcoesMusica==='function'){ window.abrirOpcoesMusica(p.link,p.titulo,p.imagem); resultadosBuscaGlobal.style.display='none'; return; } location.href=(p.destino==='galeria'?'index.html#bloco-galeria-momentos':p.destino==='texto'?'index.html#bloco-nossos-textos':m[0]+'#'+p.id); };resultadosBuscaGlobal.appendChild(b)})}if(campoBuscaGlobal){campoBuscaGlobal.oninput=mostrarBusca;filtroBuscaGlobal.onchange=mostrarBusca}onSnapshot(collection(db,'posts'),s=>{indiceBuscaGlobal=[];s.forEach(d=>{let p={id:d.id,...d.data()};if(metaBusca[p.destino])indiceBuscaGlobal.push(p)});mostrarBusca()});
 
         verificarSessao();
-    </script>
+    
+
+/* Busca oficial do YouTube para a página inicial */
+(function iniciarBuscaDeVideosYouTube(){
+ const termo=document.getElementById('youtube-busca-termo'), resultados=document.getElementById('youtube-busca-resultados'), status=document.getElementById('youtube-busca-status');
+ if(!termo||!resultados||!status)return;
+ let timer=null,seq=0,videos=[];
+ const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function buscar(q){
+   if(q.length<2){resultados.innerHTML='';status.textContent='';return;}
+   const meu=++seq; status.textContent='Pesquisando vídeos...'; resultados.innerHTML='';
+   try{
+     const apiKey='AIzaSyDqRjaqWGyLFTmgvp_2DP1qZw-gmpNW0s0';
+     const url='https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=15&q='+encodeURIComponent(q)+'&key='+encodeURIComponent(apiKey);
+     const r=await fetch(url,{cache:'no-store'}); const dados=await r.json().catch(()=>({}));
+     if(!r.ok) throw new Error(dados?.error?.message||('HTTP '+r.status));
+     if(meu!==seq)return;
+     videos=(dados.items||[]).map(item=>({
+       id:item.id?.videoId||'', title:item.snippet?.title||'Vídeo do YouTube', author:item.snippet?.channelTitle||'YouTube',
+       thumbnail:item.snippet?.thumbnails?.medium?.url||item.snippet?.thumbnails?.default?.url||''
+     })).filter(v=>v.id);
+     if(!videos.length){status.textContent='Nenhum vídeo encontrado.';return;}
+     status.textContent='Resultados — toque no vídeo desejado:';
+     resultados.innerHTML=videos.map((v,i)=>`<button type="button" class="youtube-resultado" data-video="${i}"><img src="${esc(v.thumbnail)}" alt="" loading="lazy"><span class="youtube-resultado-info"><span class="youtube-resultado-titulo">${esc(v.title)}</span><span class="youtube-resultado-canal">${esc(v.author)}</span></span></button>`).join('');
+     resultados.querySelectorAll('[data-video]').forEach(b=>b.onclick=()=>{
+       const v=videos[+b.dataset.video]; if(!v)return;
+       document.getElementById('playlist-nome').value=v.title;
+       document.getElementById('playlist-link').value='https://www.youtube.com/watch?v='+v.id;
+       document.getElementById('playlist-capa').value=v.thumbnail||('https://img.youtube.com/vi/'+v.id+'/hqdefault.jpg');
+       termo.value=v.title; resultados.innerHTML=''; status.textContent='✓ Vídeo selecionado! Os campos foram preenchidos. Agora é só adicionar.';
+     });
+   }catch(e){if(meu!==seq)return; console.error('Erro na busca do YouTube:',e); status.textContent='Não foi possível pesquisar agora: '+(e.message||'erro desconhecido');}
+ }
+ termo.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>buscar(termo.value.trim()),450);});
+})();
+</script>
 
     <script>
         const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2029, 7, 12, 0, 0, 0) };
@@ -2566,4 +2617,4 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
     </script>
 </body>
-    </html>
+</html>
