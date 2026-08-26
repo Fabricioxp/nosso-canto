@@ -199,11 +199,288 @@
         #canvas-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none !important; z-index: 1; transform: translateZ(0); }
     
 /* Visual integrado ao index */
-.theme-toggle{background:transparent;border:1px solid rgba(140,98,93,.25);border-radius:18px;padding:6px 10px;cursor:pointer}.busca-local{max-width:680px;margin:15px auto;padding:0 15px;position:relative;z-index:10}.busca-local-box{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(140,98,93,.18);border-radius:22px;padding:9px 13px;box-shadow:0 8px 20px rgba(140,98,93,.08)}.busca-local input{border:0;outline:0;flex:1;background:transparent;font:inherit}.resultados-local{display:none;background:#fff;margin-top:7px;border-radius:14px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.12)}.res-local{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:0;background:#fff;text-align:left;cursor:pointer;font:inherit;border-bottom:1px solid rgba(0,0,0,.06)}.res-local img,.res-ico{width:38px;height:38px;border-radius:10px;object-fit:cover;background:#f4e9e7;display:grid;place-items:center}.menu-criar{position:fixed;right:18px;bottom:22px;z-index:90}.btn-criar{border:0;border-radius:50px;padding:13px 18px;background:var(--primary,#8c625d);color:#fff;font-weight:bold;box-shadow:0 8px 22px rgba(0,0,0,.18);cursor:pointer}.painel-upload{display:none}.painel-upload.aberto{display:block;animation:aparece .25s ease}@keyframes aparece{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}body.dark-mode{background:#161415!important;color:#eee6e4}body.dark-mode .header-status-bar,body.dark-mode .bloco-separado,body.dark-mode .painel-upload,body.dark-mode .busca-local-box,body.dark-mode .resultados-local,body.dark-mode .res-local{background:#242022!important;color:#eee6e4}body.dark-mode .input-custom,body.dark-mode .busca-local input{background:#302a2d!important;color:#eee6e4;border-color:#66575b}
+.header-acoes{display:flex;align-items:center;gap:8px}.theme-toggle{background:transparent;border:1px solid rgba(140,98,93,.25);border-radius:18px;padding:6px 10px;cursor:pointer}.busca-local{max-width:680px;margin:15px auto;padding:0 15px;position:relative;z-index:10}.busca-local-box{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(140,98,93,.18);border-radius:22px;padding:9px 13px;box-shadow:0 8px 20px rgba(140,98,93,.08)}.busca-local input{border:0;outline:0;flex:1;background:transparent;font:inherit}.resultados-local{display:none;background:#fff;margin-top:7px;border-radius:14px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.12)}.res-local{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:0;background:#fff;text-align:left;cursor:pointer;font:inherit;border-bottom:1px solid rgba(0,0,0,.06)}.res-local img,.res-ico{width:38px;height:38px;border-radius:10px;object-fit:cover;background:#f4e9e7;display:grid;place-items:center}.menu-criar{position:fixed;right:18px;bottom:22px;z-index:90}.btn-criar{border:0;border-radius:50px;padding:13px 18px;background:var(--primary,#8c625d);color:#fff;font-weight:bold;box-shadow:0 8px 22px rgba(0,0,0,.18);cursor:pointer}.painel-upload{display:none}.painel-upload.aberto{display:block;animation:aparece .25s ease}@keyframes aparece{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}body.dark-mode{background:#161415!important;color:#eee6e4}body.dark-mode .header-status-bar,body.dark-mode .bloco-separado,body.dark-mode .painel-upload,body.dark-mode .busca-local-box,body.dark-mode .resultados-local,body.dark-mode .res-local{background:#242022!important;color:#eee6e4}body.dark-mode .input-custom,body.dark-mode .busca-local input{background:#302a2d!important;color:#eee6e4;border-color:#66575b}
 
 
 .destino-destaque{outline:3px solid rgba(230,179,168,.85)!important;outline-offset:5px}
 body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-mode .titulo-secao,body.dark-mode header h1,body.dark-mode header p{color:inherit!important}body.dark-mode .card-musica,body.dark-mode .polaroid-frente,body.dark-mode .polaroid-verso{background:#242022!important;color:#eee6e4!important}body.dark-mode .theme-toggle{color:#eee6e4;border-color:#66575b}
+        .menu-musica-opcoes {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 210000;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(74, 62, 61, .34);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .menu-musica-opcoes.aberto { display: flex; }
+
+        .menu-musica-opcoes-conteudo {
+            width: min(100%, 430px);
+            background: #fff;
+            border: 1px solid rgba(230, 179, 168, .55);
+            border-radius: 22px;
+            padding: 18px;
+            box-shadow: 0 18px 50px rgba(74, 62, 61, .22);
+            animation: entradaMenuMusica .18s ease-out;
+        }
+
+        @keyframes entradaMenuMusica {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-musica-opcoes-topo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .menu-musica-opcoes-capa {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .menu-musica-opcoes-titulo {
+            flex: 1;
+            min-width: 0;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: .95rem;
+            overflow-wrap: anywhere;
+        }
+
+        .btn-fechar-opcoes-musica {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #fffafa;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .opcao-musica-btn {
+            width: 100%;
+            border: 1px solid rgba(230, 179, 168, .55);
+            background: #fffaf8;
+            color: var(--text-color);
+            border-radius: 14px;
+            padding: 13px 14px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            text-align: left;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-weight: 700;
+            margin-top: 9px;
+        }
+
+        .opcao-musica-btn strong {
+            display: block;
+            color: var(--primary);
+            font-size: .9rem;
+        }
+
+        .opcao-musica-btn small {
+            display: block;
+            color: var(--secondary);
+            font-weight: 400;
+            font-size: .73rem;
+            margin-top: 2px;
+        }
+
+        .opcao-musica-btn .icone-opcao {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: rgba(140, 98, 93, .09);
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        #youtube-player-host {
+            position: fixed;
+            width: 1px;
+            height: 1px;
+            left: -10px;
+            bottom: 0;
+            opacity: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .player-musica-barra {
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            z-index: 205000;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid rgba(230, 179, 168, .6);
+            border-radius: 17px;
+            background: rgba(255, 255, 255, .96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(74, 62, 61, .18);
+        }
+
+        .player-musica-barra.ativo { display: flex; }
+
+        .player-musica-icone {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .player-musica-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .player-musica-titulo {
+            color: var(--primary);
+            font-size: .82rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-musica-status {
+            color: var(--secondary);
+            font-size: .68rem;
+            margin-top: 1px;
+        }
+
+        .player-musica-controle,
+        .player-musica-fechar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(230, 179, 168, .5);
+            background: #fffafa;
+            color: var(--primary);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        body.dark-mode #bloco-playlist {
+            background: linear-gradient(180deg, #342b29 0%, #2d2625 100%) !important;
+            border-color: #514448;
+        }
+
+        body.dark-mode .menu-musica-opcoes-conteudo,
+        body.dark-mode .player-musica-barra {
+            background: rgba(36, 32, 34, .97);
+            color: #eee6e4;
+            border-color: #514448;
+        }
+
+        body.dark-mode .btn-fechar-opcoes-musica,
+        body.dark-mode .opcao-musica-btn,
+        body.dark-mode .player-musica-controle,
+        body.dark-mode .player-musica-fechar {
+            background: #302a2d;
+            color: #eee6e4;
+            border-color: #514448;
+        }
+
+        @media (max-width: 420px) {
+            .menu-musica-opcoes { padding: 10px; }
+            .menu-musica-opcoes-conteudo { border-radius: 20px; padding: 15px; }
+            .player-musica-barra { left: 8px; right: 8px; bottom: 8px; }
+        }
+
+        /* Estilos da nova barra de progresso de espaço */
+        .armazenamento-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(140, 98, 93, 0.05);
+        }
+        .armazenamento-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        .armazenamento-barra-bg {
+            width: 100%;
+            height: 12px;
+            background-color: #f2f2f2;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(230, 179, 168, 0.3);
+        }
+        .armazenamento-barra-progresso {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 6px;
+            transition: width 0.5s ease-out;
+        }
+
+        @keyframes pulse { from { transform: scale(1) translateZ(0); } to { transform: scale(1.015) translateZ(0); } }
+
+
+        /* Modo noturno */
+        .theme-toggle { background: none; border: 1px solid var(--border-color); border-radius: 18px; padding: 6px 10px; cursor: pointer; font-size: 1.05rem; line-height: 1; }
+        body.dark-mode { background: #161415; color: #eee6e4; }
+        body.dark-mode #tela-login { background: #161415; }
+        body.dark-mode .box-login, body.dark-mode .bloco-separado, body.dark-mode .painel-upload,
+        body.dark-mode .card-declaracao-texto, body.dark-mode .card-musica, body.dark-mode .armazenamento-container,
+        body.dark-mode .polaroid-frente, body.dark-mode .polaroid-verso, body.dark-mode .item-opcao-flutuante,
+        body.dark-mode .header-status-bar, body.dark-mode .opcoes-tres-pontos, body.dark-mode .modal-postagem-conteudo { background-color: #242022 !important; color: #eee6e4; }
+        body.dark-mode .header-status-bar { border-bottom-color: #514448; }
+        body.dark-mode #bloco-dias-amando { background-color: #38272b !important; }
+        body.dark-mode #bloco-playlist { background-color: #332925 !important; }
+        body.dark-mode #bloco-coisinhas-dela { background-color: #382735 !important; }
+        body.dark-mode #bloco-coisas-minhas { background-color: #263342 !important; }
+        body.dark-mode #bloco-galeria-momentos, body.dark-mode #bloco-nossos-textos { background-color: #282426 !important; }
+        body.dark-mode .input-custom, body.dark-mode .select-custom, body.dark-mode .textarea-custom, body.dark-mode .input-comentario { background: #302a2d; color: #f3ebea; border-color: #66575b; }
+        body.dark-mode .input-custom:focus, body.dark-mode .select-custom:focus, body.dark-mode .textarea-custom:focus { background: #382f33; }
+        body.dark-mode .declaracao-wrapper::after { background: linear-gradient(transparent, rgba(36,32,34,.96)); }
+        body.dark-mode .declaracao-corpo-render, body.dark-mode .polaroid-desc-txt, body.dark-mode .polaroid-verso-info, body.dark-mode .opcoes-tres-pontos button { color: #eee6e4; }
+        body.dark-mode .opcoes-tres-pontos button:hover, body.dark-mode .item-opcao-flutuante:hover { background: #342d30; }
+        body.dark-mode .painel-upload, body.dark-mode .card-declaracao-texto { border-color: #514448; }
+        /* Música destacada também acompanha o modo noturno */
+        body.dark-mode .card-musica.destaque {
+            background: linear-gradient(135deg, #3a2c31, #292326) !important;
+            border-color: #d6a39c !important;
+            box-shadow: 0 0 24px rgba(214, 163, 156, 0.28), 0 10px 28px rgba(0,0,0,0.28) !important;
+        }
+        body.dark-mode .card-musica.destaque::before { color: #fff !important; }
+        body.dark-mode .card-musica.destaque .musica-titulo { color: #f3c7c1; }
+        body.dark-mode .card-musica.destaque .musica-dedicatoria { color: #fff; }
+
+
 </style>
 </head>
 <body>
@@ -212,8 +489,48 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         <div class="status-usuario-container">
             <span id="label-parceiro" class="status-nome-parceiro">Carregando...</span>
         </div>
-        <a href="index.html" class="btn-voltar">⬅ Voltar ao Canto</a>
-    <button class="theme-toggle" id="btn-theme-toggle" title="Modo noturno">🌙</button></div>
+        <div class="header-acoes"><button class="theme-toggle" id="btn-theme-toggle" title="Modo noturno">🌙</button><a href="index.html" class="btn-voltar">⬅ Voltar ao Canto</a></div></div>
+
+        <!-- Opções da música quando o link é do YouTube -->
+        <div id="menu-opcoes-musica" class="menu-musica-opcoes" aria-hidden="true">
+            <div class="menu-musica-opcoes-conteudo" role="dialog" aria-modal="true" aria-labelledby="menu-musica-titulo">
+                <div class="menu-musica-opcoes-topo">
+                    <img id="menu-musica-capa" class="menu-musica-opcoes-capa" src="" alt="">
+                    <div id="menu-musica-titulo" class="menu-musica-opcoes-titulo">Escolha como ouvir</div>
+                    <button type="button" class="btn-fechar-opcoes-musica" id="btn-fechar-opcoes-musica" aria-label="Fechar">✕</button>
+                </div>
+
+                <button type="button" class="opcao-musica-btn" id="btn-ouvir-youtube">
+                    <span class="icone-opcao">▶️</span>
+                    <span>
+                        <strong>Escutar no YouTube</strong>
+                        <small>Abre a música no aplicativo do YouTube.</small>
+                    </span>
+                </button>
+
+                <button type="button" class="opcao-musica-btn" id="btn-escutar-agora">
+                    <span class="icone-opcao">🎧</span>
+                    <span>
+                        <strong>Escutar agora</strong>
+                        <small>Toca aqui mesmo, sem mostrar o vídeo.</small>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Player YouTube invisível + barra de controle -->
+        <div id="youtube-player-host" aria-hidden="true"></div>
+
+        <div id="player-musica-barra" class="player-musica-barra" aria-label="Música em reprodução">
+            <img id="player-musica-capa" class="player-musica-icone" src="" alt="">
+            <div class="player-musica-info">
+                <div id="player-musica-titulo" class="player-musica-titulo">Nenhuma música</div>
+                <div id="player-musica-status" class="player-musica-status">Tocando no Nosso Canto</div>
+            </div>
+            <button type="button" id="player-musica-controle" class="player-musica-controle" aria-label="Pausar">Ⅱ</button>
+            <button type="button" id="player-musica-fechar" class="player-musica-fechar" aria-label="Parar música">✕</button>
+        </div>
+
 
     <canvas id="canvas-hearts"></canvas>
 
@@ -376,6 +693,202 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
             } catch (error) { console.error(error); }
         };
 
+        let musicaAtualYouTube = null;
+        let youtubeApiPronta = false;
+
+        window.onYouTubeIframeAPIReady = function() {
+            youtubeApiPronta = true;
+        };
+
+        // Carrega a API oficial do player somente quando necessário.
+        function carregarYouTubeAPI() {
+            if (window.YT && window.YT.Player) {
+                youtubeApiPronta = true;
+                return Promise.resolve();
+            }
+
+            if (window._ytApiPromise) return window._ytApiPromise;
+
+            window._ytApiPromise = new Promise((resolve) => {
+                const tag = document.createElement('script');
+                tag.src = 'https://www.youtube.com/iframe_api';
+                document.head.appendChild(tag);
+
+                const anterior = window.onYouTubeIframeAPIReady;
+                window.onYouTubeIframeAPIReady = function() {
+                    youtubeApiPronta = true;
+                    if (typeof anterior === 'function') anterior();
+                    resolve();
+                };
+            });
+
+            return window._ytApiPromise;
+        }
+
+        function fecharOpcoesMusica() {
+            const menu = document.getElementById('menu-opcoes-musica');
+            if (!menu) return;
+            menu.classList.remove('aberto');
+            menu.setAttribute('aria-hidden', 'true');
+        }
+
+        window.abrirOpcoesMusica = function(link, titulo, capa) {
+            if (!link) return;
+
+            const idYT = extrairIDYouTube(link);
+
+            // Links que não são YouTube continuam abrindo normalmente.
+            if (!idYT) {
+                window.open(link, '_blank', 'noopener,noreferrer');
+                return;
+            }
+
+            const menu = document.getElementById('menu-opcoes-musica');
+            const img = document.getElementById('menu-musica-capa');
+            const tituloEl = document.getElementById('menu-musica-titulo');
+
+            musicaAtualYouTube = { id: idYT, link, titulo, capa };
+
+            if (img) {
+                img.src = capa || `https://img.youtube.com/vi/${idYT}/hqdefault.jpg`;
+                img.alt = titulo || 'Capa da música';
+            }
+            if (tituloEl) tituloEl.textContent = titulo || 'Música';
+
+            if (menu) {
+                menu.classList.add('aberto');
+                menu.setAttribute('aria-hidden', 'false');
+            }
+        };
+
+        async function abrirYouTubeAplicativo() {
+            if (!musicaAtualYouTube) return;
+            fecharOpcoesMusica();
+
+            // A URL normal do YouTube permite que Android/iOS entregue a abertura ao app instalado.
+            window.open(musicaAtualYouTube.link, '_blank', 'noopener,noreferrer');
+        }
+
+        async function escutarYouTubeAgora() {
+            if (!musicaAtualYouTube) return;
+
+            const musica = { ...musicaAtualYouTube };
+            fecharOpcoesMusica();
+
+            try {
+                await carregarYouTubeAPI();
+
+                const host = document.getElementById('youtube-player-host');
+
+                if (!youtubePlayer) {
+                    youtubePlayer = new YT.Player(host, {
+                        width: '1',
+                        height: '1',
+                        videoId: musica.id,
+                        playerVars: {
+                            autoplay: 1,
+                            controls: 0,
+                            playsinline: 1,
+                            rel: 0,
+                            modestbranding: 1
+                        },
+                        events: {
+                            onReady: (event) => {
+                                event.target.playVideo();
+                            },
+                            onStateChange: atualizarEstadoPlayerYouTube
+                        }
+                    });
+                } else {
+                    youtubePlayer.loadVideoById(musica.id);
+                    youtubePlayer.playVideo();
+                }
+
+                const barra = document.getElementById('player-musica-barra');
+                const capa = document.getElementById('player-musica-capa');
+                const titulo = document.getElementById('player-musica-titulo');
+                const status = document.getElementById('player-musica-status');
+                const controle = document.getElementById('player-musica-controle');
+
+                if (capa) {
+                    capa.src = musica.capa || `https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`;
+                    capa.alt = musica.titulo || 'Capa da música';
+                }
+                if (titulo) titulo.textContent = musica.titulo || 'Música';
+                if (status) status.textContent = 'Tocando agora • YouTube';
+                if (controle) {
+                    controle.textContent = 'Ⅱ';
+                    controle.setAttribute('aria-label', 'Pausar');
+                }
+                if (barra) barra.classList.add('ativo');
+                document.body.classList.add('player-musica-ativo');
+
+                musicaAtualYouTube = musica;
+            } catch (erro) {
+                console.error('Não foi possível iniciar o player do YouTube:', erro);
+                alert('Não foi possível tocar essa música aqui. Você pode abrir no YouTube. 🎧');
+            }
+        }
+
+        function atualizarEstadoPlayerYouTube(event) {
+            const status = document.getElementById('player-musica-status');
+            const controle = document.getElementById('player-musica-controle');
+
+            if (event.data === YT.PlayerState.PLAYING) {
+                if (status) status.textContent = 'Tocando agora • YouTube';
+                if (controle) {
+                    controle.textContent = 'Ⅱ';
+                    controle.setAttribute('aria-label', 'Pausar');
+                }
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                if (status) status.textContent = 'Pausada';
+                if (controle) {
+                    controle.textContent = '▶';
+                    controle.setAttribute('aria-label', 'Continuar');
+                }
+            } else if (event.data === YT.PlayerState.ENDED) {
+                if (status) status.textContent = 'Finalizada';
+                if (controle) {
+                    controle.textContent = '▶';
+                    controle.setAttribute('aria-label', 'Recomeçar');
+                }
+            }
+        }
+
+        function alternarPlayerYouTube() {
+            if (!youtubePlayer || !window.YT) return;
+
+            const estado = youtubePlayer.getPlayerState();
+
+            if (estado === YT.PlayerState.PLAYING || estado === YT.PlayerState.BUFFERING) {
+                youtubePlayer.pauseVideo();
+            } else {
+                youtubePlayer.playVideo();
+            }
+        }
+
+        function pararPlayerYouTube() {
+            if (youtubePlayer && window.YT) {
+                youtubePlayer.stopVideo();
+            }
+
+            const barra = document.getElementById('player-musica-barra');
+            if (barra) barra.classList.remove('ativo');
+            document.body.classList.remove('player-musica-ativo');
+
+            musicaAtualYouTube = null;
+        }
+
+        // Pré-carrega a API para que o botão "Escutar agora" possa iniciar o áudio
+        // diretamente após o toque, inclusive em celulares.
+        carregarYouTubeAPI().catch(() => console.warn('API do YouTube não carregada ainda.'));
+
+        document.getElementById('btn-ouvir-youtube').addEventListener('click', abrirYouTubeAplicativo);
+        document.getElementById('btn-escutar-agora').addEventListener('click', escutarYouTubeAgora);
+        document.getElementById('btn-fechar-opcoes-musica').addEventListener('click', fecharOpcoesMusica);
+        document.getElementById('player-musica-controle').addEventListener('click', alternarPlayerYouTube);
+        document.getElementById('player-musica-fechar').addEventListener('click', pararPlayerYouTube);
+
         const containerPlaylist = document.getElementById('novos-cards-playlist');
         const qCards = query(collection(db, "posts"), orderBy("criadoEm", "asc"));
         
@@ -414,7 +927,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
                         <div class="musica-info">
                             <div class="musica-titulo" title="${post.titulo}">${post.titulo}</div>
                             <div class="musica-dedicatoria">Dedicado por: <strong>${post.autor}</strong></div>
-                            <a href="${post.link}" target="_blank" class="musica-link-btn">▶️ Ouvir Música</a>
+                            <button type="button" class="musica-link-btn" onclick="abrirOpcoesMusica(${JSON.stringify(post.link)}, ${JSON.stringify(post.titulo)}, ${JSON.stringify(post.imagem)})">▶️ Ouvir Música</button>
                         </div>
                     </div>
                     <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
