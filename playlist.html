@@ -481,7 +481,15 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         body.dark-mode .card-musica.destaque .musica-dedicatoria { color: #fff; }
 
 
-</style>
+
+        /* Correção do tema noturno: garante contraste em toda a página da playlist */
+        body.dark-mode header, body.dark-mode .container-blocos, body.dark-mode .busca-local { color: #eee6e4 !important; }
+        body.dark-mode .titulo-secao, body.dark-mode h1, body.dark-mode h2, body.dark-mode p,
+        body.dark-mode label, body.dark-mode span { color: inherit; }
+        body.dark-mode .painel-upload > div[style] { background: #242022 !important; border-color: #514448 !important; }
+        body.dark-mode .theme-toggle { background: #302a2d !important; color: #fff !important; }
+
+    </style>
 </head>
 <body>
 
@@ -574,7 +582,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         }
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -694,6 +702,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         };
 
         let musicaAtualYouTube = null;
+        let youtubePlayer = null;
         let youtubeApiPronta = false;
 
         window.onYouTubeIframeAPIReady = function() {
@@ -971,7 +980,7 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         document.addEventListener('DOMContentLoaded', () => { animarLoop(); });
     
 const painelCriacao=document.querySelector('.painel-upload'),btnCriacao=document.getElementById('btn-abrir-criacao');btnCriacao.onclick=()=>{painelCriacao.classList.toggle('aberto');if(painelCriacao.classList.contains('aberto'))painelCriacao.scrollIntoView({behavior:'smooth',block:'start'})};const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
-onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');document.getElementById('btn-theme-toggle').onclick=()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light')};
+onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
 </script>
 </body>
 </html>
