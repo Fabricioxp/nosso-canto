@@ -745,7 +745,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                         <input type="checkbox" id="playlist-destaque" style="transform: scale(1.3); margin-left: 5px; accent-color: #ff4d4d;">
                         <label for="playlist-destaque" style="font-size: 0.9rem; font-weight: bold; color: #ff4d4d; cursor: pointer;">🌟 Música do Momento (Destacar!)</label>
                     </div>
-                    <button class="btn-postar" id="btn-salvar-playlist">Adicionar</button>
+                    <button class="btn-postar" id="btn-salvar-playlist">Adicionar à Playlist</button>
                 </section>
             </div>
         </div>
@@ -757,7 +757,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
 
     </div>
 
-    <div class="menu-criar"><button class="btn-criar" id="btn-abrir-criacao">➕ Criar</button></div>
+    <div class="menu-criar"><button class="btn-criar" id="btn-abrir-criacao">➕ Adicionar</button></div>
 <script type="module">
         // TRAVA INSTANTÂNEA: Redireciona na hora sem alerta prévio para evitar brechas visuais
         let usuarioLogado = sessionStorage.getItem('user_canto');
@@ -816,7 +816,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
             document.getElementById('playlist-capa').value = '';
             document.getElementById('playlist-destaque').checked = false;
             document.getElementById('titulo-painel-playlist').innerText = '🎧 Dedicar uma Música';
-            document.getElementById('btn-salvar-playlist').innerText = 'Adicionar';
+            document.getElementById('btn-salvar-playlist').innerText = 'Adicionar à Playlist';
         }
 
         window.salvarMusicaFirebase = async function() {
@@ -843,6 +843,12 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                     alert('Música dedicada com sucesso! ❤️');
                 }
                 resetarFormularioPlaylist();
+                if (modalPostagem && modalPostagem.classList.contains('aberto')) {
+                    modalPostagem.classList.remove('aberto');
+                    document.body.classList.remove('modal-criacao-aberta');
+                    document.body.style.overflow='';
+                    if (btnCriacao) btnCriacao.textContent='➕ Adicionar';
+                }
             } catch (error) { console.error(error); }
         };
         document.getElementById('btn-salvar-playlist').addEventListener('click', window.salvarMusicaFirebase);
@@ -855,7 +861,14 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
             document.getElementById('playlist-destaque').checked = (destaque === 'true' || destaque === true);
             document.getElementById('titulo-painel-playlist').innerText = '✏️ Editar Música Dedicada';
             document.getElementById('btn-salvar-playlist').innerText = 'Atualizar Música 🎧';
-            document.getElementById('painel-playlist-posts').scrollIntoView({ behavior: 'smooth' });
+            // Ao editar, abre automaticamente a mesma tela de adicionar.
+            if (modalPostagem && !modalPostagem.classList.contains('aberto')) {
+                modalPostagem.classList.add('aberto');
+                document.body.classList.add('modal-criacao-aberta');
+                document.body.style.overflow='hidden';
+                if (btnCriacao) btnCriacao.textContent='Fechar';
+            }
+            setTimeout(() => document.getElementById('playlist-nome')?.focus(), 120);
         };
 
         window.removerPostagemFirebase = async function(id) {
@@ -1290,7 +1303,7 @@ function alternarModalPostagem(){
  document.body.classList.toggle('modal-criacao-aberta',abrindo);
  document.body.style.overflow=abrindo?'hidden':'';
  const rl=document.getElementById('resultados-local'); if(rl)rl.style.display='none';
- btnCriacao.textContent=abrindo?'Fechar':'➕ Criar';
+ btnCriacao.textContent=abrindo?'Fechar':'➕ Adicionar';
  if(abrindo)setTimeout(()=>document.getElementById('youtube-busca-termo')?.focus(),100);
 }
 btnCriacao.onclick=alternarModalPostagem;
