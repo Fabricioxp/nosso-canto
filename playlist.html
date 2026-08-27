@@ -539,22 +539,24 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
         }
 
 
-        /* Tela expandida do player — estilo mobile inspirado em players de streaming */
-        .player-expandido { position:fixed; inset:0; z-index:210000; display:none; background:rgba(255,250,248,.98); flex-direction:column; padding:env(safe-area-inset-top,18px) 18px calc(22px + env(safe-area-inset-bottom)); overflow:hidden; }
-        .player-expandido.aberto { display:flex; animation:playerExpandir .22s ease-out; }
-        @keyframes playerExpandir { from{transform:translateY(100%);opacity:.5} to{transform:translateY(0);opacity:1} }
-        .player-expandido-topo { display:flex; justify-content:space-between; align-items:center; min-height:48px; }
-        .player-expandido-fechar { border:0; background:transparent; color:var(--primary); font-size:1.8rem; width:46px; height:46px; cursor:pointer; }
-        .player-expandido-arrastar { width:42px;height:5px;border-radius:99px;background:rgba(140,98,93,.35); margin:2px auto 10px; }
-        .player-video-wrap { width:100%; aspect-ratio:16/9; border-radius:18px; overflow:hidden; background:#111; box-shadow:0 12px 35px rgba(74,62,61,.18); margin-top:10px; }
-        .player-video-wrap iframe { width:100%; height:100%; border:0; }
-        .player-expandido-info { padding:22px 4px 12px; }
-        .player-expandido-info h2 { margin:0; color:var(--primary); font-size:1.25rem; line-height:1.3; }
-        .player-expandido-info p { margin:7px 0 0; color:var(--secondary); font-size:.9rem; }
-        .player-expandido-controles { margin-top:auto; display:flex; justify-content:center; align-items:center; gap:22px; padding-bottom:12px; }
-        .player-expandido-play { width:70px;height:70px;border-radius:50%;border:0;background:var(--primary);color:white;font-size:1.7rem;cursor:pointer;box-shadow:0 8px 25px rgba(140,98,93,.3); }
-        body.dark-mode .player-expandido { background:#2d2625; }
-        body.dark-mode .player-expandido-fechar { color:#f0d9d4; }
+        /* Mini player central — compacto, suave e focado na música */
+        .player-expandido { position:fixed; inset:0; z-index:210000; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(58,45,44,.28); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); opacity:0; transition:opacity .28s ease; }
+        .player-expandido.aberto { display:flex; opacity:1; }
+        .player-expandido-card { width:min(100%,360px); background:rgba(255,252,250,.98); border:1px solid rgba(230,179,168,.5); border-radius:28px; padding:12px 12px 16px; box-shadow:0 24px 70px rgba(54,39,38,.28); transform:translateY(26px) scale(.96); opacity:0; transition:transform .34s cubic-bezier(.22,.8,.25,1),opacity .25s ease; touch-action:none; }
+        .player-expandido.aberto .player-expandido-card { transform:translateY(0) scale(1); opacity:1; }
+        .player-expandido-arrastar { width:38px;height:4px;border-radius:99px;background:rgba(140,98,93,.3); margin:2px auto 7px; }
+        .player-expandido-topo { display:flex; justify-content:space-between; align-items:center; padding:0 2px 8px; min-height:34px; }
+        .player-expandido-fechar { border:0; background:rgba(140,98,93,.08); color:var(--primary); font-size:1.25rem; width:32px; height:32px; border-radius:50%; cursor:pointer; }
+        .player-video-wrap { width:100%; aspect-ratio:16/9; border-radius:18px; overflow:hidden; background:#171313; box-shadow:0 10px 28px rgba(74,62,61,.16); }
+        .player-video-wrap #youtube-player-host { position:relative; width:100%!important; height:100%!important; left:auto!important; bottom:auto!important; opacity:1!important; pointer-events:auto!important; overflow:hidden; z-index:1!important; }
+        .player-video-wrap #youtube-player-host iframe { width:100%!important; height:100%!important; border:0; }
+        .player-expandido-info { padding:13px 5px 4px; }
+        .player-expandido-info h2 { margin:0; color:var(--primary); font-size:1rem; line-height:1.32; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .player-expandido-info p { margin:4px 0 0; color:var(--secondary); font-size:.78rem; }
+        .player-expandido-controles { display:flex; justify-content:center; align-items:center; padding:8px 0 0; }
+        .player-expandido-play { width:50px;height:50px;border-radius:50%;border:0;background:var(--primary);color:white;font-size:1.15rem;cursor:pointer;box-shadow:0 7px 18px rgba(140,98,93,.25); }
+        body.dark-mode .player-expandido-card { background:#302927; border-color:#514448; }
+        body.dark-mode .player-expandido-fechar { color:#f0d9d4; background:rgba(255,255,255,.07); }
 
         /* Estilos da nova barra de progresso de espaço */
         .armazenamento-container {
@@ -670,21 +672,6 @@ body.modal-criacao-aberta .menu-criar{z-index:2147483647!important}
 .youtube-busca-status{min-height:20px!important}
 @media(max-width:520px){#modal-postagem{padding:8px!important}#modal-postagem .modal-postagem-conteudo{max-height:calc(100dvh - 16px)!important;border-radius:20px 20px 14px 14px!important;padding:14px!important}.youtube-busca{padding:11px!important}.youtube-busca-resultados{max-height:36dvh!important}}
 
-
-        /* Player expandido compacto e com transições suaves */
-        .player-expandido{display:flex;visibility:hidden;transform:translateY(100%);opacity:0;transition:transform .42s cubic-bezier(.22,.9,.25,1),opacity .32s ease,visibility 0s linear .42s;background:rgba(255,250,248,.985);padding:calc(8px + env(safe-area-inset-top,0px)) 14px calc(14px + env(safe-area-inset-bottom,0px));}
-        .player-expandido.aberto{visibility:visible;transform:translateY(0);opacity:1;animation:none;transition:transform .42s cubic-bezier(.22,.9,.25,1),opacity .32s ease;}
-        .player-expandido-topo{min-height:38px;position:relative;justify-content:center;}
-        .player-expandido-fechar{position:absolute;right:0;top:-4px;width:38px;height:38px;font-size:1.45rem;}
-        .player-expandido-arrastar{width:38px;height:4px;margin:6px auto 0;background:rgba(140,98,93,.28);}
-        .player-video-wrap{width:min(100%,380px);aspect-ratio:16/9;margin:6px auto 0;border-radius:16px;box-shadow:0 8px 25px rgba(74,62,61,.14);}
-        .player-expandido-info{width:min(100%,380px);margin:0 auto;padding:14px 2px 4px;}
-        .player-expandido-info h2{font-size:1.08rem;}
-        .player-expandido-info p{font-size:.78rem;margin-top:4px;}
-        .player-expandido-controles{margin-top:auto;padding-bottom:8px;}
-        #youtube-player-host.player-em-video{position:static!important;width:100%!important;height:100%!important;left:auto!important;bottom:auto!important;opacity:1!important;pointer-events:auto!important;overflow:hidden!important;z-index:auto!important;}
-        #youtube-player-host.player-em-video iframe{width:100%!important;height:100%!important;}
-        .player-expandido.arrastando{transition:none!important;}
 </style>
 
 <style id="ajuste-botao-criar-player">
@@ -735,11 +722,13 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
 
         <!-- Tela expandida da música: fechar não interrompe a reprodução -->
         <div id="player-expandido" class="player-expandido" aria-hidden="true">
-            <div class="player-expandido-arrastar" aria-hidden="true"></div>
-            <div class="player-expandido-topo"><span style="color:var(--secondary);font-size:.8rem;font-weight:700">TOCANDO AGORA</span><button type="button" id="player-expandido-fechar" class="player-expandido-fechar" aria-label="Fechar player">⌄</button></div>
-            <div class="player-video-wrap"></div>
-            <div class="player-expandido-info"><h2 id="player-expandido-titulo">Música</h2><p id="player-expandido-status">Tocando no Nosso Canto</p></div>
-            <div class="player-expandido-controles"><button type="button" id="player-expandido-play" class="player-expandido-play" aria-label="Pausar música">Ⅱ</button></div>
+            <div id="player-expandido-card" class="player-expandido-card">
+                <div class="player-expandido-arrastar" aria-hidden="true"></div>
+                <div class="player-expandido-topo"><span style="color:var(--secondary);font-size:.72rem;font-weight:700;letter-spacing:.08em">TOCANDO AGORA</span><button type="button" id="player-expandido-fechar" class="player-expandido-fechar" aria-label="Fechar player">×</button></div>
+                <div id="player-video-wrap" class="player-video-wrap"></div>
+                <div class="player-expandido-info"><h2 id="player-expandido-titulo">Música</h2><p id="player-expandido-status">Tocando no Nosso Canto</p></div>
+                <div class="player-expandido-controles"><button type="button" id="player-expandido-play" class="player-expandido-play" aria-label="Pausar música">Ⅱ</button></div>
+            </div>
         </div>
 
         <div id="player-musica-barra" class="player-musica-barra" aria-label="Música em reprodução">
@@ -957,22 +946,22 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
             if(titulo) titulo.textContent=musica.titulo||'Música';
             if(status) status.textContent='Tocando agora • YouTube';
         }
-        let ancoraPlayerOriginal=null;
+        function moverPlayerPara(destino, expandido=false){
+            const host=document.getElementById('youtube-player-host'); if(!host||!destino) return;
+            destino.appendChild(host);
+            host.style.width=expandido?'100%':'1px'; host.style.height=expandido?'100%':'1px';
+            host.style.position=expandido?'relative':'fixed'; host.style.left=expandido?'auto':'-10px'; host.style.bottom='0'; host.style.opacity=expandido?'1':'0'; host.style.pointerEvents=expandido?'auto':'none'; host.style.zIndex=expandido?'1':'-1';
+        }
         function abrirPlayerExpandido(){
             if(!musicaAtualYouTube?.id) return;
-            const painel=document.getElementById('player-expandido'), videoWrap=document.querySelector('.player-video-wrap'), host=document.getElementById('youtube-player-host');
-            atualizarPlayerExpandido();
-            if(host && videoWrap){
-                if(!ancoraPlayerOriginal){ ancoraPlayerOriginal=document.createComment('youtube-player-original'); host.parentNode.insertBefore(ancoraPlayerOriginal,host); }
-                videoWrap.innerHTML=''; videoWrap.appendChild(host); host.classList.add('player-em-video');
-            }
-            painel.classList.add('aberto'); painel.setAttribute('aria-hidden','false');
-            atualizarBotaoExpandido();
+            const painel=document.getElementById('player-expandido'),wrap=document.getElementById('player-video-wrap');
+            atualizarPlayerExpandido(); moverPlayerPara(wrap,true); painel.classList.add('aberto'); painel.setAttribute('aria-hidden','false'); atualizarBotaoExpandido();
         }
         function fecharPlayerExpandido(){
-            const painel=document.getElementById('player-expandido'),host=document.getElementById('youtube-player-host');
+            const painel=document.getElementById('player-expandido'),barra=document.getElementById('player-musica-barra');
             painel.classList.remove('aberto'); painel.setAttribute('aria-hidden','true');
-            setTimeout(()=>{ if(host && ancoraPlayerOriginal){ancoraPlayerOriginal.parentNode.insertBefore(host,ancoraPlayerOriginal.nextSibling);host.classList.remove('player-em-video');} },430);
+            // devolve o mesmo player invisível para continuar tocando sem reiniciar
+            setTimeout(()=>moverPlayerPara(barra?.parentElement||document.body,false),260);
         }
         function atualizarBotaoExpandido(){ const b=document.getElementById('player-expandido-play'); if(!b)return; let pausada=false;try{pausada=window.YT&&youtubePlayer&&youtubePlayer.getPlayerState()===YT.PlayerState.PAUSED}catch(e){} b.textContent=pausada?'▶':'Ⅱ';b.setAttribute('aria-label',pausada?'Continuar música':'Pausar música'); }
         document.getElementById('player-musica-barra')?.addEventListener('click',e=>{if(e.target.closest('button'))return;abrirPlayerExpandido()});
@@ -980,12 +969,13 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
         document.getElementById('player-expandido-play')?.addEventListener('click',()=>document.getElementById('player-musica-controle')?.click());
         let inicioArrastoPlayer=null;
         document.getElementById('player-musica-barra')?.addEventListener('touchstart',e=>inicioArrastoPlayer=e.touches[0].clientY,{passive:true});
-        document.getElementById('player-musica-barra')?.addEventListener('touchend',e=>{if(inicioArrastoPlayer!==null&&inicioArrastoPlayer-e.changedTouches[0].clientY>35)abrirPlayerExpandido();inicioArrastoPlayer=null},{passive:true});
-        let inicioFecharPlayer=null, ultimoYPlayer=null;
-        const painelExpandido=document.getElementById('player-expandido');
-        painelExpandido?.addEventListener('touchstart',e=>{inicioFecharPlayer=e.touches[0].clientY;ultimoYPlayer=inicioFecharPlayer;},{passive:true});
-        painelExpandido?.addEventListener('touchmove',e=>{if(inicioFecharPlayer===null)return;ultimoYPlayer=e.touches[0].clientY;const dy=Math.max(0,ultimoYPlayer-inicioFecharPlayer);if(dy>0){painelExpandido.classList.add('arrastando');painelExpandido.style.transform=`translateY(${Math.min(dy,260)}px)`;painelExpandido.style.opacity=String(Math.max(.65,1-dy/700));}},{passive:true});
-        painelExpandido?.addEventListener('touchend',()=>{if(inicioFecharPlayer===null)return;const dy=(ultimoYPlayer||inicioFecharPlayer)-inicioFecharPlayer;painelExpandido.classList.remove('arrastando');painelExpandido.style.transform='';painelExpandido.style.opacity='';if(dy>95)fecharPlayerExpandido();inicioFecharPlayer=null;ultimoYPlayer=null;},{passive:true});
+        document.getElementById('player-musica-barra')?.addEventListener('touchend',e=>{if(inicioArrastoPlayer!==null&&inicioArrastoPlayer-e.changedTouches[0].clientY>28)abrirPlayerExpandido();inicioArrastoPlayer=null},{passive:true});
+        let inicioFecharPlayer=null;
+        const painelExpandido=document.getElementById('player-expandido'), cardExpandido=document.getElementById('player-expandido-card');
+        painelExpandido?.addEventListener('click',e=>{if(e.target===painelExpandido)fecharPlayerExpandido()});
+        cardExpandido?.addEventListener('touchstart',e=>{inicioFecharPlayer=e.touches[0].clientY;cardExpandido.style.transition='none'},{passive:true});
+        cardExpandido?.addEventListener('touchmove',e=>{if(inicioFecharPlayer===null)return;const dy=Math.max(0,e.touches[0].clientY-inicioFecharPlayer);if(dy>0)cardExpandido.style.transform=`translateY(${Math.min(dy,150)}px) scale(${1-Math.min(dy,150)/1800})`},{passive:true});
+        cardExpandido?.addEventListener('touchend',e=>{const dy=inicioFecharPlayer===null?0:e.changedTouches[0].clientY-inicioFecharPlayer;cardExpandido.style.transition='';cardExpandido.style.transform='';if(dy>75)fecharPlayerExpandido();inicioFecharPlayer=null},{passive:true});
 
         async function restaurarPlayerCompartilhado(){ let estado;try{estado=JSON.parse(localStorage.getItem(CHAVE_PLAYER_COMPARTILHADO)||'null')}catch(e){estado=null} if(!estado?.musica?.id)return;musicaAtualYouTube=estado.musica;mostrarBarraPlayer(musicaAtualYouTube,estado.tocando?'Retomando música…':'Pausada');if(!estado.tocando)return;try{await carregarYouTubeAPI();const host=document.getElementById('youtube-player-host');const iniciar=player=>{try{player.seekTo(Number(estado.tempo)||0,true);player.playVideo()}catch(e){}};if(!youtubePlayer)youtubePlayer=new YT.Player(host,{width:'1',height:'1',videoId:musicaAtualYouTube.id,playerVars:{autoplay:1,controls:0,playsinline:1,rel:0,modestbranding:1},events:{onReady:e=>iniciar(e.target),onStateChange:atualizarEstadoPlayerYouTube}});else{youtubePlayer.loadVideoById({videoId:musicaAtualYouTube.id,startSeconds:Number(estado.tempo)||0});youtubePlayer.playVideo()}iniciarSalvamentoPosicao()}catch(e){console.warn('Não foi possível retomar automaticamente:',e)}}
         window.addEventListener('pagehide',()=>{try{if(musicaAtualYouTube){const tocando=window.YT&&youtubePlayer&&youtubePlayer.getPlayerState()===YT.PlayerState.PLAYING;salvarEstadoPlayerCompartilhado(tocando)}}catch(e){}});
@@ -1473,4 +1463,4 @@ onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=
 document.getElementById('player-musica-controle')?.addEventListener('click',()=>setTimeout(atualizarBotaoExpandido,80));
         </script>
 </body>
-    </html>
+</html>
