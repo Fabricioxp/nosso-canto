@@ -2801,5 +2801,40 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 })();
 </script>
 
+
+<script id="clip-toggle-touch-fix">
+(function(){
+  function isToggleTarget(t){
+    return t && (t.closest ? t.closest('.featured-clip-toggle') : null);
+  }
+  ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(type=>{
+    document.addEventListener(type,function(e){
+      if(isToggleTarget(e.target)){
+        e.stopPropagation();
+        if(type==='click') e.stopImmediatePropagation();
+      }
+    },true);
+  });
+  document.addEventListener('click',function(e){
+    const b=isToggleTarget(e.target);
+    if(!b) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    // Run the toggle directly, without letting the music card receive this interaction.
+    const enabled=b.dataset.enabled==='1';
+    b.dataset.enabled=enabled?'0':'1';
+    localStorage.setItem('nossoCantoFeaturedClipEnabled',enabled?'0':'1');
+    b.textContent=enabled?'🎬 Clipe: desligado':'🎬 Clipe: ligado';
+    const card=b.closest('article, .music-card, .song-card, .card, li, [data-id]');
+    if(card) {
+      const bg=card.querySelector('.featured-clip-bg');
+      if(enabled && bg) bg.remove();
+      if(!enabled && !bg) location.reload();
+    }
+  },false);
+})();
+</script>
+
 </body>
 </html>
