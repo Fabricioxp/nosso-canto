@@ -1133,6 +1133,16 @@
 .youtube-resultado{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:1px solid rgba(230,179,168,.45);border-radius:12px;background:#fff;text-align:left;cursor:pointer;font-family:inherit}
 .youtube-resultado img{width:58px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0}.youtube-resultado-info{min-width:0;flex:1}.youtube-resultado-titulo{display:block;font-size:.83rem;font-weight:bold;color:var(--text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.youtube-resultado-canal{display:block;font-size:.72rem;color:var(--secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}.youtube-busca-ajuda{display:block;color:var(--secondary);font-size:.72rem;margin-top:9px;line-height:1.35}
 body.dark-mode .youtube-busca{background:#302a2d;border-color:#514448}body.dark-mode .youtube-resultado{background:#242022;border-color:#514448}body.dark-mode .youtube-resultado-titulo{color:#eee6e4}
+
+/* Clipe discreto no fundo da Música do Momento (somente Wi‑Fi) */
+.card-musica.destaque { overflow:hidden; isolation:isolate; }
+.card-musica.destaque .destaque-clipe-fundo{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(135deg,#fffdfd,#fff5f2)}
+.card-musica.destaque .destaque-clipe-fundo iframe{width:100%;height:100%;border:0;transform:scale(1.18);opacity:.18;filter:saturate(.85) contrast(.92)}
+.card-musica.destaque .destaque-conteudo{position:relative;z-index:1}
+.card-musica.destaque .destaque-video-toggle{position:absolute;right:11px;bottom:10px;z-index:3;border:1px solid rgba(140,98,93,.2);background:rgba(255,255,255,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--primary);border-radius:999px;padding:6px 10px;font:600 .68rem var(--font-main);box-shadow:0 3px 10px rgba(0,0,0,.08);cursor:pointer}
+.card-musica.destaque .destaque-video-toggle.ativo{background:var(--primary);color:#fff}
+body.dark-mode .card-musica.destaque .destaque-clipe-fundo{background:#2f272a}body.dark-mode .card-musica.destaque .destaque-video-toggle{background:rgba(42,35,38,.86);color:#f3c7c1}
+
 </style>
 </head>
 <body>
@@ -2284,6 +2294,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                 blocoMusica.dataset.musicaCapa = post.imagem || '';
                 blocoMusica.innerHTML = `
                     ${menuTresPontosPlaylist}
+                    <div class="destaque-conteudo">
                     <div class="musica-layout">
                         <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
                         <div class="musica-info">
@@ -2296,6 +2307,8 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                         <button class="btn-coracao-minimalista" onclick="event.stopPropagation(); alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                         <span class="contagem-likes">${curtidasArray.length} amaram</span>
                     </div>
+                    </div>
+                    ${post.destaque ? '<button type="button" class="destaque-video-toggle" aria-pressed="false">🎬 Clipe: desligado</button>' : ''}
                 `;
                 blocoMusica.addEventListener('click', function(event) {
                     if (event.target.closest('.menu-acoes-container') || event.target.closest('.btn-coracao-minimalista')) return;
@@ -2616,5 +2629,36 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         setInterval(atualizarContadores, 1000); atualizarContadores();
 
     </script>
+
+<script>
+/* Clipe de fundo da música destacada: opt-in, automático somente em Wi‑Fi quando o navegador informa o tipo de conexão. */
+(function(){
+  const PREF='nossoCantoClipeDestaque';
+  function wifiConfirmado(){
+    const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+    return !!(c && String(c.type||'').toLowerCase()==='wifi');
+  }
+  function idYoutube(link){ const m=String(link||'').match(/(?:youtu\.be\/|youtube\.com\\/(?:watch\?v=|embed\/|shorts\/))([^?&#/]+)/); return m?m[1]:null; }
+  function remover(card){ const bg=card.querySelector('.destaque-clipe-fundo'); if(bg) bg.remove(); const b=card.querySelector('.destaque-video-toggle'); if(b){b.classList.remove('ativo');b.setAttribute('aria-pressed','false');b.textContent='🎬 Clipe: desligado';} }
+  function ativar(card){
+    const id=idYoutube(card.dataset.musicaLink); if(!id) return;
+    remover(card); const bg=document.createElement('div'); bg.className='destaque-clipe-fundo';
+    const iframe=document.createElement('iframe'); iframe.title='Clipe da música do momento'; iframe.allow='autoplay; encrypted-media; picture-in-picture'; iframe.tabIndex=-1;
+    iframe.src='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist='+encodeURIComponent(id)+'&rel=0&modestbranding=1'; bg.appendChild(iframe); card.prepend(bg);
+    const b=card.querySelector('.destaque-video-toggle'); if(b){b.classList.add('ativo');b.setAttribute('aria-pressed','true');b.textContent='🎬 Clipe: ligado';}
+  }
+  function configurar(){
+    const card=document.querySelector('.card-musica.destaque'); if(!card||card.dataset.clipeConfigurado) return; card.dataset.clipeConfigurado='1';
+    const btn=card.querySelector('.destaque-video-toggle'); if(!btn) return;
+    const pref=localStorage.getItem(PREF);
+    // Só inicia sozinho se o usuário deixou a opção ligada E a conexão é explicitamente Wi‑Fi.
+    if(pref==='on' && wifiConfirmado()) ativar(card);
+    btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();const ligado=!!card.querySelector('.destaque-clipe-fundo'); if(ligado){remover(card);localStorage.setItem(PREF,'off');}else{ativar(card);localStorage.setItem(PREF,'on');}});
+  }
+  const obs=new MutationObserver(configurar); obs.observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',configurar); else configurar();
+})();
+</script>
+
 </body>
 </html>
