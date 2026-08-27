@@ -448,29 +448,8 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
             z-index: -1;
         }
 
-        /* Clipe opcional no fundo da barra: desligado por padrão para economizar dados */
-        .card-musica.tocando-agora{position:relative;overflow:hidden;}
-        .card-musica .clipe-card-fundo{position:absolute;inset:0;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .35s ease;z-index:0;}
-        .card-musica .clipe-card-fundo.ativo{opacity:.20;}
-        .card-musica .clipe-card-fundo iframe{position:absolute;width:125%;height:125%;left:-12.5%;top:-12.5%;border:0;filter:saturate(.75) contrast(.9);}
-        .card-musica.tocando-agora > *:not(.clipe-card-fundo){position:relative;z-index:1;}
-        .clipe-card-controle{display:none;margin-top:10px;align-items:center;justify-content:space-between;gap:10px;font-size:.75rem;color:var(--text-color);}
-        .card-musica.tocando-agora .clipe-card-controle{display:flex;}
-        .clipe-switch{width:44px;height:25px;border:0;border-radius:999px;background:#c9c2c0;padding:3px;cursor:pointer;transition:.2s;position:relative;flex-shrink:0;}
-        .clipe-switch span{display:block;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s;}
-        .clipe-switch.ativo{background:var(--primary);}.clipe-switch.ativo span{transform:translateX(19px);}
-        .player-musica-video-fundo{position:absolute;inset:0;border-radius:17px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .35s ease;background:linear-gradient(135deg,rgba(140,98,93,.12),rgba(255,255,255,.2));}
-        .player-musica-video-fundo.ativo{opacity:1;}
-        .player-musica-video-fundo iframe{position:absolute;width:118%;height:118%;left:-9%;top:-9%;border:0;filter:saturate(.82) contrast(.9);}
-        .player-musica-video-fundo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.90),rgba(255,255,255,.68));}
-        body.dark-mode .player-musica-video-fundo::after{background:linear-gradient(90deg,rgba(36,32,34,.91),rgba(36,32,34,.68));}
-        .player-musica-barra>*:not(.player-musica-video-fundo){position:relative;z-index:1;}
-        .player-video-toggle{width:34px;height:34px;border-radius:50%;border:1px solid rgba(230,179,168,.55);background:rgba(255,250,250,.88);color:var(--primary);display:grid;place-items:center;cursor:pointer;flex-shrink:0;font-size:.95rem;transition:transform .2s ease,background .2s ease;}
-        .player-video-toggle.ativo{background:var(--primary);color:#fff;box-shadow:0 5px 14px rgba(140,98,93,.22);}
-        .player-video-toggle:active{transform:scale(.92);}
         .player-musica-barra {
             position: fixed;
-            overflow: hidden;
             left: 12px;
             right: 12px;
             bottom: 12px;
@@ -708,6 +687,10 @@ body.player-expandido-aberto .menu-criar{opacity:0!important;pointer-events:none
 body.player-musica-ativo .menu-criar{bottom:96px!important}
 @media(max-width:520px){body.player-musica-ativo .menu-criar{bottom:92px!important}}
 </style>
+
+<style id="clipe-card-safe-css">
+.card-musica{position:relative;overflow:hidden}.card-musica .clipe-card-bg{position:absolute;inset:0;display:none;pointer-events:none;overflow:hidden;z-index:0}.card-musica.clipe-ativo .clipe-card-bg{display:block}.card-musica .clipe-card-bg iframe{position:absolute;width:180%;height:180%;left:-40%;top:-40%;border:0;opacity:.16;filter:saturate(.85) contrast(.9)}.card-musica .musica-layout,.card-musica .barra-reacoes-polaroid,.card-musica .menu-acoes-container,.card-musica .clipe-toggle{position:relative;z-index:1}.clipe-toggle{display:none;margin-top:9px;align-items:center;gap:8px;font-size:.72rem;color:var(--secondary);font-weight:700}.card-musica.tocando .clipe-toggle{display:flex}.clipe-switch{width:38px;height:22px;border:0;border-radius:20px;background:#c8c0bf;padding:2px;cursor:pointer;transition:.22s}.clipe-switch i{display:block;width:18px;height:18px;border-radius:50%;background:#fff;transition:.22s}.clipe-switch.ativo{background:var(--primary)}.clipe-switch.ativo i{transform:translateX(16px)}
+</style>
 </head>
 <body>
 
@@ -760,7 +743,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
         </div>
 
         <div id="player-musica-barra" class="player-musica-barra" aria-label="Música em reprodução">
-                        <img id="player-musica-capa" class="player-musica-icone" src="" alt="">
+            <img id="player-musica-capa" class="player-musica-icone" src="" alt="">
             <div class="player-musica-info">
                 <div id="player-musica-titulo" class="player-musica-titulo">Nenhuma música</div>
                 <div id="player-musica-status" class="player-musica-status">Tocando no Nosso Canto</div>
@@ -966,44 +949,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
         function limparEstadoPlayerCompartilhado(){ localStorage.removeItem(CHAVE_PLAYER_COMPARTILHADO); }
         function iniciarSalvamentoPosicao(){ if(intervaloSalvarPosicao) clearInterval(intervaloSalvarPosicao); intervaloSalvarPosicao=setInterval(()=>salvarEstadoPlayerCompartilhado(true),1000); }
         function pararSalvamentoPosicao(){ if(intervaloSalvarPosicao){clearInterval(intervaloSalvarPosicao);intervaloSalvarPosicao=null;} }
-        /* Clipe opcional no fundo do cartão da música que está tocando. */
-        const CHAVE_VIDEO_FUNDO='nosso_canto_video_fundo_ativo_v2';
-        let videoFundoPlayer=null, videoFundoId=null, intervaloSyncVideoFundo=null;
-        function videoFundoLigado(){return localStorage.getItem(CHAVE_VIDEO_FUNDO)==='1';}
-        function cartaoDaMusicaAtual(){
-            if(!musicaAtualYouTube?.id)return null;
-            return document.querySelector(`.card-musica[data-youtube-id="${CSS.escape(musicaAtualYouTube.id)}"]`);
-        }
-        function atualizarCartaoAtivo(){
-            document.querySelectorAll('.card-musica.tocando-agora').forEach(c=>c.classList.remove('tocando-agora'));
-            const card=cartaoDaMusicaAtual(); if(card)card.classList.add('tocando-agora');
-            atualizarBotaoVideoFundo();
-        }
-        function atualizarBotaoVideoFundo(){
-            const card=cartaoDaMusicaAtual(); if(!card)return;
-            const b=card.querySelector('.clipe-switch'); if(!b)return;
-            const on=videoFundoLigado(); b.classList.toggle('ativo',on); b.setAttribute('aria-pressed',on?'true':'false');
-        }
-        function pararVideoFundo(){
-            if(intervaloSyncVideoFundo){clearInterval(intervaloSyncVideoFundo);intervaloSyncVideoFundo=null;}
-            if(videoFundoPlayer){try{videoFundoPlayer.stopVideo()}catch(e){}}
-            document.querySelectorAll('.clipe-card-fundo.ativo').forEach(x=>x.classList.remove('ativo'));
-        }
-        async function iniciarVideoFundo(){
-            const musica=musicaAtualYouTube, card=cartaoDaMusicaAtual();
-            if(!musica?.id||!videoFundoLigado()||!card)return;
-            const box=card.querySelector('.clipe-card-fundo');if(!box)return;
-            box.classList.add('ativo'); await carregarYouTubeAPI();
-            const tempo=(()=>{try{return youtubePlayer?.getCurrentTime?.()||0}catch(e){return 0}})();
-            if(!videoFundoPlayer){
-                const host=document.createElement('div');host.id='youtube-video-fundo-host';box.innerHTML='';box.appendChild(host);
-                videoFundoPlayer=new YT.Player(host,{width:'100%',height:'100%',videoId:musica.id,playerVars:{autoplay:1,controls:0,playsinline:1,rel:0,modestbranding:1,disablekb:1},events:{onReady:e=>{e.target.mute();e.target.seekTo(tempo,true);e.target.playVideo();}}});videoFundoId=musica.id;
-            }else{try{videoFundoPlayer.mute();if(videoFundoId!==musica.id){videoFundoId=musica.id;videoFundoPlayer.loadVideoById({videoId:musica.id,startSeconds:tempo});}else{videoFundoPlayer.seekTo(tempo,true);videoFundoPlayer.playVideo();}}catch(e){}}
-            if(intervaloSyncVideoFundo)clearInterval(intervaloSyncVideoFundo);
-            intervaloSyncVideoFundo=setInterval(()=>{if(!videoFundoLigado()||!youtubePlayer||!videoFundoPlayer)return;try{const a=youtubePlayer.getCurrentTime(),b=videoFundoPlayer.getCurrentTime();if(Math.abs(a-b)>1.5)videoFundoPlayer.seekTo(a,true);const st=youtubePlayer.getPlayerState();if(st===YT.PlayerState.PLAYING)videoFundoPlayer.playVideo();else if(st===YT.PlayerState.PAUSED)videoFundoPlayer.pauseVideo();}catch(e){}},1200);
-        }
-        function definirVideoFundo(on){localStorage.setItem(CHAVE_VIDEO_FUNDO,on?'1':'0');atualizarBotaoVideoFundo();if(on)iniciarVideoFundo();else pararVideoFundo();}
-        function mostrarBarraPlayer(musica,statusTexto){ const barra=document.getElementById('player-musica-barra'),capa=document.getElementById('player-musica-capa'),titulo=document.getElementById('player-musica-titulo'),status=document.getElementById('player-musica-status'),controle=document.getElementById('player-musica-controle'); if(capa){capa.src=musica.capa||`https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`;capa.alt=musica.titulo||'Capa da música';} if(titulo)titulo.textContent=musica.titulo||'Música'; if(status)status.textContent=statusTexto||'Tocando agora • YouTube'; if(controle){controle.textContent=statusTexto==='Pausada'?'▶':'Ⅱ';controle.setAttribute('aria-label',statusTexto==='Pausada'?'Continuar':'Pausar');} if(barra)barra.classList.add('ativo');document.body.classList.add('player-musica-ativo'); atualizarCartaoAtivo(); if(videoFundoLigado()) setTimeout(iniciarVideoFundo,0); }
+        function mostrarBarraPlayer(musica,statusTexto){ const barra=document.getElementById('player-musica-barra'),capa=document.getElementById('player-musica-capa'),titulo=document.getElementById('player-musica-titulo'),status=document.getElementById('player-musica-status'),controle=document.getElementById('player-musica-controle'); if(capa){capa.src=musica.capa||`https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`;capa.alt=musica.titulo||'Capa da música';} if(titulo)titulo.textContent=musica.titulo||'Música'; if(status)status.textContent=statusTexto||'Tocando agora • YouTube'; if(controle){controle.textContent=statusTexto==='Pausada'?'▶':'Ⅱ';controle.setAttribute('aria-label',statusTexto==='Pausada'?'Continuar':'Pausar');} if(barra)barra.classList.add('ativo');document.body.classList.add('player-musica-ativo'); }
         /* Player expandido: a barra pode ser tocada ou arrastada para cima */
         function atualizarPlayerExpandido(){
             const musica=musicaAtualYouTube; if(!musica) return;
@@ -1248,7 +1194,6 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
         }
 
         function atualizarEstadoPlayerYouTube(event) {
-            if(videoFundoLigado()) setTimeout(iniciarVideoFundo,0);
             const status = document.getElementById('player-musica-status');
             const controle = document.getElementById('player-musica-controle');
 
@@ -1306,7 +1251,6 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
             document.body.classList.remove('player-musica-ativo'); document.body.classList.remove('player-expandido-aberto'); fecharPlayerExpandido?.();
 
             musicaAtualYouTube = null;
-            pararVideoFundo?.();
             pararSalvamentoPosicao();
             limparEstadoPlayerCompartilhado();
         }
@@ -1353,10 +1297,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
 
                 blocoMusica.className = classesCartao;
                 blocoMusica.id = post.id;
-                const idVideoCard = extrairIdYouTube(post.link) || '';
-                blocoMusica.dataset.youtubeId = idVideoCard;
                 blocoMusica.innerHTML = `
-                    <div class="clipe-card-fundo" aria-hidden="true"></div>
                     ${menuTresPontosPlaylist}
                     <div class="musica-layout">
                         <img src="${post.imagem}" class="musica-capa" alt="Capa" loading="lazy">
@@ -1366,7 +1307,6 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                             <button type="button" class="musica-link-btn btn-ouvir-musica-card">▶️ Ouvir Música</button>
                         </div>
                     </div>
-                    <div class="clipe-card-controle"><span>🎬 Clipe no fundo</span><button type="button" class="clipe-switch" aria-pressed="false" aria-label="Ativar clipe no fundo"><span></span></button></div>
                     <div class="barra-reacoes-polaroid" style="margin-top: 15px; padding-top: 10px;">
                         <button class="btn-coracao-minimalista" onclick="alternarCurtidaItem('${post.id}')">${jaCurtido ? '❤️' : '🤍'}</button>
                         <span class="contagem-likes">${curtidasArray.length} amaram</span>
@@ -1380,8 +1320,6 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                         window.abrirOpcoesMusica(post.link, post.titulo, post.imagem);
                     });
                 }
-                const toggleClipe = blocoMusica.querySelector('.clipe-switch');
-                if (toggleClipe) toggleClipe.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); definirVideoFundo(!videoFundoLigado()); });
                 if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
             });
         });
@@ -1543,5 +1481,17 @@ btnCriacao.onclick=alternarModalPostagem;
 onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
 document.getElementById('player-musica-controle')?.addEventListener('click',()=>setTimeout(atualizarBotaoExpandido,80));
         </script>
+
+<script id="clipe-card-safe-script">
+(function(){
+  let ativoId=null, ativoLink=null;
+  function videoId(url){try{const u=new URL(url);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1);return u.searchParams.get('v')||''}catch(e){const m=String(url||'').match(/[?&]v=([^&]+)/);return m?m[1]:''}}
+  function limpar(){document.querySelectorAll('.card-musica.tocando').forEach(c=>{c.classList.remove('tocando'); if(c.dataset.clipeLigado!=='1') c.classList.remove('clipe-ativo')});}
+  document.addEventListener('click',e=>{const b=e.target.closest('.btn-ouvir-musica-card');if(!b)return;const card=b.closest('.card-musica');if(!card)return;ativoId=card.id;ativoLink=null;limpar();card.classList.add('tocando');setTimeout(()=>{try{ativoLink=window.musicaAtualYouTube?.link||null;preparar(card)}catch(_){}},350)},true);
+  function preparar(card){if(!card||card.querySelector('.clipe-toggle'))return;const bg=document.createElement('div');bg.className='clipe-card-bg';card.prepend(bg);const row=document.createElement('div');row.className='clipe-toggle';row.innerHTML='<span>🎬 Clipe no fundo</span><button type="button" class="clipe-switch" aria-label="Ativar clipe no fundo"><i></i></button>';card.querySelector('.musica-info')?.appendChild(row);const sw=row.querySelector('button');sw.addEventListener('click',ev=>{ev.stopPropagation();const ligado=card.dataset.clipeLigado==='1';if(ligado){card.dataset.clipeLigado='0';card.classList.remove('clipe-ativo');sw.classList.remove('ativo');bg.innerHTML='';return}const link=ativoLink||window.musicaAtualYouTube?.link||'';const id=videoId(link);if(!id)return;card.dataset.clipeLigado='1';card.classList.add('clipe-ativo');sw.classList.add('ativo');bg.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist='+encodeURIComponent(id)+'&rel=0" allow="autoplay; encrypted-media" tabindex="-1"></iframe>';});}
+  const obs=new MutationObserver(()=>{const barra=document.getElementById('player-musica-barra');if(!barra)return;if(!barra.classList.contains('ativo')){limpar();ativoId=null;return}if(ativoId){const c=document.getElementById(ativoId);if(c){limpar();c.classList.add('tocando');preparar(c)}}});
+  document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('player-musica-barra');if(b)obs.observe(b,{attributes:true,attributeFilter:['class']});document.getElementById('player-musica-fechar')?.addEventListener('click',()=>{limpar();ativoId=null});});
+})();
+</script>
 </body>
 </html>
