@@ -2631,32 +2631,88 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
     </script>
 
 <script>
-/* Clipe de fundo da música destacada: opt-in, automático somente em Wi‑Fi quando o navegador informa o tipo de conexão. */
+/* Clipe automático no fundo apenas do ÚLTIMO destaque.
+   Wi-Fi: inicia ligado. Dados móveis: inicia desligado para economizar internet. */
 (function(){
   const PREF='nossoCantoClipeDestaque';
-  function wifiConfirmado(){
-    const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-    return !!(c && String(c.type||'').toLowerCase()==='wifi');
+  const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  function conexaoMovel(){
+    if(!conn) return false;
+    const type=String(conn.type||'').toLowerCase();
+    return type==='cellular';
   }
-  function idYoutube(link){ const m=String(link||'').match(/(?:youtu\.be\/|youtube\.com\\/(?:watch\?v=|embed\/|shorts\/))([^?&#/]+)/); return m?m[1]:null; }
-  function remover(card){ const bg=card.querySelector('.destaque-clipe-fundo'); if(bg) bg.remove(); const b=card.querySelector('.destaque-video-toggle'); if(b){b.classList.remove('ativo');b.setAttribute('aria-pressed','false');b.textContent='🎬 Clipe: desligado';} }
+  function idYoutube(link){
+    const m=String(link||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^?&#/]+)/);
+    return m?m[1]:null;
+  }
+  function estado(card, ligado){
+    const b=card.querySelector('.destaque-video-toggle'); if(!b)return;
+    b.classList.toggle('ativo',ligado);
+    b.setAttribute('aria-pressed',String(ligado));
+    b.textContent=ligado?'🎬 Clipe: ligado':'🎬 Clipe: desligado';
+  }
+  function remover(card){
+    const bg=card.querySelector('.destaque-clipe-fundo');
+    if(bg) bg.remove();
+    estado(card,false);
+  }
   function ativar(card){
-    const id=idYoutube(card.dataset.musicaLink); if(!id) return;
-    remover(card); const bg=document.createElement('div'); bg.className='destaque-clipe-fundo';
-    const iframe=document.createElement('iframe'); iframe.title='Clipe da música do momento'; iframe.allow='autoplay; encrypted-media; picture-in-picture'; iframe.tabIndex=-1;
-    iframe.src='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist='+encodeURIComponent(id)+'&rel=0&modestbranding=1'; bg.appendChild(iframe); card.prepend(bg);
-    const b=card.querySelector('.destaque-video-toggle'); if(b){b.classList.add('ativo');b.setAttribute('aria-pressed','true');b.textContent='🎬 Clipe: ligado';}
+    const id=idYoutube(card.dataset.musicaLink);
+    if(!id){ estado(card,false); return; }
+    const antigo=card.querySelector('.destaque-clipe-fundo');
+    if(antigo) antigo.remove();
+    const bg=document.createElement('div');
+    bg.className='destaque-clipe-fundo';
+    bg.setAttribute('aria-hidden','true');
+    const iframe=document.createElement('iframe');
+    iframe.title='Clipe da música em destaque';
+    iframe.tabIndex=-1;
+    iframe.allow='autoplay; encrypted-media; picture-in-picture';
+    iframe.src='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist='+encodeURIComponent(id)+'&rel=0&modestbranding=1';
+    bg.appendChild(iframe);
+    card.insertBefore(bg,card.firstChild);
+    estado(card,true);
   }
   function configurar(){
-    const card=document.querySelector('.card-musica.destaque'); if(!card||card.dataset.clipeConfigurado) return; card.dataset.clipeConfigurado='1';
-    const btn=card.querySelector('.destaque-video-toggle'); if(!btn) return;
+    const destaques=[...document.querySelectorAll('.card-musica.destaque')];
+    if(!destaques.length) return;
+
+    // Somente o último destaque da lista pode ter vídeo e botão ativo.
+    const alvo=destaques[destaques.length-1];
+    destaques.slice(0,-1).forEach(remover);
+
+    const btn=alvo.querySelector('.destaque-video-toggle');
+    if(!btn) return;
+    if(btn.dataset.clipeListener!=='1'){
+      btn.dataset.clipeListener='1';
+      btn.addEventListener('click',function(e){
+        e.preventDefault(); e.stopPropagation();
+        const ligado=!!alvo.querySelector('.destaque-clipe-fundo');
+        if(ligado){ remover(alvo); localStorage.setItem(PREF,'off'); }
+        else { ativar(alvo); localStorage.setItem(PREF,'on'); }
+      });
+    }
+
+    // Em dados móveis nunca inicia sozinho. No Wi-Fi/desktop, inicia ligado por padrão.
+    if(conexaoMovel()){
+      remover(alvo);
+      return;
+    }
     const pref=localStorage.getItem(PREF);
-    // Só inicia sozinho se o usuário deixou a opção ligada E a conexão é explicitamente Wi‑Fi.
-    if(pref==='on' && wifiConfirmado()) ativar(card);
-    btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();const ligado=!!card.querySelector('.destaque-clipe-fundo'); if(ligado){remover(card);localStorage.setItem(PREF,'off');}else{ativar(card);localStorage.setItem(PREF,'on');}});
+    if(pref==='off') remover(alvo);
+    else ativar(alvo);
   }
-  const obs=new MutationObserver(configurar); obs.observe(document.documentElement,{childList:true,subtree:true});
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',configurar); else configurar();
+
+  // A playlist pode ser renderizada novamente pelo Firebase, então observamos mudanças.
+  let timer;
+  const obs=new MutationObserver(function(){
+    clearTimeout(timer);
+    timer=setTimeout(configurar,80);
+  });
+  obs.observe(document.documentElement,{childList:true,subtree:true});
+  if(conn && conn.addEventListener) conn.addEventListener('change',configurar);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',configurar);
+  else configurar();
 })();
 </script>
 
