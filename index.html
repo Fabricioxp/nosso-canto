@@ -1144,6 +1144,29 @@ body.dark-mode .youtube-busca{background:#302a2d;border-color:#514448}body.dark-
 body.dark-mode .card-musica.destaque .destaque-clipe-fundo{background:#2f272a}body.dark-mode .card-musica.destaque .destaque-video-toggle{background:rgba(42,35,38,.86);color:#f3c7c1}
 
 </style>
+
+<style id="clip-touch-and-layer-fix">
+.card-musica.destaque { isolation:isolate; }
+.card-musica.destaque .destaque-clipe-fundo { pointer-events:none !important; z-index:0 !important; }
+.card-musica.destaque .destaque-clipe-fundo iframe { pointer-events:none !important; }
+.card-musica.destaque .destaque-conteudo,
+.card-musica.destaque .menu-acoes-container,
+.card-musica.destaque .destaque-video-toggle { position:relative; }
+.card-musica.destaque .destaque-video-toggle { z-index:30 !important; pointer-events:auto !important; touch-action:manipulation; }
+.card-musica.destaque .menu-acoes-container { z-index:31 !important; }
+</style>
+<script>
+/* Isola o toque do botão antes que qualquer evento do card seja executado. */
+document.addEventListener('click', function(e){
+  const b = e.target.closest && e.target.closest('.destaque-video-toggle');
+  if (b) e.stopPropagation();
+}, true);
+document.addEventListener('touchstart', function(e){
+  const b = e.target.closest && e.target.closest('.destaque-video-toggle');
+  if (b) e.stopPropagation();
+}, true);
+</script>
+
 </head>
 <body>
 
@@ -2311,7 +2334,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     ${post.destaque ? '<button type="button" class="destaque-video-toggle" aria-pressed="false">🎬 Clipe: desligado</button>' : ''}
                 `;
                 blocoMusica.addEventListener('click', function(event) {
-                    if (event.target.closest('.menu-acoes-container') || event.target.closest('.btn-coracao-minimalista')) return;
+                    if (event.target.closest('.menu-acoes-container') || event.target.closest('.btn-coracao-minimalista') || event.target.closest('.destaque-video-toggle')) return;
                     abrirOpcoesMusica(this.dataset.musicaLink, this.dataset.musicaTitulo, this.dataset.musicaCapa);
                 });
                 containers.playlist.appendChild(blocoMusica);
@@ -2724,117 +2747,6 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 </script>
 
 
-<!-- Destaque: clipe de fundo isolado -->
-<style id="featured-clip-isolated-style">
-.featured-clip-bg{position:absolute!important;inset:0!important;overflow:hidden!important;pointer-events:none!important;z-index:0!important;background:transparent!important;border-radius:inherit!important}
-.featured-clip-bg iframe{position:absolute!important;left:50%!important;top:50%!important;width:178%!important;height:178%!important;transform:translate(-50%,-50%)!important;border:0!important;pointer-events:none!important;opacity:.38!important}
-.featured-clip-content{position:relative!important;z-index:2!important}
-.featured-clip-toggle{position:relative!important;z-index:10!important;pointer-events:auto!important}
-</style>
-<script id="featured-clip-isolated-script">
-(function(){
-  const key='nossoCantoFeaturedClipEnabled';
-  let observer, timer;
-  function getVideoId(v){
-    if(!v) return null;
-    const str=String(v);
-    let m=str.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
-    return m?m[1]:(str.match(/^[A-Za-z0-9_-]{11}$/)?str:null);
-  }
-  function mobileData(){
-    const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-    return !!(c && (c.saveData || /(^|-)2g|3g|4g|5g|cellular/i.test(c.effectiveType||c.type||'')));
-  }
-  function findFeaturedCards(){
-    return [...document.querySelectorAll('article, .music-card, .song-card, .card, li, [data-id]')].filter(el=>{
-      const t=(el.innerText||'').toLowerCase();
-      return t.includes('destaque') && /música|musica|ouvir|editar/.test(t);
-    });
-  }
-  function pickLast(cards){ return cards.length?cards[cards.length-1]:null; }
-  function extractUrl(card){
-    const attrs=['data-url','data-link','data-video','data-youtube','data-src'];
-    for(const a of attrs) if(card.getAttribute(a)) return card.getAttribute(a);
-    const links=[...card.querySelectorAll('a[href]')].map(a=>a.href);
-    return links.find(x=>/youtu\.be|youtube\.com/.test(x)) || null;
-  }
-  function ensure(){
-    clearTimeout(timer); timer=setTimeout(render,80);
-  }
-  function render(){
-    const cards=findFeaturedCards();
-    document.querySelectorAll('.featured-clip-bg').forEach(x=>x.remove());
-    document.querySelectorAll('.featured-clip-toggle').forEach(x=>x.remove());
-    if(!cards.length) return;
-    const card=pickLast(cards);
-    const url=extractUrl(card);
-    const id=getVideoId(url);
-    if(!id) return;
-    if(getComputedStyle(card).position==='static') card.style.position='relative';
-    const saved=localStorage.getItem(key);
-    let enabled=saved===null ? !mobileData() : saved==='1';
-    const toggle=document.createElement('button');
-    toggle.type='button'; toggle.className='featured-clip-toggle';
-    toggle.textContent=enabled?'🎬 Clipe: ligado':'🎬 Clipe: desligado';
-    toggle.style.margin='8px 0';
-    toggle.addEventListener('click',e=>{
-      e.preventDefault(); e.stopPropagation();
-      enabled=!enabled; localStorage.setItem(key,enabled?'1':'0');
-      render();
-    });
-    // Append without touching the existing three-dot/action menu.
-    const anchor=[...card.children].find(el=>/destaque/i.test(el.innerText||'')) || card;
-    anchor.appendChild(toggle);
-    if(enabled){
-      const bg=document.createElement('div'); bg.className='featured-clip-bg';
-      const iframe=document.createElement('iframe');
-      iframe.allow='autoplay; encrypted-media; picture-in-picture';
-      iframe.title='Clipe da música em destaque';
-      iframe.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&controls=0&playsinline=1&rel=0';
-      bg.appendChild(iframe); card.insertBefore(bg,card.firstChild);
-      // Keep every pre-existing card element clickable and above the background.
-      [...card.children].filter(x=>x!==bg).forEach(x=>x.classList.add('featured-clip-content'));
-    }
-  }
-  window.addEventListener('load',()=>{render(); observer=new MutationObserver(ensure); observer.observe(document.body,{childList:true,subtree:true});});
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) ensure(); });
-})();
-</script>
-
-
-<script id="clip-toggle-touch-fix">
-(function(){
-  function isToggleTarget(t){
-    return t && (t.closest ? t.closest('.featured-clip-toggle') : null);
-  }
-  ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(type=>{
-    document.addEventListener(type,function(e){
-      if(isToggleTarget(e.target)){
-        e.stopPropagation();
-        if(type==='click') e.stopImmediatePropagation();
-      }
-    },true);
-  });
-  document.addEventListener('click',function(e){
-    const b=isToggleTarget(e.target);
-    if(!b) return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    // Run the toggle directly, without letting the music card receive this interaction.
-    const enabled=b.dataset.enabled==='1';
-    b.dataset.enabled=enabled?'0':'1';
-    localStorage.setItem('nossoCantoFeaturedClipEnabled',enabled?'0':'1');
-    b.textContent=enabled?'🎬 Clipe: desligado':'🎬 Clipe: ligado';
-    const card=b.closest('article, .music-card, .song-card, .card, li, [data-id]');
-    if(card) {
-      const bg=card.querySelector('.featured-clip-bg');
-      if(enabled && bg) bg.remove();
-      if(!enabled && !bg) location.reload();
-    }
-  },false);
-})();
-</script>
 
 </body>
 </html>
