@@ -678,6 +678,7 @@ body.modal-criacao-aberta .menu-criar{z-index:2147483647!important}
 .player-expandido.aberto{visibility:visible;pointer-events:auto;opacity:1;transition:opacity .28s ease!important;}
 .player-expandido-card{will-change:transform;transform:translateY(30px) scale(.97);transition:transform .38s cubic-bezier(.22,.85,.22,1),opacity .28s ease!important;}
 .player-expandido.aberto .player-expandido-card{transform:translateY(0) scale(1);}
+#player-musica-barra{touch-action:pan-x;}
 body.player-expandido-aberto .menu-criar{opacity:0!important;pointer-events:none!important;transform:translateY(18px)!important;transition:opacity .2s ease,transform .2s ease!important;}
 </style>
 
@@ -985,7 +986,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
         let inicioArrastoPlayer=null, deltaArrastoPlayer=0;
         const barraArrasto=document.getElementById('player-musica-barra');
         barraArrasto?.addEventListener('touchstart',e=>{inicioArrastoPlayer=e.touches[0].clientY;deltaArrastoPlayer=0;barraArrasto.style.transition='none'},{passive:true});
-        barraArrasto?.addEventListener('touchmove',e=>{if(inicioArrastoPlayer===null)return;const dy=e.touches[0].clientY-inicioArrastoPlayer;deltaArrastoPlayer=Math.min(0,dy);const subida=Math.min(42,Math.max(0,-dy)*.35);barraArrasto.style.transform=`translateY(${-subida}px)`},{passive:true});
+        barraArrasto?.addEventListener('touchmove',e=>{if(inicioArrastoPlayer===null)return;const dy=e.touches[0].clientY-inicioArrastoPlayer;if(dy<0){e.preventDefault();const subida=Math.min(58,Math.max(0,-dy)*.48);barraArrasto.style.transform=`translateY(${-subida}px)`}},{passive:false});
         barraArrasto?.addEventListener('touchend',e=>{const subida=inicioArrastoPlayer===null?0:inicioArrastoPlayer-e.changedTouches[0].clientY;barraArrasto.style.transition='transform .28s cubic-bezier(.22,.85,.22,1)';barraArrasto.style.transform='';if(subida>22)abrirPlayerExpandido();inicioArrastoPlayer=null;deltaArrastoPlayer=0;setTimeout(()=>barraArrasto.style.transition='',300)},{passive:true});
 
         let inicioFecharPlayer=null;
@@ -1485,33 +1486,43 @@ document.getElementById('player-musica-controle')?.addEventListener('click',()=>
 
 <script id="clipe-card-safe-script">
 (function(){
-  let ativoId=null;
+  let ativoCard=null;
   function videoId(url){try{const u=new URL(url);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1);return u.searchParams.get('v')||''}catch(e){const m=String(url||'').match(/(?:youtu\.be\/|[?&]v=)([^?&#/]+)/);return m?m[1]:''}}
-  function limpar(){document.querySelectorAll('.card-musica.tocando').forEach(c=>c.classList.remove('tocando'));}
+  function desligarCard(card){
+    if(!card)return;
+    card.classList.remove('tocando','clipe-ativo');
+    card.dataset.clipeLigado='0';
+    card.querySelector('.clipe-card-bg')?.remove();
+    const sw=card.querySelector('.clipe-switch'); if(sw)sw.classList.remove('ativo');
+  }
+  function limparExceto(cardAtual){document.querySelectorAll('.card-musica').forEach(c=>{if(c!==cardAtual)desligarCard(c);});}
   function preparar(card){
     if(!card||card.querySelector('.clipe-toggle'))return;
     const row=document.createElement('div');row.className='clipe-toggle';
-    row.innerHTML='<span>🎬 Clipe no fundo</span><button type="button" class="clipe-switch" aria-label="Ativar clipe no fundo"><i></i></button>';
+    row.innerHTML='<span>🎬 Clipe no fundo</span><button type="button" class="clipe-switch" aria-label="Ativar clipe no fundo" aria-pressed="false"><i></i></button>';
     const info=card.querySelector('.musica-info'); if(!info)return; info.appendChild(row);
     const sw=row.querySelector('.clipe-switch');
     sw.addEventListener('click',function(ev){
       ev.preventDefault();ev.stopPropagation();
       const ligado=card.dataset.clipeLigado==='1';
-      if(ligado){card.dataset.clipeLigado='0';card.classList.remove('clipe-ativo');sw.classList.remove('ativo');card.querySelector('.clipe-card-bg')?.remove();return;}
+      if(ligado){desligarClipe(card);return;}
       const id=videoId(card.dataset.youtubeLink||'');
       if(!id){console.warn('Vídeo do YouTube não encontrado para esta música.');return;}
       let bg=card.querySelector('.clipe-card-bg');
       if(!bg){bg=document.createElement('div');bg.className='clipe-card-bg';card.prepend(bg);}
-      card.dataset.clipeLigado='1';card.classList.add('clipe-ativo');sw.classList.add('ativo');
+      card.dataset.clipeLigado='1';card.classList.add('clipe-ativo');sw.classList.add('ativo');sw.setAttribute('aria-pressed','true');
       bg.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist='+encodeURIComponent(id)+'&rel=0" allow="autoplay; encrypted-media" tabindex="-1"></iframe>';
     });
   }
+  function desligarClipe(card){card.classList.remove('clipe-ativo');card.dataset.clipeLigado='0';card.querySelector('.clipe-card-bg')?.remove();const sw=card.querySelector('.clipe-switch');if(sw){sw.classList.remove('ativo');sw.setAttribute('aria-pressed','false');}}
   document.addEventListener('click',function(e){
     const b=e.target.closest('.btn-ouvir-musica-card');if(!b)return;
     const card=b.closest('.card-musica');if(!card)return;
-    ativoId=card.id;limpar();card.classList.add('tocando');preparar(card);
+    if(ativoCard&&ativoCard!==card)desligarCard(ativoCard);
+    limparExceto(card);
+    ativoCard=card;card.classList.add('tocando');preparar(card);
   },true);
-  document.getElementById('player-musica-fechar')?.addEventListener('click',()=>{limpar();ativoId=null;});
+  document.getElementById('player-musica-fechar')?.addEventListener('click',()=>{if(ativoCard)desligarCard(ativoCard);ativoCard=null;});
 })();
 </script>
 </body>
