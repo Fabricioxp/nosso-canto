@@ -1145,28 +1145,6 @@ body.dark-mode .card-musica.destaque .destaque-clipe-fundo{background:#2f272a}bo
 
 </style>
 
-<style id="clip-touch-and-layer-fix">
-.card-musica.destaque { isolation:isolate; }
-.card-musica.destaque .destaque-clipe-fundo { pointer-events:none !important; z-index:0 !important; }
-.card-musica.destaque .destaque-clipe-fundo iframe { pointer-events:none !important; }
-.card-musica.destaque .destaque-conteudo,
-.card-musica.destaque .menu-acoes-container,
-.card-musica.destaque .destaque-video-toggle { position:relative; }
-.card-musica.destaque .destaque-video-toggle { z-index:30 !important; pointer-events:auto !important; touch-action:manipulation; }
-.card-musica.destaque .menu-acoes-container { z-index:31 !important; }
-</style>
-<script>
-/* Isola o toque do botão antes que qualquer evento do card seja executado. */
-document.addEventListener('click', function(e){
-  const b = e.target.closest && e.target.closest('.destaque-video-toggle');
-  if (b) e.stopPropagation();
-}, true);
-document.addEventListener('touchstart', function(e){
-  const b = e.target.closest && e.target.closest('.destaque-video-toggle');
-  if (b) e.stopPropagation();
-}, true);
-</script>
-
 </head>
 <body>
 
@@ -2747,6 +2725,56 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 </script>
 
 
+
+
+<style id="featured-clip-clean-ui">
+#featuredClipControl{
+ position:absolute;right:12px;bottom:10px;z-index:9999;
+ display:flex;align-items:center;gap:7px;padding:7px 10px;
+ border-radius:999px;border:1px solid rgba(255,255,255,.18);
+ background:rgba(20,20,25,.72);backdrop-filter:blur(10px);
+ color:#fff;font-size:12px;pointer-events:auto;touch-action:manipulation;
+}
+#featuredClipControl button{border:0;background:transparent;color:inherit;padding:0;font:inherit;cursor:pointer;touch-action:manipulation}
+.featuredClipBg{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;z-index:0}
+.featuredClipBg iframe{width:100%;height:100%;border:0;transform:scale(1.25);pointer-events:none;opacity:.32}
+</style>
+<script id="featured-clip-clean-script">
+(function(){
+ let lastCard=null, lastId=null;
+ const storage='nossoCantoFeaturedClipEnabled';
+ const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+ function isMobile(){return !!(conn && (conn.saveData||/2g|3g|4g|5g|cellular/i.test((conn.effectiveType||conn.type||''))));}
+ function idFrom(text){
+  const m=String(text||'').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  return m&&m[1];
+ }
+ function cards(){return [...document.querySelectorAll('.card-musica')].filter(c=>/destaque/i.test(c.innerText||''));}
+ function setup(){
+  document.querySelectorAll('#featuredClipControl,.featuredClipBg').forEach(x=>x.remove());
+  const cs=cards(); const card=cs.at(-1); if(!card)return;
+  const raw=card.innerHTML.match(/https?:\/\/[^"' <]+(?:youtube\.com|youtu\.be)[^"' <]*/)?.[0] || '';
+  const id=idFrom(raw); if(!id)return;
+  lastCard=card; lastId=id;
+  if(getComputedStyle(card).position==='static')card.style.position='relative';
+  const control=document.createElement('div');control.id='featuredClipControl';
+  const btn=document.createElement('button');control.append(btn);card.append(control);
+  let enabled=localStorage.getItem(storage); enabled=enabled===null?!isMobile():enabled==='1';
+  function draw(){
+   btn.textContent=enabled?'🎬 Clipe ligado':'🎬 Clipe desligado';
+   card.querySelector('.featuredClipBg')?.remove();
+   if(enabled){
+    const bg=document.createElement('div');bg.className='featuredClipBg';
+    const f=document.createElement('iframe');f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&loop=1&playlist='+id+'&controls=0&playsinline=1';
+    f.allow='autoplay; encrypted-media';bg.append(f);card.prepend(bg);
+   }
+  }
+  btn.addEventListener('pointerup',e=>{e.preventDefault();e.stopPropagation();enabled=!enabled;localStorage.setItem(storage,enabled?'1':'0');draw();});
+  draw();
+ }
+ window.addEventListener('load',setup);
+})();
+</script>
 
 </body>
 </html>
