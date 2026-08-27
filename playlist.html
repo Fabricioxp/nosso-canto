@@ -538,6 +538,24 @@ body.dark-mode header,body.dark-mode .container-blocos{color:#eee6e4}body.dark-m
             .player-musica-barra { left: 8px; right: 8px; bottom: 8px; }
         }
 
+
+        /* Tela expandida do player — estilo mobile inspirado em players de streaming */
+        .player-expandido { position:fixed; inset:0; z-index:210000; display:none; background:rgba(255,250,248,.98); flex-direction:column; padding:env(safe-area-inset-top,18px) 18px calc(22px + env(safe-area-inset-bottom)); overflow:hidden; }
+        .player-expandido.aberto { display:flex; animation:playerExpandir .22s ease-out; }
+        @keyframes playerExpandir { from{transform:translateY(100%);opacity:.5} to{transform:translateY(0);opacity:1} }
+        .player-expandido-topo { display:flex; justify-content:space-between; align-items:center; min-height:48px; }
+        .player-expandido-fechar { border:0; background:transparent; color:var(--primary); font-size:1.8rem; width:46px; height:46px; cursor:pointer; }
+        .player-expandido-arrastar { width:42px;height:5px;border-radius:99px;background:rgba(140,98,93,.35); margin:2px auto 10px; }
+        .player-video-wrap { width:100%; aspect-ratio:16/9; border-radius:18px; overflow:hidden; background:#111; box-shadow:0 12px 35px rgba(74,62,61,.18); margin-top:10px; }
+        .player-video-wrap iframe { width:100%; height:100%; border:0; }
+        .player-expandido-info { padding:22px 4px 12px; }
+        .player-expandido-info h2 { margin:0; color:var(--primary); font-size:1.25rem; line-height:1.3; }
+        .player-expandido-info p { margin:7px 0 0; color:var(--secondary); font-size:.9rem; }
+        .player-expandido-controles { margin-top:auto; display:flex; justify-content:center; align-items:center; gap:22px; padding-bottom:12px; }
+        .player-expandido-play { width:70px;height:70px;border-radius:50%;border:0;background:var(--primary);color:white;font-size:1.7rem;cursor:pointer;box-shadow:0 8px 25px rgba(140,98,93,.3); }
+        body.dark-mode .player-expandido { background:#2d2625; }
+        body.dark-mode .player-expandido-fechar { color:#f0d9d4; }
+
         /* Estilos da nova barra de progresso de espaço */
         .armazenamento-container {
             background: #ffffff;
@@ -698,6 +716,16 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
 
         <!-- Player YouTube invisível + barra de controle -->
         <div id="youtube-player-host" aria-hidden="true"></div>
+
+
+        <!-- Tela expandida da música: fechar não interrompe a reprodução -->
+        <div id="player-expandido" class="player-expandido" aria-hidden="true">
+            <div class="player-expandido-arrastar" aria-hidden="true"></div>
+            <div class="player-expandido-topo"><span style="color:var(--secondary);font-size:.8rem;font-weight:700">TOCANDO AGORA</span><button type="button" id="player-expandido-fechar" class="player-expandido-fechar" aria-label="Fechar player">⌄</button></div>
+            <div class="player-video-wrap"><iframe id="player-expandido-video" title="Vídeo da música" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+            <div class="player-expandido-info"><h2 id="player-expandido-titulo">Música</h2><p id="player-expandido-status">Tocando no Nosso Canto</p></div>
+            <div class="player-expandido-controles"><button type="button" id="player-expandido-play" class="player-expandido-play" aria-label="Pausar música">Ⅱ</button></div>
+        </div>
 
         <div id="player-musica-barra" class="player-musica-barra" aria-label="Música em reprodução">
             <img id="player-musica-capa" class="player-musica-icone" src="" alt="">
@@ -907,6 +935,34 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
         function iniciarSalvamentoPosicao(){ if(intervaloSalvarPosicao) clearInterval(intervaloSalvarPosicao); intervaloSalvarPosicao=setInterval(()=>salvarEstadoPlayerCompartilhado(true),1000); }
         function pararSalvamentoPosicao(){ if(intervaloSalvarPosicao){clearInterval(intervaloSalvarPosicao);intervaloSalvarPosicao=null;} }
         function mostrarBarraPlayer(musica,statusTexto){ const barra=document.getElementById('player-musica-barra'),capa=document.getElementById('player-musica-capa'),titulo=document.getElementById('player-musica-titulo'),status=document.getElementById('player-musica-status'),controle=document.getElementById('player-musica-controle'); if(capa){capa.src=musica.capa||`https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`;capa.alt=musica.titulo||'Capa da música';} if(titulo)titulo.textContent=musica.titulo||'Música'; if(status)status.textContent=statusTexto||'Tocando agora • YouTube'; if(controle){controle.textContent=statusTexto==='Pausada'?'▶':'Ⅱ';controle.setAttribute('aria-label',statusTexto==='Pausada'?'Continuar':'Pausar');} if(barra)barra.classList.add('ativo');document.body.classList.add('player-musica-ativo'); }
+        /* Player expandido: a barra pode ser tocada ou arrastada para cima */
+        function atualizarPlayerExpandido(){
+            const musica=musicaAtualYouTube; if(!musica) return;
+            const titulo=document.getElementById('player-expandido-titulo'), status=document.getElementById('player-expandido-status');
+            if(titulo) titulo.textContent=musica.titulo||'Música';
+            if(status) status.textContent='Tocando agora • YouTube';
+        }
+        function abrirPlayerExpandido(){
+            if(!musicaAtualYouTube?.id) return;
+            const painel=document.getElementById('player-expandido'), iframe=document.getElementById('player-expandido-video');
+            atualizarPlayerExpandido(); painel.classList.add('aberto'); painel.setAttribute('aria-hidden','false');
+            let tempo=0; try{tempo=Math.floor(youtubePlayer?.getCurrentTime?.()||0)}catch(e){}
+            // O vídeo exibido fica sem áudio; o áudio continua no player principal.
+            iframe.src=`https://www.youtube.com/embed/${musicaAtualYouTube.id}?autoplay=1&mute=1&playsinline=1&controls=0&rel=0&start=${tempo}`;
+            atualizarBotaoExpandido();
+        }
+        function fecharPlayerExpandido(){ const painel=document.getElementById('player-expandido'),iframe=document.getElementById('player-expandido-video'); painel.classList.remove('aberto');painel.setAttribute('aria-hidden','true');iframe.src=''; }
+        function atualizarBotaoExpandido(){ const b=document.getElementById('player-expandido-play'); if(!b)return; let pausada=false;try{pausada=window.YT&&youtubePlayer&&youtubePlayer.getPlayerState()===YT.PlayerState.PAUSED}catch(e){} b.textContent=pausada?'▶':'Ⅱ';b.setAttribute('aria-label',pausada?'Continuar música':'Pausar música'); }
+        document.getElementById('player-musica-barra')?.addEventListener('click',e=>{if(e.target.closest('button'))return;abrirPlayerExpandido()});
+        document.getElementById('player-expandido-fechar')?.addEventListener('click',fecharPlayerExpandido);
+        document.getElementById('player-expandido-play')?.addEventListener('click',()=>document.getElementById('player-musica-controle')?.click());
+        let inicioArrastoPlayer=null;
+        document.getElementById('player-musica-barra')?.addEventListener('touchstart',e=>inicioArrastoPlayer=e.touches[0].clientY,{passive:true});
+        document.getElementById('player-musica-barra')?.addEventListener('touchend',e=>{if(inicioArrastoPlayer!==null&&inicioArrastoPlayer-e.changedTouches[0].clientY>35)abrirPlayerExpandido();inicioArrastoPlayer=null},{passive:true});
+        let inicioFecharPlayer=null;
+        document.getElementById('player-expandido')?.addEventListener('touchstart',e=>inicioFecharPlayer=e.touches[0].clientY,{passive:true});
+        document.getElementById('player-expandido')?.addEventListener('touchend',e=>{if(inicioFecharPlayer!==null&&e.changedTouches[0].clientY-inicioFecharPlayer>70)fecharPlayerExpandido();inicioFecharPlayer=null},{passive:true});
+
         async function restaurarPlayerCompartilhado(){ let estado;try{estado=JSON.parse(localStorage.getItem(CHAVE_PLAYER_COMPARTILHADO)||'null')}catch(e){estado=null} if(!estado?.musica?.id)return;musicaAtualYouTube=estado.musica;mostrarBarraPlayer(musicaAtualYouTube,estado.tocando?'Retomando música…':'Pausada');if(!estado.tocando)return;try{await carregarYouTubeAPI();const host=document.getElementById('youtube-player-host');const iniciar=player=>{try{player.seekTo(Number(estado.tempo)||0,true);player.playVideo()}catch(e){}};if(!youtubePlayer)youtubePlayer=new YT.Player(host,{width:'1',height:'1',videoId:musicaAtualYouTube.id,playerVars:{autoplay:1,controls:0,playsinline:1,rel:0,modestbranding:1},events:{onReady:e=>iniciar(e.target),onStateChange:atualizarEstadoPlayerYouTube}});else{youtubePlayer.loadVideoById({videoId:musicaAtualYouTube.id,startSeconds:Number(estado.tempo)||0});youtubePlayer.playVideo()}iniciarSalvamentoPosicao()}catch(e){console.warn('Não foi possível retomar automaticamente:',e)}}
         window.addEventListener('pagehide',()=>{try{if(musicaAtualYouTube){const tocando=window.YT&&youtubePlayer&&youtubePlayer.getPlayerState()===YT.PlayerState.PLAYING;salvarEstadoPlayerCompartilhado(tocando)}}catch(e){}});
         // Garante que o estado seja salvo ANTES de navegar para outra página.
@@ -1234,7 +1290,8 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                 if (post.destaque) { containerPlaylist.prepend(blocoMusica); } else { containerPlaylist.appendChild(blocoMusica); }
             });
         });
-    </script>
+    document.getElementById('player-musica-controle')?.addEventListener('click',()=>setTimeout(atualizarBotaoExpandido,80));
+        </script>
 
     <script>
         // Tema: fica isolado do restante do código para continuar funcionando mesmo se outro script da página falhar.
@@ -1264,7 +1321,8 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
                 }
             });
         })();
-    </script>
+    document.getElementById('player-musica-controle')?.addEventListener('click',()=>setTimeout(atualizarBotaoExpandido,80));
+        </script>
 
     <script>
         const canvas = document.getElementById('canvas-hearts'); const ctx = canvas.getContext('2d');
@@ -1388,6 +1446,7 @@ btnCriacao.onclick=alternarModalPostagem;
  termo.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>buscar(termo.value.trim()),450);});
 })();;;;;const campoBuscaLocal=document.getElementById('campo-busca-local'),resLocal=document.getElementById('resultados-local');let indiceLocal=[];const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filtrarLocal(){let q=norm(campoBuscaLocal.value).trim();if(!q){resLocal.style.display='none';return}let a=indiceLocal.filter(p=>norm([p.titulo,p.subtitulo,p.corpo,p.conteudo].join(' ')).includes(q)).slice(0,12);resLocal.style.display='block';resLocal.innerHTML=a.length?'':'<div style="padding:12px;text-align:center">Nada encontrado ainda 🤍</div>';a.forEach(p=>{let b=document.createElement('button');b.className='res-local';b.innerHTML=(p.imagem?`<img src="${p.imagem}">`:`<span class="res-ico">🎵</span>`)+`<span><b>${p.titulo||p.subtitulo||'Abrir'}</b></span>`;b.onclick=()=>{let el=document.getElementById(p.id);resLocal.style.display='none'; if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('destino-destaque');setTimeout(()=>el.classList.remove('destino-destaque'),1800)}};resLocal.appendChild(b)})}campoBuscaLocal.oninput=filtrarLocal;
 onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=>{indiceLocal=[];snap.forEach(d=>indiceLocal.push({id:d.id,...d.data()}));});function aplicarTemaPlaylist(){const escuro=document.body.classList.contains('dark-mode');const btn=document.getElementById('btn-theme-toggle');if(btn){btn.textContent=escuro?'☀️':'🌙';btn.title=escuro?'Modo claro':'Modo noturno';}}const temaSalvo=localStorage.getItem('tema_canto');if(temaSalvo==='dark')document.body.classList.add('dark-mode');aplicarTemaPlaylist();document.getElementById('btn-theme-toggle').addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('tema_canto',document.body.classList.contains('dark-mode')?'dark':'light');aplicarTemaPlaylist();});
-</script>
+document.getElementById('player-musica-controle')?.addEventListener('click',()=>setTimeout(atualizarBotaoExpandido,80));
+        </script>
 </body>
 </html>
