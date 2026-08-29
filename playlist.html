@@ -827,37 +827,16 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
 #player-progresso-input::-moz-range-thumb{width:15px;height:15px;border:0;border-radius:50%;background:var(--primary)}
 </style>
 
-
-<style id="ajuste-final-botoes-e-player">
-/* Último ajuste visual: controles compactos, alinhados e com respiro uniforme. */
-.player-expandido-principais{
-  display:grid!important;
-  grid-template-columns:36px 46px 68px 46px 36px!important;
-  justify-content:center!important;
-  align-items:center!important;
-  gap:5px!important;
-  padding:16px 0 12px!important;
+<style>
+/* Ajuste final: controles compactos e equilibrados */
+.player-expandido-controles, .player-controles, .controles-expandido {
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  gap:10px !important; width:100% !important;
 }
-.player-expandido-principais .player-controle-icone{
-  width:100%!important;height:48px!important;margin:0!important;padding:0!important;
+.player-expandido-controles button, .player-controles button, .controles-expandido button {
+  margin:0 !important;
 }
-.player-expandido-principais .player-controle-modo{
-  width:36px!important;height:44px!important;font-size:1.12rem!important;
-}
-.player-expandido-principais .player-expandido-play{
-  width:68px!important;height:68px!important;margin:0!important;
-}
-@media(max-width:360px){
-  .player-expandido-principais{grid-template-columns:34px 42px 62px 42px 34px!important;gap:4px!important}
-  .player-expandido-principais .player-expandido-play{width:62px!important;height:62px!important}
-}
-/* Painel da playlist em duas linhas claras: ação principal e opções compactas. */
-.playlist-controles{display:grid!important;grid-template-columns:44px 44px minmax(0,1fr)!important;gap:7px!important;padding:7px!important}
-.playlist-btn-principal{grid-column:1/-1!important;height:46px!important}
-.playlist-btn-icone{width:44px!important;height:42px!important}
-.playlist-btn-organizar{height:42px!important;min-width:0!important}
 </style>
-
 </head>
 <body>
 <div id="playlist-feedback" class="playlist-feedback" role="status" aria-live="polite"></div>
@@ -1177,15 +1156,15 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
             atualizarControlesExpandidos();
         }
 
-        /* O player do YouTube fica fora do painel enquanto toca apenas áudio.
-           Ele só é levado para a área do vídeo quando o usuário pede para ver o vídeo.
-           Isso preserva a reprodução normal das músicas individuais. */
+        /* O vídeo é o próprio iframe que já está tocando o áudio: por isso permanece sincronizado. */
         function prepararPlayerVisual(){
             const host=document.getElementById('youtube-player-host');
-            if(!host) return;
-            if(!videoExpandidoAtivo && host.parentElement!==document.body) document.body.appendChild(host);
-            if(!videoExpandidoAtivo){
-                host.style.cssText='position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;z-index:-1;';
+            const wrap=document.getElementById('player-video-wrap');
+            if(host&&wrap&&host.parentElement!==wrap) wrap.appendChild(host);
+            if(host){
+                host.style.width='100%';host.style.height='100%';host.style.position='absolute';
+                host.style.inset='0';host.style.left='auto';host.style.bottom='auto';
+                host.style.opacity='1';host.style.pointerEvents='auto';host.style.zIndex='1';
             }
         }
 
@@ -1193,15 +1172,6 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
             videoExpandidoAtivo=!!ativo;
             const stage=document.getElementById('player-media-stage');
             const btn=document.getElementById('player-toggle-video');
-            const host=document.getElementById('youtube-player-host');
-            const wrap=document.getElementById('player-video-wrap');
-            if(videoExpandidoAtivo && host && wrap){
-                wrap.appendChild(host);
-                host.style.cssText='position:absolute;inset:0;width:100%;height:100%;opacity:1;pointer-events:auto;z-index:1;';
-            } else if(host){
-                document.body.appendChild(host);
-                host.style.cssText='position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;z-index:-1;';
-            }
             if(stage) stage.classList.toggle('video-ativo',videoExpandidoAtivo);
             if(btn){
                 btn.classList.toggle('ativo',videoExpandidoAtivo);
@@ -1701,17 +1671,12 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
                     btnOuvirMusicaCard.addEventListener('click', function(event) {
                         event.preventDefault();
                         event.stopPropagation();
-                        // Música escolhida individualmente: toca imediatamente no mesmo player do site.
-                        playlistEmReproducao=false;
-                        indicePlaylistAtual=filaPlaylist.findIndex(item=>item.id===post.id);
-                        // Chamada direta no próprio gesto do toque para manter a reprodução liberada no celular.
-                        escutarYouTubeAgoraDireto({id:post.id,link:post.link,titulo:post.titulo,imagem:post.imagem})
-                          .then(()=>mostrarFeedbackPlaylist('🎵 Tocando: '+(post.titulo||'Música')))
-                          .catch((erro)=>{
-                              console.error('Falha ao tocar música individual:',erro);
-                              // Mantém o caminho original como reserva caso a API ainda esteja iniciando.
-                              window.abrirOpcoesMusica(post.link,post.titulo,post.imagem);
-                          });
+                        // Mantém o fluxo original da página, que já funcionava: abre as opções
+                        // da música e o botão "Escutar agora" inicia o mesmo player interno.
+                        // Isso evita iniciar o player por um caminho paralelo e quebrar o clique individual.
+                        playlistEmReproducao = false;
+                        indicePlaylistAtual = filaPlaylist.findIndex(item => item.id === post.id);
+                        window.abrirOpcoesMusica(post.link, post.titulo, post.imagem);
                     });
                 }
                 blocoMusica.dataset.postId = post.id;
