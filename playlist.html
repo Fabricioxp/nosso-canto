@@ -1449,6 +1449,17 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
         // Um único caminho de troca de música. O token impede que cliques rápidos deixem a capa
         // de uma música enquanto o player termina de carregar outra.
         let trocaMusicaToken = 0;
+        let videoYouTubeEsperado = null;
+        function sincronizarUIComMusicaAtual(){
+            const musica=musicaAtualYouTube; if(!musica) return;
+            const barra=document.getElementById('player-musica-barra'), capa=document.getElementById('player-musica-capa'), titulo=document.getElementById('player-musica-titulo'), status=document.getElementById('player-musica-status'), controle=document.getElementById('player-musica-controle');
+            if(capa){capa.src=musica.capa||`https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`;capa.alt=musica.titulo||'Capa da música';}
+            if(titulo)titulo.textContent=musica.titulo||'Música';
+            if(status)status.textContent='Tocando agora • YouTube';
+            if(controle){controle.textContent='Ⅱ';controle.setAttribute('aria-label','Pausar');}
+            if(barra)barra.classList.add('ativo'); document.body.classList.add('player-musica-ativo');
+            atualizarPlayerExpandido();
+        }
         async function escutarYouTubeAgora() {
             if (!musicaAtualYouTube) return;
             const musica = { ...musicaAtualYouTube };
@@ -1458,7 +1469,8 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
             if (!musica.id) { alert('Não foi possível identificar esta música para reprodução interna.'); return; }
             // A fonte de verdade é atualizada antes de qualquer operação assíncrona.
             musicaAtualYouTube = musica;
-            atualizarPlayerExpandido();
+            videoYouTubeEsperado = musica.id;
+            sincronizarUIComMusicaAtual();
             try {
                 await carregarYouTubeAPI();
                 if (meuToken !== trocaMusicaToken) return;
@@ -1470,17 +1482,11 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
                         events:{onReady:(event)=>{ if(meuToken===trocaMusicaToken) event.target.playVideo(); }, onStateChange:atualizarEstadoPlayerYouTube}
                     });
                 } else {
-                    youtubePlayer.loadVideoById(musica.id);
-                    youtubePlayer.playVideo();
+                    youtubePlayer.stopVideo();
+                    youtubePlayer.loadVideoById({videoId:musica.id});
                 }
                 if (meuToken !== trocaMusicaToken) return;
-                const barra=document.getElementById('player-musica-barra'), capa=document.getElementById('player-musica-capa'), titulo=document.getElementById('player-musica-titulo'), status=document.getElementById('player-musica-status'), controle=document.getElementById('player-musica-controle');
-                if(capa){capa.src=musica.capa||`https://img.youtube.com/vi/${musica.id}/hqdefault.jpg`;capa.alt=musica.titulo||'Capa da música';}
-                if(titulo)titulo.textContent=musica.titulo||'Música';
-                if(status)status.textContent='Tocando agora • YouTube';
-                if(controle){controle.textContent='Ⅱ';controle.setAttribute('aria-label','Pausar');}
-                if(barra)barra.classList.add('ativo'); document.body.classList.add('player-musica-ativo');
-                atualizarPlayerExpandido(); salvarEstadoPlayerCompartilhado(true); iniciarSalvamentoPosicao();
+                sincronizarUIComMusicaAtual(); salvarEstadoPlayerCompartilhado(true); iniciarSalvamentoPosicao();
             } catch(erro) { if(meuToken===trocaMusicaToken){ console.error('Não foi possível iniciar o player do YouTube:',erro); alert('Não foi possível tocar essa música aqui. Você pode abrir no YouTube. 🎧'); } }
         }
 
@@ -1525,6 +1531,16 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
         }
 
         function atualizarEstadoPlayerYouTube(event) {
+            // Eventos antigos do YouTube podem chegar depois de uma troca rápida.
+            // Nunca deixamos um vídeo anterior continuar tocando enquanto a interface já mostra outro.
+            try {
+                const idTocando = event.target?.getVideoData?.().video_id;
+                if (videoYouTubeEsperado && idTocando && idTocando !== videoYouTubeEsperado && event.data === YT.PlayerState.PLAYING) {
+                    event.target.stopVideo();
+                    event.target.loadVideoById({videoId: videoYouTubeEsperado});
+                    return;
+                }
+            } catch(e) {}
             const status = document.getElementById('player-musica-status');
             const controle = document.getElementById('player-musica-controle');
 
