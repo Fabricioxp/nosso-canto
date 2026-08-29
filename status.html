@@ -250,6 +250,8 @@
       .card { box-shadow: none; border: 1px solid #ccc; }
     }
   
+
+    .mini-meter{height:8px;border-radius:999px;background:var(--border-color);overflow:hidden;margin-top:8px}.mini-meter i{display:block;height:100%;background:var(--primary);border-radius:999px}.metric-note{font-size:.72rem;color:var(--text-muted);margin-top:6px}.deep-highlight{border-left:3px solid var(--primary)}
     .advanced-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:12px}.insight-card{padding:14px;border:1px solid var(--border-color);border-radius:14px;background:var(--bg-card);box-shadow:0 4px 14px rgba(0,0,0,.05)}.insight-card b{display:block;font-size:1.05rem;margin-top:5px}.insight-card span{font-size:.74rem;color:var(--text-muted)}.insight-card small{font-size:.72rem;color:var(--text-muted)}.chart-box canvas{max-height:280px}.comparison-bar{height:10px;border-radius:99px;background:var(--border-color);overflow:hidden;margin:7px 0}.comparison-fill{height:100%;background:var(--primary);border-radius:99px}.filter-chip{border:1px solid var(--border-color);border-radius:999px;padding:7px 10px;background:var(--bg-card);color:var(--text-color);font-size:.75rem}
 
   </style>
@@ -309,6 +311,8 @@
       <button class="tab-btn active" onclick="switchTab('analyticsTab')">📊 Análises</button>
       <button class="tab-btn" onclick="switchTab('insightsTab')">🧠 Insights</button>
       <button class="tab-btn" onclick="switchTab('memoriesTab')">✨ Recordações & Dicionário</button>
+      <button class="tab-btn" onclick="switchTab('deepTab')">🔬 Explorar</button>
+      <button class="tab-btn" onclick="switchTab('compareTab')">⚖️ Comparações</button>
       <button class="tab-btn" onclick="switchTab('chatTab')">💬 Histórico & Busca</button>
       <button class="tab-btn" id="tabGalleryBtn" style="display:none;" onclick="switchTab('galleryTab')">🖼️ Fotos</button>
       <button class="tab-btn" id="tabAudiosBtn" style="display:none;" onclick="switchTab('audiosTab')">🎙️ Áudios</button>
@@ -347,6 +351,16 @@
     <div id="insightsTab" class="tab-content">
       <div class="card"><div class="section-title">🧠 Descobertas do histórico</div><p class="card-section-note">Uma leitura rápida dos hábitos, ritmo e diferenças da conversa.</p><div id="advancedInsights" class="advanced-grid"></div></div>
       <div class="card"><div class="section-title">⚖️ Comparação entre vocês</div><div id="comparisonInsights"></div></div>
+    </div>
+
+    <div id="deepTab" class="tab-content">
+      <div class="card"><div class="section-title">🔬 Exploração Profunda</div><p class="card-section-note">Veja padrões, intensidade e mudanças ao longo da história.</p><div id="deepInsights" class="advanced-grid"></div></div>
+      <div class="charts-wrapper"><div class="chart-box"><div class="section-title" style="font-size:.9rem;margin-bottom:8px;">📈 Evolução da intensidade</div><canvas id="intensityChart"></canvas></div><div class="chart-box"><div class="section-title" style="font-size:.9rem;margin-bottom:8px;">🗓️ Mapa semanal</div><canvas id="heatChart"></canvas></div></div>
+      <div class="card"><div class="section-title">🧭 Linha do tempo</div><div id="timelineInsights" class="advanced-grid"></div></div>
+    </div>
+    <div id="compareTab" class="tab-content">
+      <div class="card"><div class="section-title">⚖️ Vocês em comparação</div><p class="card-section-note">Comparações calculadas somente a partir do histórico carregado.</p><div id="compareDetailed" class="advanced-grid"></div></div>
+      <div class="charts-wrapper"><div class="chart-box"><div class="section-title" style="font-size:.9rem;margin-bottom:8px;">👥 Participação por período</div><canvas id="authorPeriodChart"></canvas></div><div class="chart-box"><div class="section-title" style="font-size:.9rem;margin-bottom:8px;">🕒 Horários de cada um</div><canvas id="authorHourChart"></canvas></div></div>
     </div>
 
     <div id="memoriesTab" class="tab-content">
@@ -470,6 +484,8 @@
               <option value="rhythm">⚡ Ritmo & Atividade</option>
               <option value="compare">⚖️ Comparação do Casal</option>
               <option value="words">🗣️ Palavras & Expressões</option>
+              <option value="deep">🔬 História Profunda</option>
+              <option value="milestones">🏁 Marcos & Recordes</option>
             </select>
           </label>
           <div class="wrap-control">
@@ -485,7 +501,7 @@
             <label>Transparência da imagem: <span id="wrapOpacityValue">18%</span><input id="wrapImageOpacity" type="range" min="0" max="70" value="18" oninput="updateWrappedPreview()"></label>
           </div>
           <div class="wrap-control">
-            <label>Estatísticas exibidas:<select id="wrapItemsCount" onchange="updateWrappedPreview()"><option value="4">4 itens</option><option value="2">2 itens</option><option value="6">6 itens</option></select></label>
+            <label>Estatísticas exibidas:<select id="wrapItemsCount" onchange="updateWrappedPreview()"><option value="4">4 itens</option><option value="2">2 itens</option><option value="6">6 itens</option><option value="8">8 itens</option></select></label>
           </div>
         </div>
 
@@ -1275,6 +1291,41 @@
     document.getElementById('searchInput').addEventListener('input', applyFilters);
     document.getElementById('dateStart').addEventListener('change', applyFilters);
     document.getElementById('dateEnd').addEventListener('change', applyFilters);
+    // Extensão avançada: não altera o Histórico & Busca.
+    let intensityChartInstance=null, heatChartInstance=null, authorPeriodChartInstance=null, authorHourChartInstance=null;
+    function advancedProfile(){
+      const st=getAdvancedStats(), msgs=st.valid, dates=st.days;
+      const perDate=dates.map(d=>({d,n:st.byDate[d]||0}));
+      const avgAll=st.span?msgs.length/st.span:0;
+      const sorted=[...perDate].sort((a,b)=>b.n-a.n);
+      const longestGap=(()=>{let best=0,prev=null;dates.forEach(d=>{const dt=new Date(d+'T12:00:00'); if(prev) best=Math.max(best,Math.round((dt-prev)/86400000)-1); prev=dt});return Math.max(0,best)})();
+      const firstMonth=dates[0]?.slice(0,7), lastMonth=dates.at(-1)?.slice(0,7);
+      const monthCount=m=>msgs.filter(x=>x.date?.startsWith(m)).length;
+      const firstN=firstMonth?monthCount(firstMonth):0,lastN=lastMonth?monthCount(lastMonth):0;
+      return {...st,perDate,avgAll,sorted,longestGap,firstMonth,lastMonth,firstN,lastN};
+    }
+    function generateDeepFeatures(){
+      if(!parsedMessages.length)return;
+      const st=advancedProfile(), deep=document.getElementById('deepInsights'), timeline=document.getElementById('timelineInsights'), cmp=document.getElementById('compareDetailed');
+      const fmt=n=>Number(n||0).toLocaleString('pt-BR');
+      const longestRun=(()=>{let max=0,run=0,prev=null;st.days.forEach(d=>{let dt=new Date(d+'T12:00:00');run=prev&&(dt-prev===86400000)?run+1:1;max=Math.max(max,run);prev=dt});return max})();
+      if(deep) deep.innerHTML=[['🔥','Pico absoluto',st.sorted[0]?fmt(st.sorted[0].n)+' mensagens':'—',st.sorted[0]?.d||''],['📉','Maior intervalo',st.longestGap+' dias','entre dias com conversa'],['⚡','Intensidade geral',st.avgAll.toFixed(1),'mensagens por dia do período'],['📆','Primeiro mês',st.firstMonth||'—',fmt(st.firstN)+' mensagens'],['🚀','Último mês',st.lastMonth||'—',fmt(st.lastN)+' mensagens'],['🔗','Constância máxima',longestRun+' dias','sequência de dias ativos']].map(x=>`<div class="insight-card deep-highlight"><span>${x[0]} ${x[1]}</span><b>${x[2]}</b><small>${x[3]}</small></div>`).join('');
+      if(timeline) timeline.innerHTML=[['🌱','Começo',st.first||'—',st.first?'primeiro dia encontrado no arquivo':'' ],['🏆','Dia recorde',st.busiest||'—',st.busiest?fmt(st.byDate[st.busiest])+' mensagens':'' ],['📍','Fim do período',st.last||'—',st.last?'último dia encontrado no arquivo':'' ],['⏳','Tempo analisado',st.span+' dias',st.activeDays+' dias com conversa']].map(x=>`<div class="insight-card"><span>${x[0]} ${x[1]}</span><b>${x[2]}</b><small>${x[3]}</small></div>`).join('');
+      const periods=['Madrugada','Manhã','Tarde','Noite'], byP={fabricio:[0,0,0,0],maria:[0,0,0,0]}, byH={fabricio:Array(24).fill(0),maria:Array(24).fill(0)};
+      st.valid.forEach(m=>{let k=isFabricio(m.author)?'fabricio':'maria', p=m.hour<6?0:m.hour<12?1:m.hour<18?2:3;byP[k][p]++;byH[k][m.hour]++});
+      if(cmp){let a=st.byAuthor.fabricio,b=st.byAuthor.maria, winner=a===b?'Empate':a>b?'Fabricio 💜':'Meu Amor 💙'; let items=[['💬','Mais mensagens',winner,Math.abs(a-b).toLocaleString('pt-BR')+' de diferença'],['🌙','Mais ativo de madrugada',byP.fabricio[0]===byP.maria[0]?'Empate':byP.fabricio[0]>byP.maria[0]?'Fabricio 💜':'Meu Amor 💙',fmt(Math.max(byP.fabricio[0],byP.maria[0]))+' mensagens'],['☀️','Mais ativo de dia',byP.fabricio.slice(1,3).reduce((x,y)=>x+y,0)>=byP.maria.slice(1,3).reduce((x,y)=>x+y,0)?'Fabricio 💜':'Meu Amor 💙','manhã + tarde'],['🌃','Mais ativo à noite',byP.fabricio[3]===byP.maria[3]?'Empate':byP.fabricio[3]>byP.maria[3]?'Fabricio 💜':'Meu Amor 💙',fmt(Math.max(byP.fabricio[3],byP.maria[3]))+' mensagens']];cmp.innerHTML=items.map(x=>`<div class="insight-card"><span>${x[0]} ${x[1]}</span><b>${x[2]}</b><small>${x[3]}</small></div>`).join('')}
+      if(!window.Chart)return;
+      const ictx=document.getElementById('intensityChart'); if(ictx){intensityChartInstance?.destroy(); intensityChartInstance=new Chart(ictx,{type:'line',data:{labels:st.perDate.map(x=>x.d),datasets:[{label:'Mensagens no dia',data:st.perDate.map(x=>x.n),borderColor:'#8c625d',backgroundColor:'rgba(140,98,93,.12)',fill:true,tension:.25}]},options:{responsive:true,plugins:{legend:{display:false}}}})}
+      const hctx=document.getElementById('heatChart'); if(hctx){heatChartInstance?.destroy();let vals=Array(7).fill(0);st.valid.forEach(m=>vals[new Date(m.date+'T12:00:00').getDay()]++);heatChartInstance=new Chart(hctx,{type:'radar',data:{labels:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],datasets:[{label:'Atividade',data:vals,borderColor:'#8c625d',backgroundColor:'rgba(140,98,93,.18)'}]},options:{responsive:true}})}
+      const ap=document.getElementById('authorPeriodChart'); if(ap){authorPeriodChartInstance?.destroy();authorPeriodChartInstance=new Chart(ap,{type:'bar',data:{labels:periods,datasets:[{label:'Fabricio 💜',data:byP.fabricio,backgroundColor:'#6b21a8'},{label:'Meu Amor 💙',data:byP.maria,backgroundColor:'#3b82f6'}]},options:{responsive:true}})}
+      const ah=document.getElementById('authorHourChart'); if(ah){authorHourChartInstance?.destroy();authorHourChartInstance=new Chart(ah,{type:'line',data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[{label:'Fabricio 💜',data:byH.fabricio,borderColor:'#6b21a8',tension:.3},{label:'Meu Amor 💙',data:byH.maria,borderColor:'#3b82f6',tension:.3}]},options:{responsive:true}})}
+    }
+    const _oldGenerateCharts=generateCharts; generateCharts=function(){_oldGenerateCharts();setTimeout(generateDeepFeatures,0)};
+    const _oldUpdateWrapped=updateWrappedPreview; updateWrappedPreview=function(){
+      _oldUpdateWrapped(); const type=document.getElementById('wrapContentType')?.value, grid=document.getElementById('wrappedGrid'), count=+document.getElementById('wrapItemsCount')?.value||4; if(!grid||!type||!parsedMessages.length)return;
+      if(type==='deep'||type==='milestones'){const st=advancedProfile(), items=type==='deep'?[['🔥 Pico diário',st.sorted[0]?.n||0],['⚡ Média geral',st.avgAll.toFixed(1)],['🔗 Maior sequência',(()=>{let m=0,r=0,p=null;st.days.forEach(d=>{let q=new Date(d+'T12:00:00');r=p&&(q-p===86400000)?r+1:1;m=Math.max(m,r);p=q});return m})()+' dias'],['📉 Maior intervalo',st.longestGap+' dias'],['📆 Dias ativos',st.activeDays],['🕒 Hora favorita',String(st.topHour).padStart(2,'0')+'h'],['📅 Período',st.span+' dias'],['💬 Total',parsedMessages.length]]:[['🌱 Primeiro dia',st.first||'—'],['🏁 Último dia',st.last||'—'],['🏆 Dia recorde',st.busiest||'—'],['🔥 Mensagens no recorde',st.byDate[st.busiest]||0],['📅 Dias conversando',st.activeDays],['💬 Total',parsedMessages.length],['📈 Média ativa',st.avg.toFixed(1)],['⏳ História',st.span+' dias']];grid.innerHTML=items.slice(0,count).map(([a,b])=>`<div class="wrapped-item"><span>${a}</span><span class="wrapped-val">${b}</span></div>`).join('');const titles={deep:'História em Profundidade 🔬',milestones:'Nossos Marcos 🏁'};document.getElementById('wrapTitle').innerText=document.getElementById('wrapCustomTitle').value.trim()||titles[type]}
+    };
+
   </script>
 </body>
 </html>
