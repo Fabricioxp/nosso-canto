@@ -837,6 +837,12 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
   margin:0 !important;
 }
 </style>
+
+<style>
+/* Ajuste final: controles compactos e alinhados como no player de referência */
+.player-expandido-botoes, .player-expandido-controles{gap:12px!important;justify-content:center!important;align-items:center!important;}
+.player-expandido-botoes button, .player-expandido-controles button{margin:0!important;flex:0 0 auto!important;}
+</style>
 </head>
 <body>
 <div id="playlist-feedback" class="playlist-feedback" role="status" aria-live="polite"></div>
@@ -1157,19 +1163,31 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
         }
 
         /* O vídeo é o próprio iframe que já está tocando o áudio: por isso permanece sincronizado. */
+        // O host do YouTube precisa permanecer no local invisível enquanto toca só o áudio.
+        // Ele só é movido para a área visual quando o usuário pede para ver o vídeo.
+        const playerHostOriginalParent = document.getElementById('youtube-player-host')?.parentElement;
+        const playerHostOriginalNext = document.getElementById('youtube-player-host')?.nextSibling;
         function prepararPlayerVisual(){
             const host=document.getElementById('youtube-player-host');
             const wrap=document.getElementById('player-video-wrap');
-            if(host&&wrap&&host.parentElement!==wrap) wrap.appendChild(host);
-            if(host){
-                host.style.width='100%';host.style.height='100%';host.style.position='absolute';
-                host.style.inset='0';host.style.left='auto';host.style.bottom='auto';
-                host.style.opacity='1';host.style.pointerEvents='auto';host.style.zIndex='1';
+            if(!host||!wrap) return;
+            if(videoExpandidoAtivo){
+                if(host.parentElement!==wrap) wrap.appendChild(host);
+                host.style.cssText='position:absolute;inset:0;width:100%;height:100%;opacity:1;pointer-events:auto;z-index:1;overflow:hidden;';
             }
+        }
+        function restaurarHostDeAudio(){
+            const host=document.getElementById('youtube-player-host');
+            if(!host||!playerHostOriginalParent) return;
+            if(host.parentElement!==playerHostOriginalParent){
+                playerHostOriginalParent.insertBefore(host, playerHostOriginalNext || null);
+            }
+            host.style.cssText='position:fixed;width:1px;height:1px;left:-10px;bottom:0;opacity:0;pointer-events:none;overflow:hidden;z-index:-1;';
         }
 
         function definirVideoExpandido(ativo){
             videoExpandidoAtivo=!!ativo;
+            if(videoExpandidoAtivo) prepararPlayerVisual(); else restaurarHostDeAudio();
             const stage=document.getElementById('player-media-stage');
             const btn=document.getElementById('player-toggle-video');
             if(stage) stage.classList.toggle('video-ativo',videoExpandidoAtivo);
@@ -1224,13 +1242,15 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
         function abrirPlayerExpandido(){
             if(!musicaAtualYouTube?.id) return;
             const painel=document.getElementById('player-expandido');
-            prepararPlayerVisual(); atualizarPlayerExpandido();
+            if(videoExpandidoAtivo) prepararPlayerVisual(); else restaurarHostDeAudio(); atualizarPlayerExpandido();
             painel.classList.add('aberto'); painel.setAttribute('aria-hidden','false');
             document.body.classList.add('player-expandido-aberto');
             iniciarAtualizacaoProgresso();
             atualizarBotaoExpandido();
         }
         function fecharPlayerExpandido(){
+            // Fechar a tela não para a música; apenas volta o player ao modo de áudio discreto.
+            definirVideoExpandido(false);
             const painel=document.getElementById('player-expandido');
             if(!painel) return;
             painel.classList.remove('aberto'); painel.setAttribute('aria-hidden','true');
