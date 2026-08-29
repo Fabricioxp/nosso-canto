@@ -776,6 +776,51 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
 body.dark-mode .playlist-controles{background:rgba(36,31,33,.82)!important;border-color:#514448!important}
 @media(max-width:390px){.playlist-controles{grid-template-columns:minmax(0,1fr) 44px 44px 96px!important;gap:6px!important}.playlist-btn-organizar{font-size:.72rem!important}}
 </style>
+
+<style id="ajustes-finais-player">
+/* Painel da playlist: simples, elegante e sem pesar nos cards. */
+.playlist-controles{display:flex;align-items:center;gap:8px;margin:14px 0 18px;padding:8px;border:1px solid rgba(140,98,93,.12);border-radius:18px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.playlist-btn{height:42px;border:0;background:transparent;color:var(--secondary);border-radius:13px;padding:0 11px;font:700 .8rem var(--font-main);box-shadow:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .18s ease,color .18s ease,transform .18s ease}
+.playlist-btn:active{transform:scale(.96)}
+.playlist-btn-principal{flex:1;justify-content:flex-start;padding-left:15px;background:var(--primary);color:#fff;box-shadow:0 7px 18px rgba(140,98,93,.18)}
+.playlist-btn-icone{width:42px;padding:0;font-size:1rem}
+.playlist-btn-organizar{white-space:nowrap;background:rgba(140,98,93,.07)}
+.playlist-btn.ativo{background:rgba(140,98,93,.14);color:var(--primary);box-shadow:inset 0 0 0 1px rgba(140,98,93,.18)}
+.playlist-btn-principal.ativo{background:var(--primary);color:#fff}
+.playlist-hint-organizar{padding:8px 4px 2px;font-size:.74rem;color:var(--secondary)}
+/* Remove definitivamente o antigo clipe de fundo dos cards. */
+.clipe-toggle,.clipe-card-bg{display:none!important}
+body.dark-mode .playlist-controles{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+body.dark-mode .playlist-btn{color:#eadfdd;background:transparent}
+body.dark-mode .playlist-btn-principal{background:var(--primary);color:#fff}
+body.dark-mode .playlist-btn-organizar{background:rgba(255,255,255,.06)}
+</style>
+
+<style id="correcoes-finais-painel-e-player">
+/* Painel da playlist: organização limpa, sem botões se sobrepondo. */
+.playlist-controles{display:grid!important;grid-template-columns:48px 48px minmax(0,1fr)!important;gap:8px!important;padding:8px!important;margin:14px 0 18px!important;border-radius:18px!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(140,98,93,.12)!important;box-shadow:0 8px 24px rgba(140,98,93,.07)!important;backdrop-filter:blur(10px)!important}
+.playlist-btn{min-width:0!important;height:44px!important;min-height:44px!important;margin:0!important;border-radius:13px!important;box-shadow:none!important}
+.playlist-btn-principal{grid-column:1 / -1!important;width:100%!important;justify-content:center!important;padding:0 16px!important}
+.playlist-btn-icone{width:44px!important;padding:0!important;font-size:1rem!important;background:rgba(140,98,93,.07)!important}
+.playlist-btn-organizar{width:100%!important;justify-content:center!important;background:rgba(140,98,93,.07)!important;white-space:nowrap!important}
+.playlist-btn.ativo:not(.playlist-btn-principal){background:rgba(140,98,93,.15)!important;color:var(--primary)!important;box-shadow:inset 0 0 0 1px rgba(140,98,93,.18)!important}
+body.dark-mode .playlist-controles{background:rgba(36,31,33,.82)!important;border-color:rgba(255,255,255,.08)!important}
+body.dark-mode .playlist-btn-icone,body.dark-mode .playlist-btn-organizar{background:rgba(255,255,255,.06)!important}
+
+/* O gesto de fechar é feito pelo puxador superior, sem disputar com a rolagem ou os controles. */
+.player-expandido-card.arrastando-para-fechar{transition:none!important;transform:translateY(var(--player-drag-y,0px))!important}
+.player-expandido-arrastar,.player-expandido-topo{touch-action:none!important;user-select:none!important;-webkit-user-select:none!important}
+.player-expandido-arrastar{cursor:grab!important}
+.player-expandido-card.fechando-arrasto{transition:transform .28s cubic-bezier(.22,.85,.22,1)!important}
+
+/* Barra de progresso realmente interativa no celular. */
+#player-progresso-input{touch-action:none!important;-webkit-appearance:none!important;appearance:none!important;height:24px!important;background:transparent!important;padding:0!important}
+#player-progresso-input::-webkit-slider-runnable-track{height:4px;border-radius:99px;background:rgba(140,98,93,.22)}
+#player-progresso-input::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--primary);margin-top:-5.5px;box-shadow:0 2px 7px rgba(74,62,61,.22)}
+#player-progresso-input::-moz-range-track{height:4px;border-radius:99px;background:rgba(140,98,93,.22)}
+#player-progresso-input::-moz-range-thumb{width:15px;height:15px;border:0;border-radius:50%;background:var(--primary)}
+</style>
+
 </head>
 <body>
 <div id="playlist-feedback" class="playlist-feedback" role="status" aria-live="polite"></div>
@@ -911,10 +956,10 @@ body.dark-mode .playlist-controles{background:rgba(36,31,33,.82)!important;borde
         <section class="bloco-separado" id="bloco-playlist">
             <div class="titulo-secao">🎶 Todas as Músicas da Playlist</div>
             <div class="playlist-controles" aria-label="Controles da playlist">
-                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ Tocar playlist</button>
-                <button type="button" class="playlist-btn" id="btn-aleatorio" aria-pressed="false" title="Tocar em ordem aleatória">🔀</button>
-                <button type="button" class="playlist-btn" id="btn-repetir" aria-pressed="false" title="Repetir música atual">🔁</button>
-                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ Organizar</button>
+                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ <span>Tocar playlist</span></button>
+                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-aleatorio" aria-pressed="false" title="Reprodução aleatória">🔀</button>
+                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-repetir" aria-pressed="false" title="Repetir música">🔁</button>
+                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ <span>Organizar</span></button>
             </div>
             <div id="novos-cards-playlist"></div>
             <div class="playlist-hint-organizar">Segure uma música e arraste para mudar a posição.</div>
@@ -1522,6 +1567,10 @@ body.dark-mode .playlist-controles{background:rgba(36,31,33,.82)!important;borde
         }
 
         function pararPlayerYouTube() {
+            // Interrompe a fila antes de parar o YouTube, para que o evento ENDED não avance sozinho.
+            playlistEmReproducao = false;
+            const botaoPlaylist=document.getElementById('btn-tocar-playlist');
+            if(botaoPlaylist) botaoPlaylist.textContent='▶️ Tocar playlist';
             if (audioPreview) { audioPreview.pause(); audioPreview.currentTime=0; musicaPreviewAtual=null; }
             if (youtubePlayer && window.YT) {
                 youtubePlayer.stopVideo();
@@ -1705,6 +1754,73 @@ body.dark-mode .playlist-controles{background:rgba(36,31,33,.82)!important;borde
         }
         window.addEventListener('pointerup',finalizarArrasto,{passive:true});
         window.addEventListener('pointercancel',finalizarArrasto,{passive:true});
+
+        /* Correções de interação: fechar puxando para baixo e acompanhar/controlar a música. */
+        (function(){
+            const painel=document.getElementById('player-expandido');
+            const card=document.getElementById('player-expandido-card');
+            const puxador=document.querySelector('.player-expandido-arrastar');
+            const topo=document.querySelector('.player-expandido-topo');
+            let inicioY=null,ultimoY=null,arrastandoFechar=false;
+
+            function podeComecarArrasto(e){
+                return !e.target.closest('button,input,a,iframe');
+            }
+            function iniciarArrastoFechar(e){
+                if(!painel?.classList.contains('aberto')||!podeComecarArrasto(e)) return;
+                inicioY=e.clientY;ultimoY=e.clientY;arrastandoFechar=false;
+                card.setPointerCapture?.(e.pointerId);
+            }
+            function moverArrastoFechar(e){
+                if(inicioY===null) return;
+                ultimoY=e.clientY;
+                const dy=Math.max(0,e.clientY-inicioY);
+                if(dy>4){
+                    arrastandoFechar=true;
+                    card.classList.add('arrastando-para-fechar');
+                    card.style.setProperty('--player-drag-y',dy+'px');
+                    painel.style.opacity=String(Math.max(.45,1-dy/700));
+                    e.preventDefault();
+                }
+            }
+            function finalizarArrastoFechar(e){
+                if(inicioY===null) return;
+                const dy=Math.max(0,(ultimoY??inicioY)-inicioY);
+                inicioY=null;ultimoY=null;
+                card.classList.remove('arrastando-para-fechar');
+                card.style.removeProperty('--player-drag-y');
+                painel.style.opacity='';
+                if(arrastandoFechar&&dy>85){
+                    arrastandoFechar=false;
+                    fecharPlayerExpandido();
+                }else{
+                    arrastandoFechar=false;
+                    card.classList.add('fechando-arrasto');
+                    setTimeout(()=>card.classList.remove('fechando-arrasto'),300);
+                }
+            }
+            [puxador,topo].filter(Boolean).forEach(el=>{
+                el.addEventListener('pointerdown',iniciarArrastoFechar,{passive:true});
+                el.addEventListener('pointermove',moverArrastoFechar,{passive:false});
+                el.addEventListener('pointerup',finalizarArrastoFechar,{passive:true});
+                el.addEventListener('pointercancel',finalizarArrastoFechar,{passive:true});
+            });
+
+            const barra=document.getElementById('player-progresso-input');
+            let procurando=false;
+            function aplicarPosicao(valor){
+                const tempo=Number(valor)||0;
+                try{ if(youtubePlayer?.seekTo) youtubePlayer.seekTo(tempo,true); }catch(err){}
+                const atual=document.getElementById('player-tempo-atual');
+                if(atual) atual.textContent=formatarTempoPlayer(tempo);
+            }
+            barra?.addEventListener('pointerdown',e=>{procurando=true;arrastandoProgresso=true;e.stopPropagation();},{passive:true});
+            barra?.addEventListener('input',()=>{if(procurando) aplicarPosicao(barra.value);});
+            barra?.addEventListener('change',()=>{aplicarPosicao(barra.value);procurando=false;arrastandoProgresso=false;atualizarProgressoExpandido();});
+            barra?.addEventListener('pointerup',()=>{aplicarPosicao(barra.value);procurando=false;arrastandoProgresso=false;atualizarProgressoExpandido();});
+            barra?.addEventListener('pointercancel',()=>{procurando=false;arrastandoProgresso=false;atualizarProgressoExpandido();});
+        })();
+
     document.getElementById('player-musica-controle')?.addEventListener('click',()=>setTimeout(atualizarBotaoExpandido,80));
         </script>
 
