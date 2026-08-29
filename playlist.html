@@ -680,6 +680,11 @@ body.modal-criacao-aberta .menu-criar{z-index:2147483647!important}
 .player-expandido.aberto .player-expandido-card{transform:translateY(0) scale(1);}
 #player-musica-barra{touch-action:pan-x;}
 body.player-expandido-aberto .menu-criar{opacity:0!important;pointer-events:none!important;transform:translateY(18px)!important;transition:opacity .2s ease,transform .2s ease!important;}
+
+/* Ajuste final: controles compactos e equilibrados */
+.player-expandido-controles{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:8px 0 2px!important}
+.player-expandido-controles button{margin:0!important;flex:0 0 auto!important}
+.player-expandido-controles .player-expandido-play{margin:0 2px!important}
 </style>
 
 <style id="ajuste-botao-criar-player">
@@ -1691,18 +1696,34 @@ body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
                     btnOuvirMusicaCard.addEventListener('click', function(event) {
                         event.preventDefault();
                         event.stopPropagation();
-                        // Mantém o fluxo original da página, que já funcionava: abre as opções
-                        // da música e o botão "Escutar agora" inicia o mesmo player interno.
-                        // Isso evita iniciar o player por um caminho paralelo e quebrar o clique individual.
+                        // Clique individual: inicia imediatamente esta música no mesmo player usado pela playlist.
+                        // Não dependemos do menu intermediário para que o botão sempre responda ao toque.
                         playlistEmReproducao = false;
                         indicePlaylistAtual = filaPlaylist.findIndex(item => item.id === post.id);
-                        window.abrirOpcoesMusica(post.link, post.titulo, post.imagem);
+                        const musicaSelecionada = { ...post, imagem: post.imagem || '', capa: post.imagem || '' };
+                        escutarYouTubeAgoraDireto(musicaSelecionada);
                     });
                 }
                 blocoMusica.dataset.postId = post.id;
                 blocoMusica.innerHTML = '<span class="alca-arrastar" aria-label="Arrastar música">⠿</span>' + blocoMusica.innerHTML;
                 containerPlaylist.appendChild(blocoMusica);
             });
+        });
+
+        // Proteção extra para o toque em celular: se algum card for recriado pelo Firebase,
+        // este listener delegado continua fazendo o botão tocar a música selecionada.
+        containerPlaylist.addEventListener('click', function(event){
+            const botao = event.target.closest('.btn-ouvir-musica-card');
+            if(!botao || modoOrganizarPlaylist) return;
+            event.preventDefault();
+            event.stopPropagation();
+            const card = botao.closest('.card-musica');
+            const idPost = card?.dataset.postId;
+            const musica = filaPlaylist.find(item => item.id === idPost);
+            if(!musica) return;
+            playlistEmReproducao = false;
+            indicePlaylistAtual = filaPlaylist.findIndex(item => item.id === idPost);
+            escutarYouTubeAgoraDireto({ ...musica, imagem: musica.imagem || '', capa: musica.imagem || '' });
         });
 
         let feedbackTimer;
