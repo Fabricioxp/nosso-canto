@@ -813,6 +813,12 @@ body.dark-mode .playlist-btn-icone,body.dark-mode .playlist-btn-organizar{backgr
 .player-expandido-arrastar{cursor:grab!important}
 .player-expandido-card.fechando-arrasto{transition:transform .28s cubic-bezier(.22,.85,.22,1)!important}
 
+/* Controles do player no mesmo desenho do player de referência: aleatório à esquerda e repetir à direita. */
+.player-expandido-principais{display:grid!important;grid-template-columns:40px 44px minmax(64px,1fr) 44px 40px!important;align-items:center!important;gap:8px!important;padding:14px 0 10px!important;}
+.player-controle-modo{font-size:1.18rem!important;opacity:.72!important;}
+.player-controle-modo.ativo{opacity:1!important;color:var(--primary)!important;transform:scale(1.08);}
+body.dark-mode .player-controle-modo.ativo{color:#f0d9d4!important;}
+@media(max-width:390px){.player-expandido-principais{grid-template-columns:36px 40px minmax(58px,1fr) 40px 36px!important;gap:5px!important;}}
 /* Barra de progresso realmente interativa no celular. */
 #player-progresso-input{touch-action:none!important;-webkit-appearance:none!important;appearance:none!important;height:24px!important;background:transparent!important;padding:0!important}
 #player-progresso-input::-webkit-slider-runnable-track{height:4px;border-radius:99px;background:rgba(140,98,93,.22)}
@@ -887,16 +893,12 @@ body.dark-mode .playlist-btn-icone,body.dark-mode .playlist-btn-organizar{backgr
                     <input id="player-progresso-input" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progresso da música">
                     <span id="player-tempo-total">0:00</span>
                 </div>
-
-                <div class="player-expandido-controles player-expandido-principais">
+                <div class="player-expandido-controles player-expandido-principais" aria-label="Controles da música">
+                    <button type="button" id="player-expandido-aleatorio" class="player-controle-icone player-controle-modo" aria-label="Reprodução aleatória" aria-pressed="false">🔀</button>
                     <button type="button" id="player-expandido-anterior" class="player-controle-icone" aria-label="Voltar música">⏮</button>
                     <button type="button" id="player-expandido-play" class="player-expandido-play" aria-label="Pausar música">Ⅱ</button>
                     <button type="button" id="player-expandido-proxima" class="player-controle-icone" aria-label="Pular música">⏭</button>
-                </div>
-
-                <div class="player-expandido-modos">
-                    <button type="button" id="player-expandido-aleatorio" class="player-modo-btn" aria-pressed="false">🔀 <span>Aleatório</span></button>
-                    <button type="button" id="player-expandido-repetir" class="player-modo-btn" aria-pressed="false">🔁 <span>Repetir</span></button>
+                    <button type="button" id="player-expandido-repetir" class="player-controle-icone player-controle-modo" aria-label="Repetir música" aria-pressed="false">🔁</button>
                 </div>
             </div>
         </div>
@@ -1499,16 +1501,19 @@ body.dark-mode .playlist-btn-icone,body.dark-mode .playlist-btn-organizar{backgr
             escutarYouTubeAgoraDireto(musica);
         }
         async function escutarYouTubeAgoraDireto(musica){
-            musicaAtualYouTube={id:extrairIDYouTube(musica.link),link:musica.link,titulo:musica.titulo,capa:musica.imagem};
-            if(!musicaAtualYouTube.id){playlistEmReproducao=false;return;}
-            await carregarYouTubeAPI();
-            const host=document.getElementById('youtube-player-host');
-            const iniciar=e=>{try{e.target.playVideo()}catch(_){}};
-            if(!youtubePlayer) youtubePlayer=new YT.Player(host,{width:'1',height:'1',videoId:musicaAtualYouTube.id,playerVars:{autoplay:1,controls:0,playsinline:1,rel:0,modestbranding:1},events:{onReady:iniciar,onStateChange:atualizarEstadoPlayerYouTube}});
-            else {youtubePlayer.loadVideoById(musicaAtualYouTube.id);youtubePlayer.playVideo();}
-            const barra=document.getElementById('player-musica-barra'),capa=document.getElementById('player-musica-capa'),titulo=document.getElementById('player-musica-titulo'),controle=document.getElementById('player-musica-controle');
-            if(capa)capa.src=musica.imagem||`https://img.youtube.com/vi/${musicaAtualYouTube.id}/hqdefault.jpg`; if(titulo)titulo.textContent=musica.titulo||'Música'; if(controle)controle.textContent='Ⅱ'; if(barra)barra.classList.add('ativo'); document.body.classList.add('player-musica-ativo'); atualizarPlayerExpandido();
+            // Usa exatamente o mesmo caminho de reprodução da música individual.
+            // Assim não existem dois players concorrendo e o toque sempre inicia no mesmo player.
+            const id = musica?.id && String(musica.id).length===11 ? musica.id : extrairIDYouTube(musica?.link||'');
+            musicaAtualYouTube={id,link:musica?.link||'',titulo:musica?.titulo||'Música',capa:musica?.imagem||musica?.capa||''};
+            if(!id){
+                playlistEmReproducao=false;
+                mostrarFeedbackPlaylist('Não foi possível identificar esta música 🎧');
+                return;
+            }
+            await escutarYouTubeAgora();
+            atualizarPlayerExpandido();
         }
+
         function proximaDaPlaylist(){
             if(!playlistEmReproducao||!filaPlaylist.length)return;
             if(modoRepetir){tocarItemDaPlaylist(indicePlaylistAtual);return;}
@@ -1656,9 +1661,11 @@ body.dark-mode .playlist-btn-icone,body.dark-mode .playlist-btn-organizar{backgr
                     btnOuvirMusicaCard.addEventListener('click', function(event) {
                         event.preventDefault();
                         event.stopPropagation();
-                        const indice=filaPlaylist.findIndex(item=>item.id===post.id);
-                        if(indice>=0){ tocarItemDaPlaylist(indice); mostrarFeedbackPlaylist('🎵 Tocando: '+(post.titulo||'Música')); }
-                        else { escutarYouTubeAgoraDireto({id:post.id,link:post.link,titulo:post.titulo,imagem:post.imagem}); }
+                        // Música escolhida individualmente: toca imediatamente no mesmo player do site.
+                        playlistEmReproducao=false;
+                        indicePlaylistAtual=filaPlaylist.findIndex(item=>item.id===post.id);
+                        escutarYouTubeAgoraDireto({id:post.id,link:post.link,titulo:post.titulo,imagem:post.imagem});
+                        mostrarFeedbackPlaylist('🎵 Tocando: '+(post.titulo||'Música'));
                     });
                 }
                 blocoMusica.dataset.postId = post.id;
