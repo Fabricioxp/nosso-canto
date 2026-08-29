@@ -776,25 +776,6 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
 body.dark-mode .playlist-controles{background:rgba(36,31,33,.82)!important;border-color:#514448!important}
 @media(max-width:390px){.playlist-controles{grid-template-columns:minmax(0,1fr) 44px 44px 96px!important;gap:6px!important}.playlist-btn-organizar{font-size:.72rem!important}}
 </style>
-
-<style id="ajustes-finais-player">
-/* Painel da playlist: simples, elegante e sem pesar nos cards. */
-.playlist-controles{display:flex;align-items:center;gap:8px;margin:14px 0 18px;padding:8px;border:1px solid rgba(140,98,93,.12);border-radius:18px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.playlist-btn{height:42px;border:0;background:transparent;color:var(--secondary);border-radius:13px;padding:0 11px;font:700 .8rem var(--font-main);box-shadow:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .18s ease,color .18s ease,transform .18s ease}
-.playlist-btn:active{transform:scale(.96)}
-.playlist-btn-principal{flex:1;justify-content:flex-start;padding-left:15px;background:var(--primary);color:#fff;box-shadow:0 7px 18px rgba(140,98,93,.18)}
-.playlist-btn-icone{width:42px;padding:0;font-size:1rem}
-.playlist-btn-organizar{white-space:nowrap;background:rgba(140,98,93,.07)}
-.playlist-btn.ativo{background:rgba(140,98,93,.14);color:var(--primary);box-shadow:inset 0 0 0 1px rgba(140,98,93,.18)}
-.playlist-btn-principal.ativo{background:var(--primary);color:#fff}
-.playlist-hint-organizar{padding:8px 4px 2px;font-size:.74rem;color:var(--secondary)}
-/* Remove definitivamente o antigo clipe de fundo dos cards. */
-.clipe-toggle,.clipe-card-bg{display:none!important}
-body.dark-mode .playlist-controles{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
-body.dark-mode .playlist-btn{color:#eadfdd;background:transparent}
-body.dark-mode .playlist-btn-principal{background:var(--primary);color:#fff}
-body.dark-mode .playlist-btn-organizar{background:rgba(255,255,255,.06)}
-</style>
 </head>
 <body>
 <div id="playlist-feedback" class="playlist-feedback" role="status" aria-live="polite"></div>
@@ -930,10 +911,10 @@ body.dark-mode .playlist-btn-organizar{background:rgba(255,255,255,.06)}
         <section class="bloco-separado" id="bloco-playlist">
             <div class="titulo-secao">🎶 Todas as Músicas da Playlist</div>
             <div class="playlist-controles" aria-label="Controles da playlist">
-                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ <span>Tocar playlist</span></button>
-                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-aleatorio" aria-pressed="false" title="Reprodução aleatória">🔀</button>
-                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-repetir" aria-pressed="false" title="Repetir música">🔁</button>
-                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ <span>Organizar</span></button>
+                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ Tocar playlist</button>
+                <button type="button" class="playlist-btn" id="btn-aleatorio" aria-pressed="false" title="Tocar em ordem aleatória">🔀</button>
+                <button type="button" class="playlist-btn" id="btn-repetir" aria-pressed="false" title="Repetir música atual">🔁</button>
+                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ Organizar</button>
             </div>
             <div id="novos-cards-playlist"></div>
             <div class="playlist-hint-organizar">Segure uma música e arraste para mudar a posição.</div>
@@ -1541,10 +1522,6 @@ body.dark-mode .playlist-btn-organizar{background:rgba(255,255,255,.06)}
         }
 
         function pararPlayerYouTube() {
-            // Interrompe a fila antes de parar o YouTube, para que o evento ENDED não avance sozinho.
-            playlistEmReproducao = false;
-            const botaoPlaylist=document.getElementById('btn-tocar-playlist');
-            if(botaoPlaylist) botaoPlaylist.textContent='▶️ Tocar playlist';
             if (audioPreview) { audioPreview.pause(); audioPreview.currentTime=0; musicaPreviewAtual=null; }
             if (youtubePlayer && window.YT) {
                 youtubePlayer.stopVideo();
