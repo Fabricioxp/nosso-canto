@@ -689,9 +689,7 @@ body.player-musica-ativo .menu-criar{bottom:96px!important}
 @media(max-width:520px){body.player-musica-ativo .menu-criar{bottom:92px!important}}
 </style>
 
-<style id="clipe-card-safe-css">
-.card-musica{position:relative;overflow:hidden}.card-musica .clipe-card-bg{position:absolute;inset:0;display:none;pointer-events:none;overflow:hidden;z-index:0}.card-musica.clipe-ativo .clipe-card-bg{display:block}.card-musica .clipe-card-bg iframe{position:absolute;width:180%;height:180%;left:-40%;top:-40%;border:0;opacity:.16;filter:saturate(.85) contrast(.9)}.card-musica .musica-layout,.card-musica .barra-reacoes-polaroid,.card-musica .clipe-toggle{position:relative;z-index:1}.card-musica .menu-acoes-container{position:absolute;z-index:10}.clipe-toggle{display:none;margin-top:9px;align-items:center;gap:8px;font-size:.72rem;color:var(--secondary);font-weight:700}.card-musica.tocando .clipe-toggle{display:flex}.clipe-switch{width:38px;height:22px;border:0;border-radius:20px;background:#c8c0bf;padding:2px;cursor:pointer;transition:.22s}.clipe-switch i{display:block;width:18px;height:18px;border-radius:50%;background:#fff;transition:.22s}.clipe-switch.ativo{background:var(--primary)}.clipe-switch.ativo i{transform:translateX(16px)}
-</style>
+
 
 <style id="playlist-player-controls">
 .playlist-controles{display:flex;align-items:center;gap:10px;margin:12px 0 18px;flex-wrap:wrap}.playlist-btn{border:1px solid rgba(230,179,168,.7);background:#fff;color:var(--primary);border-radius:16px;min-height:44px;padding:0 14px;font:700 .82rem var(--font-main);cursor:pointer;box-shadow:0 4px 12px rgba(140,98,93,.07);transition:.2s}.playlist-btn-principal{background:var(--primary);color:#fff;border-color:var(--primary);flex:1;min-width:155px}.playlist-btn.ativo{background:#f4e1de;border-color:var(--primary);box-shadow:0 0 0 2px rgba(140,98,93,.12)}.playlist-btn-organizar{margin-left:auto}.card-musica.organizando{touch-action:none;user-select:none}.card-musica.arrastando{opacity:.55;transform:scale(.98);box-shadow:0 14px 32px rgba(74,62,61,.2)}.alca-arrastar{display:none;position:absolute;left:8px;top:50%;transform:translateY(-50%);width:28px;height:38px;align-items:center;justify-content:center;color:var(--secondary);font-size:1.2rem;cursor:grab;z-index:12}.modo-organizar .alca-arrastar{display:flex}.modo-organizar .card-musica{padding-left:38px}.modo-organizar .btn-ouvir-musica-card,.modo-organizar .menu-acoes-container,.modo-organizar .barra-reacoes-polaroid{pointer-events:none;opacity:.55}.playlist-hint-organizar{display:none;font-size:.72rem;color:var(--secondary);margin:-8px 0 10px}.modo-organizar + .playlist-hint-organizar{display:block}body.dark-mode .playlist-btn{background:#302a2d;color:#eee6e4;border-color:#514448}body.dark-mode .playlist-btn-principal{background:var(--primary);color:#fff}body.dark-mode .playlist-btn.ativo{background:#4a3738;border-color:#d6a39c}
@@ -767,6 +765,36 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
 }
 </style>
 
+
+<style id="playlist-controls-refined-css">
+.playlist-controles{display:grid!important;grid-template-columns:minmax(0,1fr) 48px 48px 108px!important;gap:8px!important;padding:8px!important;margin:12px 0 18px!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(230,179,168,.55)!important;border-radius:20px!important;box-shadow:0 8px 24px rgba(140,98,93,.08)!important;backdrop-filter:blur(10px)!important}
+.playlist-btn{height:46px!important;min-height:46px!important;border-radius:14px!important;padding:0 12px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;font-weight:800!important;letter-spacing:.01em!important}
+.playlist-btn-principal{justify-content:center!important;font-size:.88rem!important;box-shadow:0 8px 18px rgba(140,98,93,.18)!important}
+.playlist-btn:not(.playlist-btn-principal):not(.playlist-btn-organizar){font-size:1.05rem!important;padding:0!important}
+.playlist-btn-organizar{margin:0!important;font-size:.78rem!important}
+.playlist-btn:active{transform:scale(.97)!important}
+body.dark-mode .playlist-controles{background:rgba(36,31,33,.82)!important;border-color:#514448!important}
+@media(max-width:390px){.playlist-controles{grid-template-columns:minmax(0,1fr) 44px 44px 96px!important;gap:6px!important}.playlist-btn-organizar{font-size:.72rem!important}}
+</style>
+
+<style id="ajustes-finais-player">
+/* Painel da playlist: simples, elegante e sem pesar nos cards. */
+.playlist-controles{display:flex;align-items:center;gap:8px;margin:14px 0 18px;padding:8px;border:1px solid rgba(140,98,93,.12);border-radius:18px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.playlist-btn{height:42px;border:0;background:transparent;color:var(--secondary);border-radius:13px;padding:0 11px;font:700 .8rem var(--font-main);box-shadow:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .18s ease,color .18s ease,transform .18s ease}
+.playlist-btn:active{transform:scale(.96)}
+.playlist-btn-principal{flex:1;justify-content:flex-start;padding-left:15px;background:var(--primary);color:#fff;box-shadow:0 7px 18px rgba(140,98,93,.18)}
+.playlist-btn-icone{width:42px;padding:0;font-size:1rem}
+.playlist-btn-organizar{white-space:nowrap;background:rgba(140,98,93,.07)}
+.playlist-btn.ativo{background:rgba(140,98,93,.14);color:var(--primary);box-shadow:inset 0 0 0 1px rgba(140,98,93,.18)}
+.playlist-btn-principal.ativo{background:var(--primary);color:#fff}
+.playlist-hint-organizar{padding:8px 4px 2px;font-size:.74rem;color:var(--secondary)}
+/* Remove definitivamente o antigo clipe de fundo dos cards. */
+.clipe-toggle,.clipe-card-bg{display:none!important}
+body.dark-mode .playlist-controles{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+body.dark-mode .playlist-btn{color:#eadfdd;background:transparent}
+body.dark-mode .playlist-btn-principal{background:var(--primary);color:#fff}
+body.dark-mode .playlist-btn-organizar{background:rgba(255,255,255,.06)}
+</style>
 </head>
 <body>
 <div id="playlist-feedback" class="playlist-feedback" role="status" aria-live="polite"></div>
@@ -902,10 +930,10 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
         <section class="bloco-separado" id="bloco-playlist">
             <div class="titulo-secao">🎶 Todas as Músicas da Playlist</div>
             <div class="playlist-controles" aria-label="Controles da playlist">
-                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ Tocar playlist</button>
-                <button type="button" class="playlist-btn" id="btn-aleatorio" aria-pressed="false" title="Tocar em ordem aleatória">🔀</button>
-                <button type="button" class="playlist-btn" id="btn-repetir" aria-pressed="false" title="Repetir música atual">🔁</button>
-                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ Organizar</button>
+                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ <span>Tocar playlist</span></button>
+                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-aleatorio" aria-pressed="false" title="Reprodução aleatória">🔀</button>
+                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-repetir" aria-pressed="false" title="Repetir música">🔁</button>
+                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ <span>Organizar</span></button>
             </div>
             <div id="novos-cards-playlist"></div>
             <div class="playlist-hint-organizar">Segure uma música e arraste para mudar a posição.</div>
@@ -1513,6 +1541,10 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
         }
 
         function pararPlayerYouTube() {
+            // Interrompe a fila antes de parar o YouTube, para que o evento ENDED não avance sozinho.
+            playlistEmReproducao = false;
+            const botaoPlaylist=document.getElementById('btn-tocar-playlist');
+            if(botaoPlaylist) botaoPlaylist.textContent='▶️ Tocar playlist';
             if (audioPreview) { audioPreview.pause(); audioPreview.currentTime=0; musicaPreviewAtual=null; }
             if (youtubePlayer && window.YT) {
                 youtubePlayer.stopVideo();
@@ -1523,6 +1555,10 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
             document.body.classList.remove('player-musica-ativo'); document.body.classList.remove('player-expandido-aberto'); fecharPlayerExpandido?.();
 
             musicaAtualYouTube = null;
+            playlistEmReproducao = false;
+            indicePlaylistAtual = -1;
+            const btnPlaylist=document.getElementById('btn-tocar-playlist');
+            if(btnPlaylist) btnPlaylist.textContent='▶️ Tocar playlist';
             pararSalvamentoPosicao();
             limparEstadoPlayerCompartilhado();
         }
@@ -1594,7 +1630,9 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
                     btnOuvirMusicaCard.addEventListener('click', function(event) {
                         event.preventDefault();
                         event.stopPropagation();
-                        window.abrirOpcoesMusica(post.link, post.titulo, post.imagem);
+                        const indice=filaPlaylist.findIndex(item=>item.id===post.id);
+                        if(indice>=0){ tocarItemDaPlaylist(indice); mostrarFeedbackPlaylist('🎵 Tocando: '+(post.titulo||'Música')); }
+                        else { escutarYouTubeAgoraDireto({id:post.id,link:post.link,titulo:post.titulo,imagem:post.imagem}); }
                     });
                 }
                 blocoMusica.dataset.postId = post.id;
@@ -1633,7 +1671,7 @@ body.dark-mode .player-controle-icone{color:#f0d9d4}
             }
             tocarItemDaPlaylist(anterior);
         }
-        document.getElementById('btn-tocar-playlist')?.addEventListener('click',()=>{ if(filaPlaylist.length){tocarItemDaPlaylist(0);mostrarFeedbackPlaylist('▶️ Playlist iniciada');} else mostrarFeedbackPlaylist('Sua playlist ainda está vazia 🎧'); });
+        document.getElementById('btn-tocar-playlist')?.addEventListener('click',()=>{ if(!filaPlaylist.length){mostrarFeedbackPlaylist('Sua playlist ainda está vazia 🎧');return;} tocarItemDaPlaylist(0); mostrarFeedbackPlaylist('▶️ Playlist iniciada — tocando em sequência'); });
         document.getElementById('btn-aleatorio')?.addEventListener('click',function(){modoAleatorio=!modoAleatorio;this.classList.toggle('ativo',modoAleatorio);this.setAttribute('aria-pressed',modoAleatorio);mostrarFeedbackPlaylist(modoAleatorio?'🔀 Reprodução aleatória ativada':'🔀 Reprodução aleatória desativada');atualizarControlesExpandidos();});
         document.getElementById('btn-repetir')?.addEventListener('click',function(){modoRepetir=!modoRepetir;this.classList.toggle('ativo',modoRepetir);this.setAttribute('aria-pressed',modoRepetir);mostrarFeedbackPlaylist(modoRepetir?'🔁 Repetir música ativado':'🔁 Repetir música desativado');atualizarControlesExpandidos();});
         document.getElementById('btn-organizar-playlist')?.addEventListener('click',function(){modoOrganizarPlaylist=!modoOrganizarPlaylist;containerPlaylist.classList.toggle('modo-organizar',modoOrganizarPlaylist);this.classList.toggle('ativo',modoOrganizarPlaylist);this.textContent=modoOrganizarPlaylist?'✓ Concluir':'↕️ Organizar';mostrarFeedbackPlaylist(modoOrganizarPlaylist?'↕️ Arraste as músicas para organizar':'✓ Nova ordem salva');});
@@ -1849,47 +1887,7 @@ onSnapshot(query(collection(db,"posts"), where("destino","==","playlist")),snap=
 document.getElementById('player-musica-controle')?.addEventListener('click',()=>setTimeout(atualizarBotaoExpandido,80));
         </script>
 
-<script id="clipe-card-safe-script">
-(function(){
-  let ativoCard=null;
-  function videoId(url){try{const u=new URL(url);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1);return u.searchParams.get('v')||''}catch(e){const m=String(url||'').match(/(?:youtu\.be\/|[?&]v=)([^?&#/]+)/);return m?m[1]:''}}
-  function desligarCard(card){
-    if(!card)return;
-    card.classList.remove('tocando','clipe-ativo');
-    card.dataset.clipeLigado='0';
-    card.querySelector('.clipe-card-bg')?.remove();
-    const sw=card.querySelector('.clipe-switch'); if(sw)sw.classList.remove('ativo');
-  }
-  function limparExceto(cardAtual){document.querySelectorAll('.card-musica').forEach(c=>{if(c!==cardAtual)desligarCard(c);});}
-  function preparar(card){
-    if(!card||card.querySelector('.clipe-toggle'))return;
-    const row=document.createElement('div');row.className='clipe-toggle';
-    row.innerHTML='<span>🎬 Clipe no fundo</span><button type="button" class="clipe-switch" aria-label="Ativar clipe no fundo" aria-pressed="false"><i></i></button>';
-    const info=card.querySelector('.musica-info'); if(!info)return; info.appendChild(row);
-    const sw=row.querySelector('.clipe-switch');
-    sw.addEventListener('click',function(ev){
-      ev.preventDefault();ev.stopPropagation();
-      const ligado=card.dataset.clipeLigado==='1';
-      if(ligado){desligarClipe(card);return;}
-      const id=videoId(card.dataset.youtubeLink||'');
-      if(!id){console.warn('Vídeo do YouTube não encontrado para esta música.');return;}
-      let bg=card.querySelector('.clipe-card-bg');
-      if(!bg){bg=document.createElement('div');bg.className='clipe-card-bg';card.prepend(bg);}
-      card.dataset.clipeLigado='1';card.classList.add('clipe-ativo');sw.classList.add('ativo');sw.setAttribute('aria-pressed','true');
-      bg.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist='+encodeURIComponent(id)+'&rel=0" allow="autoplay; encrypted-media" tabindex="-1"></iframe>';
-    });
-  }
-  function desligarClipe(card){card.classList.remove('clipe-ativo');card.dataset.clipeLigado='0';card.querySelector('.clipe-card-bg')?.remove();const sw=card.querySelector('.clipe-switch');if(sw){sw.classList.remove('ativo');sw.setAttribute('aria-pressed','false');}}
-  document.addEventListener('click',function(e){
-    const b=e.target.closest('.btn-ouvir-musica-card');if(!b)return;
-    const card=b.closest('.card-musica');if(!card)return;
-    if(ativoCard&&ativoCard!==card)desligarCard(ativoCard);
-    limparExceto(card);
-    ativoCard=card;card.classList.add('tocando');preparar(card);
-  },true);
-  document.getElementById('player-musica-fechar')?.addEventListener('click',()=>{if(ativoCard)desligarCard(ativoCard);ativoCard=null;});
-})();
-</script>
+
 
 <!-- Controles de playlist: reprodução contínua, aleatória, repetição e organização -->
 
