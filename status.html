@@ -4,9 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Nosso Histórico de Amor ❤️ - Edição Especial</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
+    let weekdayChartInstance=null, comparisonChartInstance=null;
+    function buildAdvancedStats(){
+      const msgs=parsedMessages||[]; const total=msgs.length; const byDay=Array(7).fill(0), byHour=Array(24).fill(0), authors={}; const words={}; const dates={};
+      msgs.forEach(m=>{ const a=isFabricio(m.author)?'Fabricio 💜':'Meu Amor 💙'; authors[a]=(authors[a]||0)+1; if(m.hour>=0)byHour[m.hour]++; if(m.date){const d=new Date(m.date+'T12:00:00'); if(!isNaN(d))byDay[d.getDay()]++; dates[m.date]=(dates[m.date]||0)+1;} (m.content.match(/[\p{L}À-ÿ]{4,}/gu)||[]).forEach(w=>{w=w.toLowerCase(); if(!['para','como','mais','você','uma','esse','essa','isso','porque','quando','muito','também'].includes(w)) words[w]=(words[w]||0)+1;}); });
+      const activeDays=Object.keys(dates).length||1, topHour=byHour.indexOf(Math.max(...byHour)), topDay=byDay.indexOf(Math.max(...byDay)), topWord=Object.entries(words).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
+      return {total,byDay,byHour,authors,words,dates,activeDays,avg:(total/activeDays).toFixed(1),topHour,topDay,topWord,peak:Math.max(...byHour)};
+    }
+    function renderAdvancedAnalytics(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      const qi=document.getElementById('quickInsights'); if(qi) qi.innerHTML=`<div class="insight-card"><span>📆 Dias ativos</span><b>${s.activeDays}</b><span class="mini-label">dias com conversa</span></div><div class="insight-card"><span>💬 Média diária</span><b>${s.avg}</b><span class="mini-label">mensagens por dia ativo</span></div><div class="insight-card"><span>⏰ Pico</span><b>${String(s.topHour).padStart(2,'0')}h</b><span class="mini-label">horário mais movimentado</span></div><div class="insight-card"><span>🗣️ Palavra marcante</span><b>${escapeHTML(s.topWord)}</b><span class="mini-label">entre palavras frequentes</span></div>`;
+      const wd=document.getElementById('weekdayChart'); if(wd&&window.Chart){if(weekdayChartInstance)weekdayChartInstance.destroy();weekdayChartInstance=new Chart(wd,{type:'bar',data:{labels:days,datasets:[{label:'Mensagens',data:s.byDay}]},options:{responsive:true,plugins:{legend:{display:false}}}})};
+      const cc=document.getElementById('comparisonChart'); if(cc&&window.Chart){if(comparisonChartInstance)comparisonChartInstance.destroy();comparisonChartInstance=new Chart(cc,{type:'doughnut',data:{labels:Object.keys(s.authors),datasets:[{data:Object.values(s.authors)}]},options:{responsive:true}})};
+      const hm=document.getElementById('activityHeatmap'); if(hm){const max=Math.max(...s.byDay,1);hm.innerHTML=s.byDay.map((v,i)=>`<div class="heat" style="opacity:${.18+.82*v/max}" title="${days[i]}: ${v} mensagens">${days[i]}<br>${v}</div>`).join('');}
+    }
+    function generateDeepInsights(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado']; const sortedDates=Object.entries(s.dates).sort((a,b)=>b[1]-a[1]); const topDate=sortedDates[0]; const authorEntries=Object.entries(s.authors).sort((a,b)=>b[1]-a[1]); const lead=authorEntries[0]?.[0]||'—'; const diff=authorEntries.length>1?Math.abs(authorEntries[0][1]-authorEntries[1][1]):0;
+      const night=s.byHour.slice(0,6).reduce((a,b)=>a+b,0), morning=s.byHour.slice(6,12).reduce((a,b)=>a+b,0), afternoon=s.byHour.slice(12,18).reduce((a,b)=>a+b,0), evening=s.byHour.slice(18).reduce((a,b)=>a+b,0);
+      const rows=[['🏆 Dia mais movimentado',topDate?`${topDate[0]} — ${topDate[1]} mensagens`:'Sem dados'],['📅 Dia da semana favorito',`${days[s.topDay]} (${s.byDay[s.topDay]} mensagens)`],['⏰ Horário campeão',`${String(s.topHour).padStart(2,'0')}:00 — ${s.peak} mensagens`],['👥 Quem falou mais',`${lead}${diff?` (+${diff} mensagens)`:''}`],['🌙 Madrugada',`${night} mensagens`],['☀️ Manhã',`${morning} mensagens`],['🌤️ Tarde',`${afternoon} mensagens`],['🌙 Noite',`${evening} mensagens`],['🗣️ Palavra mais recorrente',s.topWord],['📈 Ritmo',`${s.avg} mensagens por dia ativo`]];
+      document.getElementById('deepInsights').innerHTML=rows.map(([a,b])=>`<div class="analysis-row"><span>${a}</span><b>${escapeHTML(String(b))}</b></div>`).join('');
+    }
+    const oldGenerateCharts=generateCharts; generateCharts=function(){oldGenerateCharts(); renderAdvancedAnalytics(); generateDeepInsights();};
+    const oldUpdateWrappedPreview=updateWrappedPreview; updateWrappedPreview=function(){oldUpdateWrappedPreview(); const type=document.getElementById('wrapContentType')?.value; if(!type||!parsedMessages.length)return; const s=buildAdvancedStats(); const grid=document.getElementById('wrappedGrid'); if(!grid)return; let vals=[]; if(type==='activity') vals=[['Dias ativos',s.activeDays],['Média diária',s.avg],['Horário campeão',String(s.topHour).padStart(2,'0')+'h'],['Pico de mensagens',s.peak],['Dia favorito',['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][s.topDay]],['Total',s.total]]; else if(type==='compare') vals=[['Fabricio 💜',s.authors['Fabricio 💜']||0],['Meu Amor 💙',s.authors['Meu Amor 💙']||0],['Diferença',Math.abs((s.authors['Fabricio 💜']||0)-(s.authors['Meu Amor 💙']||0))],['Madrugada',s.byHour.slice(0,6).reduce((a,b)=>a+b,0)],['Noite',s.byHour.slice(18).reduce((a,b)=>a+b,0)],['Dias ativos',s.activeDays]]; else if(type==='words'){const top=Object.entries(s.words).sort((a,b)=>b[1]-a[1]).slice(0,6); vals=top.map(x=>[x[0],x[1]+'x']);} if(vals.length){const count=parseInt(document.getElementById('wrapItemsCount')?.value||'4',10);grid.innerHTML=vals.slice(0,count).map(x=>`<div class="wrapped-item"><span>${escapeHTML(x[0])}</span><span class="wrapped-val">${escapeHTML(String(x[1]))}</span></div>`).join('');}}
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    let weekdayChartInstance=null, comparisonChartInstance=null;
+    function buildAdvancedStats(){
+      const msgs=parsedMessages||[]; const total=msgs.length; const byDay=Array(7).fill(0), byHour=Array(24).fill(0), authors={}; const words={}; const dates={};
+      msgs.forEach(m=>{ const a=isFabricio(m.author)?'Fabricio 💜':'Meu Amor 💙'; authors[a]=(authors[a]||0)+1; if(m.hour>=0)byHour[m.hour]++; if(m.date){const d=new Date(m.date+'T12:00:00'); if(!isNaN(d))byDay[d.getDay()]++; dates[m.date]=(dates[m.date]||0)+1;} (m.content.match(/[\p{L}À-ÿ]{4,}/gu)||[]).forEach(w=>{w=w.toLowerCase(); if(!['para','como','mais','você','uma','esse','essa','isso','porque','quando','muito','também'].includes(w)) words[w]=(words[w]||0)+1;}); });
+      const activeDays=Object.keys(dates).length||1, topHour=byHour.indexOf(Math.max(...byHour)), topDay=byDay.indexOf(Math.max(...byDay)), topWord=Object.entries(words).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
+      return {total,byDay,byHour,authors,words,dates,activeDays,avg:(total/activeDays).toFixed(1),topHour,topDay,topWord,peak:Math.max(...byHour)};
+    }
+    function renderAdvancedAnalytics(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      const qi=document.getElementById('quickInsights'); if(qi) qi.innerHTML=`<div class="insight-card"><span>📆 Dias ativos</span><b>${s.activeDays}</b><span class="mini-label">dias com conversa</span></div><div class="insight-card"><span>💬 Média diária</span><b>${s.avg}</b><span class="mini-label">mensagens por dia ativo</span></div><div class="insight-card"><span>⏰ Pico</span><b>${String(s.topHour).padStart(2,'0')}h</b><span class="mini-label">horário mais movimentado</span></div><div class="insight-card"><span>🗣️ Palavra marcante</span><b>${escapeHTML(s.topWord)}</b><span class="mini-label">entre palavras frequentes</span></div>`;
+      const wd=document.getElementById('weekdayChart'); if(wd&&window.Chart){if(weekdayChartInstance)weekdayChartInstance.destroy();weekdayChartInstance=new Chart(wd,{type:'bar',data:{labels:days,datasets:[{label:'Mensagens',data:s.byDay}]},options:{responsive:true,plugins:{legend:{display:false}}}})};
+      const cc=document.getElementById('comparisonChart'); if(cc&&window.Chart){if(comparisonChartInstance)comparisonChartInstance.destroy();comparisonChartInstance=new Chart(cc,{type:'doughnut',data:{labels:Object.keys(s.authors),datasets:[{data:Object.values(s.authors)}]},options:{responsive:true}})};
+      const hm=document.getElementById('activityHeatmap'); if(hm){const max=Math.max(...s.byDay,1);hm.innerHTML=s.byDay.map((v,i)=>`<div class="heat" style="opacity:${.18+.82*v/max}" title="${days[i]}: ${v} mensagens">${days[i]}<br>${v}</div>`).join('');}
+    }
+    function generateDeepInsights(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado']; const sortedDates=Object.entries(s.dates).sort((a,b)=>b[1]-a[1]); const topDate=sortedDates[0]; const authorEntries=Object.entries(s.authors).sort((a,b)=>b[1]-a[1]); const lead=authorEntries[0]?.[0]||'—'; const diff=authorEntries.length>1?Math.abs(authorEntries[0][1]-authorEntries[1][1]):0;
+      const night=s.byHour.slice(0,6).reduce((a,b)=>a+b,0), morning=s.byHour.slice(6,12).reduce((a,b)=>a+b,0), afternoon=s.byHour.slice(12,18).reduce((a,b)=>a+b,0), evening=s.byHour.slice(18).reduce((a,b)=>a+b,0);
+      const rows=[['🏆 Dia mais movimentado',topDate?`${topDate[0]} — ${topDate[1]} mensagens`:'Sem dados'],['📅 Dia da semana favorito',`${days[s.topDay]} (${s.byDay[s.topDay]} mensagens)`],['⏰ Horário campeão',`${String(s.topHour).padStart(2,'0')}:00 — ${s.peak} mensagens`],['👥 Quem falou mais',`${lead}${diff?` (+${diff} mensagens)`:''}`],['🌙 Madrugada',`${night} mensagens`],['☀️ Manhã',`${morning} mensagens`],['🌤️ Tarde',`${afternoon} mensagens`],['🌙 Noite',`${evening} mensagens`],['🗣️ Palavra mais recorrente',s.topWord],['📈 Ritmo',`${s.avg} mensagens por dia ativo`]];
+      document.getElementById('deepInsights').innerHTML=rows.map(([a,b])=>`<div class="analysis-row"><span>${a}</span><b>${escapeHTML(String(b))}</b></div>`).join('');
+    }
+    const oldGenerateCharts=generateCharts; generateCharts=function(){oldGenerateCharts(); renderAdvancedAnalytics(); generateDeepInsights();};
+    const oldUpdateWrappedPreview=updateWrappedPreview; updateWrappedPreview=function(){oldUpdateWrappedPreview(); const type=document.getElementById('wrapContentType')?.value; if(!type||!parsedMessages.length)return; const s=buildAdvancedStats(); const grid=document.getElementById('wrappedGrid'); if(!grid)return; let vals=[]; if(type==='activity') vals=[['Dias ativos',s.activeDays],['Média diária',s.avg],['Horário campeão',String(s.topHour).padStart(2,'0')+'h'],['Pico de mensagens',s.peak],['Dia favorito',['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][s.topDay]],['Total',s.total]]; else if(type==='compare') vals=[['Fabricio 💜',s.authors['Fabricio 💜']||0],['Meu Amor 💙',s.authors['Meu Amor 💙']||0],['Diferença',Math.abs((s.authors['Fabricio 💜']||0)-(s.authors['Meu Amor 💙']||0))],['Madrugada',s.byHour.slice(0,6).reduce((a,b)=>a+b,0)],['Noite',s.byHour.slice(18).reduce((a,b)=>a+b,0)],['Dias ativos',s.activeDays]]; else if(type==='words'){const top=Object.entries(s.words).sort((a,b)=>b[1]-a[1]).slice(0,6); vals=top.map(x=>[x[0],x[1]+'x']);} if(vals.length){const count=parseInt(document.getElementById('wrapItemsCount')?.value||'4',10);grid.innerHTML=vals.slice(0,count).map(x=>`<div class="wrapped-item"><span>${escapeHTML(x[0])}</span><span class="wrapped-val">${escapeHTML(String(x[1]))}</span></div>`).join('');}}
+
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    let weekdayChartInstance=null, comparisonChartInstance=null;
+    function buildAdvancedStats(){
+      const msgs=parsedMessages||[]; const total=msgs.length; const byDay=Array(7).fill(0), byHour=Array(24).fill(0), authors={}; const words={}; const dates={};
+      msgs.forEach(m=>{ const a=isFabricio(m.author)?'Fabricio 💜':'Meu Amor 💙'; authors[a]=(authors[a]||0)+1; if(m.hour>=0)byHour[m.hour]++; if(m.date){const d=new Date(m.date+'T12:00:00'); if(!isNaN(d))byDay[d.getDay()]++; dates[m.date]=(dates[m.date]||0)+1;} (m.content.match(/[\p{L}À-ÿ]{4,}/gu)||[]).forEach(w=>{w=w.toLowerCase(); if(!['para','como','mais','você','uma','esse','essa','isso','porque','quando','muito','também'].includes(w)) words[w]=(words[w]||0)+1;}); });
+      const activeDays=Object.keys(dates).length||1, topHour=byHour.indexOf(Math.max(...byHour)), topDay=byDay.indexOf(Math.max(...byDay)), topWord=Object.entries(words).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
+      return {total,byDay,byHour,authors,words,dates,activeDays,avg:(total/activeDays).toFixed(1),topHour,topDay,topWord,peak:Math.max(...byHour)};
+    }
+    function renderAdvancedAnalytics(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      const qi=document.getElementById('quickInsights'); if(qi) qi.innerHTML=`<div class="insight-card"><span>📆 Dias ativos</span><b>${s.activeDays}</b><span class="mini-label">dias com conversa</span></div><div class="insight-card"><span>💬 Média diária</span><b>${s.avg}</b><span class="mini-label">mensagens por dia ativo</span></div><div class="insight-card"><span>⏰ Pico</span><b>${String(s.topHour).padStart(2,'0')}h</b><span class="mini-label">horário mais movimentado</span></div><div class="insight-card"><span>🗣️ Palavra marcante</span><b>${escapeHTML(s.topWord)}</b><span class="mini-label">entre palavras frequentes</span></div>`;
+      const wd=document.getElementById('weekdayChart'); if(wd&&window.Chart){if(weekdayChartInstance)weekdayChartInstance.destroy();weekdayChartInstance=new Chart(wd,{type:'bar',data:{labels:days,datasets:[{label:'Mensagens',data:s.byDay}]},options:{responsive:true,plugins:{legend:{display:false}}}})};
+      const cc=document.getElementById('comparisonChart'); if(cc&&window.Chart){if(comparisonChartInstance)comparisonChartInstance.destroy();comparisonChartInstance=new Chart(cc,{type:'doughnut',data:{labels:Object.keys(s.authors),datasets:[{data:Object.values(s.authors)}]},options:{responsive:true}})};
+      const hm=document.getElementById('activityHeatmap'); if(hm){const max=Math.max(...s.byDay,1);hm.innerHTML=s.byDay.map((v,i)=>`<div class="heat" style="opacity:${.18+.82*v/max}" title="${days[i]}: ${v} mensagens">${days[i]}<br>${v}</div>`).join('');}
+    }
+    function generateDeepInsights(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado']; const sortedDates=Object.entries(s.dates).sort((a,b)=>b[1]-a[1]); const topDate=sortedDates[0]; const authorEntries=Object.entries(s.authors).sort((a,b)=>b[1]-a[1]); const lead=authorEntries[0]?.[0]||'—'; const diff=authorEntries.length>1?Math.abs(authorEntries[0][1]-authorEntries[1][1]):0;
+      const night=s.byHour.slice(0,6).reduce((a,b)=>a+b,0), morning=s.byHour.slice(6,12).reduce((a,b)=>a+b,0), afternoon=s.byHour.slice(12,18).reduce((a,b)=>a+b,0), evening=s.byHour.slice(18).reduce((a,b)=>a+b,0);
+      const rows=[['🏆 Dia mais movimentado',topDate?`${topDate[0]} — ${topDate[1]} mensagens`:'Sem dados'],['📅 Dia da semana favorito',`${days[s.topDay]} (${s.byDay[s.topDay]} mensagens)`],['⏰ Horário campeão',`${String(s.topHour).padStart(2,'0')}:00 — ${s.peak} mensagens`],['👥 Quem falou mais',`${lead}${diff?` (+${diff} mensagens)`:''}`],['🌙 Madrugada',`${night} mensagens`],['☀️ Manhã',`${morning} mensagens`],['🌤️ Tarde',`${afternoon} mensagens`],['🌙 Noite',`${evening} mensagens`],['🗣️ Palavra mais recorrente',s.topWord],['📈 Ritmo',`${s.avg} mensagens por dia ativo`]];
+      document.getElementById('deepInsights').innerHTML=rows.map(([a,b])=>`<div class="analysis-row"><span>${a}</span><b>${escapeHTML(String(b))}</b></div>`).join('');
+    }
+    const oldGenerateCharts=generateCharts; generateCharts=function(){oldGenerateCharts(); renderAdvancedAnalytics(); generateDeepInsights();};
+    const oldUpdateWrappedPreview=updateWrappedPreview; updateWrappedPreview=function(){oldUpdateWrappedPreview(); const type=document.getElementById('wrapContentType')?.value; if(!type||!parsedMessages.length)return; const s=buildAdvancedStats(); const grid=document.getElementById('wrappedGrid'); if(!grid)return; let vals=[]; if(type==='activity') vals=[['Dias ativos',s.activeDays],['Média diária',s.avg],['Horário campeão',String(s.topHour).padStart(2,'0')+'h'],['Pico de mensagens',s.peak],['Dia favorito',['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][s.topDay]],['Total',s.total]]; else if(type==='compare') vals=[['Fabricio 💜',s.authors['Fabricio 💜']||0],['Meu Amor 💙',s.authors['Meu Amor 💙']||0],['Diferença',Math.abs((s.authors['Fabricio 💜']||0)-(s.authors['Meu Amor 💙']||0))],['Madrugada',s.byHour.slice(0,6).reduce((a,b)=>a+b,0)],['Noite',s.byHour.slice(18).reduce((a,b)=>a+b,0)],['Dias ativos',s.activeDays]]; else if(type==='words'){const top=Object.entries(s.words).sort((a,b)=>b[1]-a[1]).slice(0,6); vals=top.map(x=>[x[0],x[1]+'x']);} if(vals.length){const count=parseInt(document.getElementById('wrapItemsCount')?.value||'4',10);grid.innerHTML=vals.slice(0,count).map(x=>`<div class="wrapped-item"><span>${escapeHTML(x[0])}</span><span class="wrapped-val">${escapeHTML(String(x[1]))}</span></div>`).join('');}}
+
+  </script>
   <style>
     :root {
       --primary: #8c625d;
@@ -249,7 +321,9 @@
       .tab-content { display: block !important; page-break-after: always; }
       .card { box-shadow: none; border: 1px solid #ccc; }
     }
-  </style>
+  
+    .insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0}.insight-card{padding:14px;border:1px solid var(--border-color);border-radius:14px;background:var(--bg-card)}.insight-card b{display:block;font-size:1.25rem;margin-top:5px}.mini-label{font-size:.72rem;color:var(--text-muted)}.analysis-controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.analysis-list{display:flex;flex-direction:column;gap:8px}.analysis-row{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border-radius:10px;background:rgba(140,98,93,.06);font-size:.82rem}.heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.heat{aspect-ratio:1;border-radius:7px;background:rgba(140,98,93,.08);display:flex;align-items:center;justify-content:center;font-size:.68rem;cursor:default}.wrap-control-group{margin-top:14px;padding-top:12px;border-top:1px solid var(--border-color)}
+</style>
 </head>
 <body>
 
@@ -310,6 +384,7 @@
       <button class="tab-btn" id="tabAudiosBtn" style="display:none;" onclick="switchTab('audiosTab')">🎙️ Áudios</button>
       <button class="tab-btn" onclick="switchTab('linksTab')">🎵 Músicas & Links</button>
       <button class="tab-btn" onclick="switchTab('wrappedTab')">🎨 Gerar Card</button>
+      <button class="tab-btn" onclick="switchTab('insightsTab')">🧠 Insights</button>
       <button class="tab-btn" onclick="exportPDFReport()" style="margin-left: auto;">🖨️ PDF</button>
     </div>
 
@@ -333,7 +408,26 @@
             </div>
           </div>
         </div>
+        <div class="charts-wrapper" style="margin-top:16px;">
+          <div class="chart-box">
+            <canvas id="weekdayChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <canvas id="activityChart"></canvas>
+            <p id="activityInsight" style="font-size:.78rem;color:var(--text-muted);margin:10px 0 0;"></p>
+          </div>
+        </div>
+        <div class="chart-box" style="margin-top:16px;">
+          <div class="section-title" style="margin-bottom:8px;">⚖️ Comparação rápida</div>
+          <div id="comparisonInsights" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;font-size:.82rem;"></div>
+        </div>
       </div>
+      <div class="insight-grid" id="quickInsights"></div>
+      <div class="charts-wrapper">
+        <div class="chart-box"><div class="section-title">📅 Atividade por dia da semana</div><canvas id="weekdayChart"></canvas></div>
+        <div class="chart-box"><div class="section-title">👥 Comparação de participação</div><canvas id="comparisonChart"></canvas></div>
+      </div>
+      <div class="chart-box" style="margin-top:12px"><div class="section-title">🔥 Mapa de atividade semanal</div><p class="mini-label">Quanto mais intensa a célula, mais mensagens naquele período.</p><div id="activityHeatmap" class="heatmap"></div></div>
     </div>
 
     <div id="memoriesTab" class="tab-content">
@@ -429,6 +523,12 @@
       </div>
     </div>
 
+    <div id="insightsTab" class="tab-content"><div class="card">
+      <div class="section-title">🧠 Raio-X Completo da Conversa</div><p class="card-section-note">Comparações e padrões calculados a partir do histórico carregado.</p>
+      <div class="analysis-controls"><button class="btn" onclick="generateDeepInsights()">↻ Atualizar insights</button></div>
+      <div id="deepInsights" class="analysis-list"></div>
+    </div></div>
+
     <div id="wrappedTab" class="tab-content">
       <div class="card">
         <div class="section-title" style="margin-bottom: 12px;">🎨 Personalizar Card (Wrapped)</div>
@@ -453,7 +553,9 @@
             <select id="wrapContentType" onchange="updateWrappedPreview()" style="width:100%; padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); margin-top:4px;">
               <option value="general">📊 Visão Geral do Casal</option>
               <option value="love">❤️ Foco no Amor & Carinho</option>
-              <option value="fun">🤡 Curiosidades Engraçadas</option>
+              <option value="fun">🤡 Curiosidades Engraçadas</option><option value="activity">⚡ Ritmo & Atividade</option><option value="compare">⚖️ Comparação do Casal</option><option value="words">🗣️ Palavras & Expressões</option>
+              <option value="activity">📈 Ritmo & Atividade</option>
+              <option value="balance">⚖️ Comparação do Casal</option>
             </select>
           </label>
           <div class="wrap-control">
@@ -503,6 +605,8 @@
 
     let timeChartInstance = null;
     let hourlyChartInstance = null;
+    let weekdayChartInstance = null;
+    let activityChartInstance = null;
     let selectedHour = null;
     let wrapImageUrl = null;
     let quizCurrentQuestion = null;
@@ -778,6 +882,46 @@
       const hourRange = document.getElementById('hourRange');
       if (hourRange) hourRange.oninput = e => selectHour(parseInt(e.target.value, 10));
       resetHourSelection();
+
+      const weekdayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      const weekdayData = Array(7).fill(0);
+      parsedMessages.forEach(m => { if (m.date) weekdayData[new Date(m.date+'T12:00:00').getDay()]++; });
+      if (weekdayChartInstance) weekdayChartInstance.destroy();
+      const weekdayCtx = document.getElementById('weekdayChart')?.getContext('2d');
+      if (weekdayCtx) weekdayChartInstance = new Chart(weekdayCtx, {
+        type:'bar',
+        data:{labels:weekdayNames,datasets:[{label:'Mensagens por dia da semana',data:weekdayData,backgroundColor:'#6b21a8'}]},
+        options:{responsive:true,plugins:{title:{display:true,text:'Qual dia da semana é mais ativo?'}}}
+      });
+
+      const dates = parsedMessages.map(m=>m.date).filter(Boolean).sort();
+      const firstDate = dates[0], lastDate = dates.at(-1);
+      const totalDays = firstDate && lastDate ? Math.max(1, Math.round((new Date(lastDate)-new Date(firstDate))/86400000)+1) : 1;
+      const dailyAverage = parsedMessages.length / totalDays;
+      const nightCount = parsedMessages.filter(m=>m.hour>=0 && m.hour<=5).length;
+      const dayCount = parsedMessages.filter(m=>m.hour>=6 && m.hour<=17).length;
+      const eveningCount = parsedMessages.length-nightCount-dayCount;
+      if (activityChartInstance) activityChartInstance.destroy();
+      const activityCtx=document.getElementById('activityChart')?.getContext('2d');
+      if(activityCtx) activityChartInstance=new Chart(activityCtx,{
+        type:'doughnut',
+        data:{labels:['Madrugada','Dia','Noite'],datasets:[{data:[nightCount,dayCount,eveningCount],backgroundColor:['#6b21a8','#3b82f6','#d97706']}]},
+        options:{responsive:true,plugins:{title:{display:true,text:'Quando vocês mais conversam?'}}}
+      });
+      const peakHour=getPeakHourLabel();
+      const peakDay=weekdayNames[weekdayData.indexOf(Math.max(...weekdayData))] || '—';
+      const insight=document.getElementById('activityInsight');
+      if(insight) insight.textContent=`Média de ${dailyAverage.toFixed(1)} mensagens por dia. Horário mais ativo: ${peakHour}. Dia mais movimentado: ${peakDay}.`;
+      const comp=document.getElementById('comparisonInsights');
+      if(comp){
+        const diff=Math.abs(fabricioMonthly.reduce((a,b)=>a+b,0)-mariaMonthly.reduce((a,b)=>a+b,0));
+        comp.innerHTML=[
+          ['💬 Ritmo', `${dailyAverage.toFixed(1)} mensagens/dia`],
+          ['🕒 Pico', peakHour],
+          ['📅 Dia campeão', peakDay],
+          ['⚖️ Diferença', `${diff} mensagens entre os dois`]
+        ].map(([a,b])=>`<div style="padding:10px;border:1px solid var(--border-color);border-radius:10px;"><b>${a}</b><br><span style="color:var(--text-muted)">${b}</span></div>`).join('');
+      }
     }
 
 
@@ -1105,41 +1249,76 @@
         if (sdRegex.test(m.content)) saudadesCount++;
       });
 
-      let itemsHTML = "";
-
-      if (contentType === 'general') {
-        document.getElementById('wrapTitle').innerText = "Nosso Ano em Mensagens 💬";
-        itemsHTML = `
-          <div class="wrapped-item"><span>Total de Mensagens</span><span class="wrapped-val">${total}</span></div>
-          <div class="wrapped-item"><span>"Te Amo" Trocados</span><span class="wrapped-val">${loveCount}</span></div>
-          <div class="wrapped-item"><span>Mais Tagarela</span><span class="wrapped-val">${fabMsgs > marMsgs ? 'Fabricio 💜' : 'Meu Amor 💙'}</span></div>
-          <div class="wrapped-item"><span>Mago do Bom Dia</span><span class="wrapped-val">${bomDiaFab > bomDiaMar ? 'Fabricio 💜' : 'Meu Amor 💙'}</span></div>
-        `;
-      } else if (contentType === 'love') {
-        document.getElementById('wrapTitle').innerText = "Métricas do Nosso Amor ❤️";
-        itemsHTML = `
-          <div class="wrapped-item"><span>Declarações</span><span class="wrapped-val">${loveCount}</span></div>
-          <div class="wrapped-item"><span>Mensagens de Saudade</span><span class="wrapped-val">${saudadesCount}</span></div>
-          <div class="wrapped-item"><span>Boa Noite Trocados</span><span class="wrapped-val">${boaNoiteFab + boaNoiteMar}x</span></div>
-          <div class="wrapped-item"><span>Resultado</span><span class="wrapped-val">Empate TÉCNICO!</span></div>
-        `;
-      } else if (contentType === 'fun') {
-        document.getElementById('wrapTitle').innerText = "Curiosidades do Chat 🤡";
-        itemsHTML = `
-          <div class="wrapped-item"><span>Coruja da Madrugada</span><span class="wrapped-val">${getNightOwl()}</span></div>
-          <div class="wrapped-item"><span>Mestre dos Áudios</span><span class="wrapped-val">${getAudioKing()}</span></div>
-          <div class="wrapped-item"><span>Acorda Cedo</span><span class="wrapped-val">${bomDiaFab > bomDiaMar ? 'Fabricio 💜' : 'Meu Amor 💙'}</span></div>
-          <div class="wrapped-item"><span>Média Diária</span><span class="wrapped-val">~${Math.round(total / 30)} msgs/dia</span></div>
-        `;
-      }
+      const daysSpan = (() => {
+        const dates = parsedMessages.map(m => m.date).filter(Boolean).sort();
+        if (dates.length < 2) return 1;
+        return Math.max(1, Math.round((new Date(dates.at(-1)) - new Date(dates[0])) / 86400000) + 1);
+      })();
+      const allItems = {
+        general: [
+          ['Total de Mensagens', total],
+          ['"Te Amo" Trocados', loveCount],
+          ['Mais Tagarela', fabMsgs > marMsgs ? 'Fabricio 💜' : marMsgs > fabMsgs ? 'Meu Amor 💙' : 'Empate 🤝'],
+          ['Mago do Bom Dia', bomDiaFab > bomDiaMar ? 'Fabricio 💜' : bomDiaMar > bomDiaFab ? 'Meu Amor 💙' : 'Empate 🤝'],
+          ['Mensagens por Dia', `~${(total / daysSpan).toFixed(1)}`],
+          ['Equilíbrio', `${Math.min(fabMsgs, marMsgs) ? Math.round(Math.min(fabMsgs, marMsgs)/Math.max(fabMsgs, marMsgs)*100) : 0}%`]
+        ],
+        love: [
+          ['Declarações', loveCount],
+          ['Mensagens de Saudade', saudadesCount],
+          ['Boa Noite Trocados', `${boaNoiteFab + boaNoiteMar}x`],
+          ['Bom Dia Trocados', `${bomDiaFab + bomDiaMar}x`],
+          ['Ritmo do Amor', `${total ? (Number(loveCount)/total*100).toFixed(1) : 0}%`],
+          ['Resultado', '❤️ Conexão registrada']
+        ],
+        fun: [
+          ['Coruja da Madrugada', getNightOwl()],
+          ['Mestre dos Áudios', getAudioKing()],
+          ['Acorda Cedo', bomDiaFab > bomDiaMar ? 'Fabricio 💜' : bomDiaMar > bomDiaFab ? 'Meu Amor 💙' : 'Empate 🤝'],
+          ['Média Diária', `~${Math.round(total / daysSpan)} msgs/dia`],
+          ['Mais Tagarela', fabMsgs > marMsgs ? 'Fabricio 💜' : marMsgs > fabMsgs ? 'Meu Amor 💙' : 'Empate 🤝'],
+          ['Total de Conversas', total]
+        ],
+        activity: [
+          ['Total de Mensagens', total],
+          ['Média por Dia', `~${(total/daysSpan).toFixed(1)}`],
+          ['Período Analisado', `${daysSpan} dias`],
+          ['Horário Mais Ativo', getPeakHourLabel()],
+          ['Coruja da Madrugada', getNightOwl()],
+          ['Mais Tagarela', fabMsgs > marMsgs ? 'Fabricio 💜' : marMsgs > fabMsgs ? 'Meu Amor 💙' : 'Empate 🤝']
+        ],
+        balance: [
+          ['Fabricio', fabMsgs],
+          ['Meu Amor', marMsgs],
+          ['Diferença', Math.abs(fabMsgs-marMsgs)],
+          ['Equilíbrio', `${Math.max(fabMsgs,marMsgs) ? Math.round(Math.min(fabMsgs,marMsgs)/Math.max(fabMsgs,marMsgs)*100) : 0}%`],
+          ['Bom Dia', `${bomDiaFab} × ${bomDiaMar}`],
+          ['Boa Noite', `${boaNoiteFab} × ${boaNoiteMar}`]
+        ]
+      };
+      const titles = {
+        general:'Nosso Ano em Mensagens 💬', love:'Métricas do Nosso Amor ❤️',
+        fun:'Curiosidades do Chat 🤡', activity:'Nosso Ritmo 💫', balance:'Nós em Números ⚖️'
+      };
+      document.getElementById('wrapTitle').innerText = titles[contentType] || titles.general;
+      const selectedItems = (allItems[contentType] || allItems.general).slice(0, itemsCount);
+      const itemsHTML = selectedItems.map(([label,value]) =>
+        `<div class="wrapped-item"><span>${label}</span><span class="wrapped-val">${value}</span></div>`
+      ).join('');
 
       if (customTitle) document.getElementById('wrapTitle').innerText = customTitle;
       if (customSubtitle) document.getElementById('wrapSubtitle').innerText = customSubtitle;
       else document.getElementById('wrapSubtitle').innerText = 'Estatísticas do nosso relacionamento';
-      const temp = document.createElement('div'); temp.innerHTML = itemsHTML;
-      let items = Array.from(temp.children);
-      if (itemsCount > items.length) items = items.concat(items.slice(0, Math.max(0, itemsCount-items.length)).map(x => x.cloneNode(true)));
-      grid.innerHTML = items.slice(0, itemsCount).map(x => x.outerHTML).join('');
+      grid.innerHTML = itemsHTML;
+    }
+
+    function getPeakHourLabel() {
+      const hours = Array(24).fill(0);
+      parsedMessages.forEach(m => { if (m.hour >= 0 && m.hour < 24) hours[m.hour]++; });
+      const max = Math.max(...hours);
+      if (!max) return 'Sem dados';
+      const hour = hours.indexOf(max);
+      return `${String(hour).padStart(2,'0')}:00`;
     }
 
     function getNightOwl() {
@@ -1277,6 +1456,30 @@
     document.getElementById('searchInput').addEventListener('input', applyFilters);
     document.getElementById('dateStart').addEventListener('change', applyFilters);
     document.getElementById('dateEnd').addEventListener('change', applyFilters);
+  
+    let weekdayChartInstance=null, comparisonChartInstance=null;
+    function buildAdvancedStats(){
+      const msgs=parsedMessages||[]; const total=msgs.length; const byDay=Array(7).fill(0), byHour=Array(24).fill(0), authors={}; const words={}; const dates={};
+      msgs.forEach(m=>{ const a=isFabricio(m.author)?'Fabricio 💜':'Meu Amor 💙'; authors[a]=(authors[a]||0)+1; if(m.hour>=0)byHour[m.hour]++; if(m.date){const d=new Date(m.date+'T12:00:00'); if(!isNaN(d))byDay[d.getDay()]++; dates[m.date]=(dates[m.date]||0)+1;} (m.content.match(/[\p{L}À-ÿ]{4,}/gu)||[]).forEach(w=>{w=w.toLowerCase(); if(!['para','como','mais','você','uma','esse','essa','isso','porque','quando','muito','também'].includes(w)) words[w]=(words[w]||0)+1;}); });
+      const activeDays=Object.keys(dates).length||1, topHour=byHour.indexOf(Math.max(...byHour)), topDay=byDay.indexOf(Math.max(...byDay)), topWord=Object.entries(words).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
+      return {total,byDay,byHour,authors,words,dates,activeDays,avg:(total/activeDays).toFixed(1),topHour,topDay,topWord,peak:Math.max(...byHour)};
+    }
+    function renderAdvancedAnalytics(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+      const qi=document.getElementById('quickInsights'); if(qi) qi.innerHTML=`<div class="insight-card"><span>📆 Dias ativos</span><b>${s.activeDays}</b><span class="mini-label">dias com conversa</span></div><div class="insight-card"><span>💬 Média diária</span><b>${s.avg}</b><span class="mini-label">mensagens por dia ativo</span></div><div class="insight-card"><span>⏰ Pico</span><b>${String(s.topHour).padStart(2,'0')}h</b><span class="mini-label">horário mais movimentado</span></div><div class="insight-card"><span>🗣️ Palavra marcante</span><b>${escapeHTML(s.topWord)}</b><span class="mini-label">entre palavras frequentes</span></div>`;
+      const wd=document.getElementById('weekdayChart'); if(wd&&window.Chart){if(weekdayChartInstance)weekdayChartInstance.destroy();weekdayChartInstance=new Chart(wd,{type:'bar',data:{labels:days,datasets:[{label:'Mensagens',data:s.byDay}]},options:{responsive:true,plugins:{legend:{display:false}}}})};
+      const cc=document.getElementById('comparisonChart'); if(cc&&window.Chart){if(comparisonChartInstance)comparisonChartInstance.destroy();comparisonChartInstance=new Chart(cc,{type:'doughnut',data:{labels:Object.keys(s.authors),datasets:[{data:Object.values(s.authors)}]},options:{responsive:true}})};
+      const hm=document.getElementById('activityHeatmap'); if(hm){const max=Math.max(...s.byDay,1);hm.innerHTML=s.byDay.map((v,i)=>`<div class="heat" style="opacity:${.18+.82*v/max}" title="${days[i]}: ${v} mensagens">${days[i]}<br>${v}</div>`).join('');}
+    }
+    function generateDeepInsights(){
+      if(!parsedMessages.length)return; const s=buildAdvancedStats(), days=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado']; const sortedDates=Object.entries(s.dates).sort((a,b)=>b[1]-a[1]); const topDate=sortedDates[0]; const authorEntries=Object.entries(s.authors).sort((a,b)=>b[1]-a[1]); const lead=authorEntries[0]?.[0]||'—'; const diff=authorEntries.length>1?Math.abs(authorEntries[0][1]-authorEntries[1][1]):0;
+      const night=s.byHour.slice(0,6).reduce((a,b)=>a+b,0), morning=s.byHour.slice(6,12).reduce((a,b)=>a+b,0), afternoon=s.byHour.slice(12,18).reduce((a,b)=>a+b,0), evening=s.byHour.slice(18).reduce((a,b)=>a+b,0);
+      const rows=[['🏆 Dia mais movimentado',topDate?`${topDate[0]} — ${topDate[1]} mensagens`:'Sem dados'],['📅 Dia da semana favorito',`${days[s.topDay]} (${s.byDay[s.topDay]} mensagens)`],['⏰ Horário campeão',`${String(s.topHour).padStart(2,'0')}:00 — ${s.peak} mensagens`],['👥 Quem falou mais',`${lead}${diff?` (+${diff} mensagens)`:''}`],['🌙 Madrugada',`${night} mensagens`],['☀️ Manhã',`${morning} mensagens`],['🌤️ Tarde',`${afternoon} mensagens`],['🌙 Noite',`${evening} mensagens`],['🗣️ Palavra mais recorrente',s.topWord],['📈 Ritmo',`${s.avg} mensagens por dia ativo`]];
+      document.getElementById('deepInsights').innerHTML=rows.map(([a,b])=>`<div class="analysis-row"><span>${a}</span><b>${escapeHTML(String(b))}</b></div>`).join('');
+    }
+    const oldGenerateCharts=generateCharts; generateCharts=function(){oldGenerateCharts(); renderAdvancedAnalytics(); generateDeepInsights();};
+    const oldUpdateWrappedPreview=updateWrappedPreview; updateWrappedPreview=function(){oldUpdateWrappedPreview(); const type=document.getElementById('wrapContentType')?.value; if(!type||!parsedMessages.length)return; const s=buildAdvancedStats(); const grid=document.getElementById('wrappedGrid'); if(!grid)return; let vals=[]; if(type==='activity') vals=[['Dias ativos',s.activeDays],['Média diária',s.avg],['Horário campeão',String(s.topHour).padStart(2,'0')+'h'],['Pico de mensagens',s.peak],['Dia favorito',['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][s.topDay]],['Total',s.total]]; else if(type==='compare') vals=[['Fabricio 💜',s.authors['Fabricio 💜']||0],['Meu Amor 💙',s.authors['Meu Amor 💙']||0],['Diferença',Math.abs((s.authors['Fabricio 💜']||0)-(s.authors['Meu Amor 💙']||0))],['Madrugada',s.byHour.slice(0,6).reduce((a,b)=>a+b,0)],['Noite',s.byHour.slice(18).reduce((a,b)=>a+b,0)],['Dias ativos',s.activeDays]]; else if(type==='words'){const top=Object.entries(s.words).sort((a,b)=>b[1]-a[1]).slice(0,6); vals=top.map(x=>[x[0],x[1]+'x']);} if(vals.length){const count=parseInt(document.getElementById('wrapItemsCount')?.value||'4',10);grid.innerHTML=vals.slice(0,count).map(x=>`<div class="wrapped-item"><span>${escapeHTML(x[0])}</span><span class="wrapped-val">${escapeHTML(String(x[1]))}</span></div>`).join('');}}
+
   </script>
 </body>
 </html>
