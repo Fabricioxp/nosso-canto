@@ -1104,7 +1104,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         function chaveMusicaHistorico(m){return String(m?.id||m?.link||m?.titulo||'musica')}
         function lerHistoricoLocal(){try{return JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]')}catch(e){return[]}}
         function salvarHistoricoLocal(d){try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify(d.slice(-2000)))}catch(e){}}
-        async function registrarEventoHistorico(tipo,musica,segundos=0,sessionId=null){if(!usuarioLogado||!musica)return;const evento={usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:'playlist',mes:new Date().toISOString().slice(0,7)};const local=lerHistoricoLocal();local.push(evento);salvarHistoricoLocal(local);cacheHistorico={};try{await addDoc(collection(db,'historico_reproducoes'),evento)}catch(e){console.warn('Histórico salvo localmente.',e)}}
+        async function registrarEventoHistorico(tipo,musica,segundos=0,sessionId=null){if(!usuarioLogado||!musica)return;const evento={usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:location.pathname.includes('index')?'index':'playlist',mes:new Date().toISOString().slice(0,7)};const local=lerHistoricoLocal();local.push(evento);salvarHistoricoLocal(local);cacheHistorico={};try{await addDoc(collection(db,'historico_reproducoes'),evento)}catch(e){console.warn('Histórico salvo localmente.',e)}}
         function tempoAtualHistorico(){try{return Number(youtubePlayer?.getCurrentTime?.())||0}catch(e){return 0}}
         async function iniciarHistoricoMusica(musica){
             if(!musica)return;
@@ -1124,7 +1124,8 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             const delta=Math.max(0,atual-base);
             // Só salva se o player realmente avançou. Assim, tempo parado em segundo plano não entra na conta.
             if(delta<1)return;
-            if(!forcar&&delta<8)return;
+            // Checkpoint curto: salva rapidamente no aparelho para não perder tempo ao atualizar ou fechar.
+            if(!forcar&&delta<2)return;
             s.segundos+=delta;s.posicaoUltimoCheckpoint=atual;s.parte=(s.parte||0)+1;
             await registrarEventoHistorico('tempo',s.musica,delta,`${s.id}_tempo_${s.parte}`);
             if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;await registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}
@@ -1143,8 +1144,10 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             sessaoHistorico=null;
         }
         // Checkpoint periódico: o histórico sobrevive a atualização/fechamento da página sem redesenhar o painel.
-        setInterval(()=>{salvarCheckpointHistorico(false).catch(()=>{});},8000);
+        // Checkpoint frequente e leve. A tela não é redesenhada aqui; apenas os dados são persistidos.
+        setInterval(()=>{salvarCheckpointHistorico(false).catch(()=>{});},2000);
         window.addEventListener('pagehide',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
+        window.addEventListener('beforeunload',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
         document.addEventListener('visibilitychange',()=>{if(document.hidden)pausarHistoricoMusica().catch(()=>{});});
         function formatarMinutosHistorico(seg){seg=Math.max(0,Math.floor(Number(seg)||0));const min=Math.floor(seg/60),h=Math.floor(min/60),m=min%60;if(h)return `${h}h ${m}min`;if(min)return `${min} min`;return seg?`${seg}s`:'0 min'}
         function chaveEventoHistorico(x){return[x.usuario,x.tipo,x.musicaId,x.sessionId||x.criadoEm].join('|')}
