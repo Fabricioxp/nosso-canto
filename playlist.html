@@ -1029,20 +1029,6 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             </div>
         </div>
 
-        <section class="bloco-separado" id="bloco-playlist">
-            <div class="titulo-secao">🎶 Todas as Músicas da Playlist</div>
-            <div class="playlist-controles" aria-label="Controles da playlist">
-                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ <span>Tocar playlist</span></button>
-                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-aleatorio" aria-pressed="false" title="Reprodução aleatória">🔀</button>
-                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-repetir" aria-pressed="false" title="Repetir música">🔁</button>
-                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ <span>Organizar</span></button>
-            </div>
-            <div id="novos-cards-playlist"></div>
-            <div class="playlist-hint-organizar">Segure uma música e arraste para mudar a posição.</div>
-        </section>
-
-    
-
         <section class="bloco-separado" id="bloco-historico">
             <div class="historico-topo">
                 <div>
@@ -1059,6 +1045,21 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
                 <div class="historico-carregando">Carregando seu histórico…</div>
             </div>
         </section>
+
+        <section class="bloco-separado" id="bloco-playlist">
+            <div class="titulo-secao">🎶 Todas as Músicas da Playlist</div>
+            <div class="playlist-controles" aria-label="Controles da playlist">
+                <button type="button" class="playlist-btn playlist-btn-principal" id="btn-tocar-playlist">▶️ <span>Tocar playlist</span></button>
+                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-aleatorio" aria-pressed="false" title="Reprodução aleatória">🔀</button>
+                <button type="button" class="playlist-btn playlist-btn-icone" id="btn-repetir" aria-pressed="false" title="Repetir música">🔁</button>
+                <button type="button" class="playlist-btn playlist-btn-organizar" id="btn-organizar-playlist">↕️ <span>Organizar</span></button>
+            </div>
+            <div id="novos-cards-playlist"></div>
+            <div class="playlist-hint-organizar">Segure uma música e arraste para mudar a posição.</div>
+        </section>
+
+    
+
 </div>
 
     <div class="menu-criar"><button class="btn-criar" id="btn-abrir-criacao">➕ Adicionar</button></div>
@@ -1088,8 +1089,9 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         let cacheHistorico = {};
         let ultimaMusicaRegistrada = null;
         let inicioEscutaHistorico = null;
-        let segundosPendentesHistorico = 0;
+        let musicaHistoricoAtual = null;
         let timerHistorico = null;
+        const CHAVE_HISTORICO_LOCAL='nosso_canto_historico_v2';
 
         function normalizarUsuarioHistorico(nome){
             const n=String(nome||'').trim().toLowerCase();
@@ -1097,105 +1099,68 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             if(n.includes('fabricio')||n.includes('fabrício')) return 'Fabricio';
             return String(nome||'Usuário').trim()||'Usuário';
         }
-        function chaveMusicaHistorico(m){ return m?.id || m?.link || (m?.titulo||'Música'); }
+        function chaveMusicaHistorico(m){ return String(m?.id || m?.link || m?.titulo || 'musica'); }
+        function lerHistoricoLocal(){ try{return JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]')}catch(e){return []} }
+        function salvarHistoricoLocal(dados){ try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify(dados.slice(-2000)))}catch(e){} }
 
-        async function registrarEventoHistorico(tipo, musica, segundos=0){
+        async function registrarEventoHistorico(tipo,musica,segundos=0){
             if(!usuarioLogado || !musica) return;
-            try{
-                await addDoc(collection(db,'historico_reproducoes'),{
-                    usuario: normalizarUsuarioHistorico(usuarioLogado),
-                    tipo, musicaId: chaveMusicaHistorico(musica),
-                    titulo: musica.titulo||'Música',
-                    capa: musica.capa||musica.imagem||'',
-                    segundos: Math.max(0,Math.round(segundos||0)),
-                    criadoEm: Date.now()
-                });
-                cacheHistorico={};
-            }catch(e){ console.warn('Não foi possível registrar o histórico:',e); }
+            const evento={
+                usuario:normalizarUsuarioHistorico(usuarioLogado), tipo,
+                musicaId:chaveMusicaHistorico(musica), titulo:musica.titulo||'Música',
+                capa:musica.capa||musica.imagem||'', segundos:Math.max(0,Math.round(segundos||0)),
+                criadoEm:Date.now(), origem:'playlist'
+            };
+            const local=lerHistoricoLocal(); local.push(evento); salvarHistoricoLocal(local);
+            cacheHistorico={};
+            try{ await addDoc(collection(db,'historico_reproducoes'),evento); }
+            catch(e){ console.warn('Histórico salvo apenas neste aparelho. Verifique as regras do Firestore.',e); }
         }
-
         async function iniciarHistoricoMusica(musica){
+            if(!musica || !musica.id && !musica.link) return;
             const chave=chaveMusicaHistorico(musica);
             if(ultimaMusicaRegistrada===chave && inicioEscutaHistorico) return;
             await finalizarHistoricoMusica();
             ultimaMusicaRegistrada=chave;
+            musicaHistoricoAtual={...musica};
             inicioEscutaHistorico=Date.now();
-            segundosPendentesHistorico=0;
-            await registrarEventoHistorico('play',musica,0);
+            await registrarEventoHistorico('play',musicaHistoricoAtual,0);
             if(timerHistorico) clearInterval(timerHistorico);
-            timerHistorico=setInterval(()=>{ segundosPendentesHistorico+=10; },10000);
+            timerHistorico=setInterval(()=>{ /* mantém o tempo ativo; cálculo final usa o relógio real */ },15000);
         }
         async function finalizarHistoricoMusica(){
             if(timerHistorico){clearInterval(timerHistorico);timerHistorico=null;}
-            if(!inicioEscutaHistorico||!musicaAtualYouTube) return;
-            const decorrido=Math.max(0,(Date.now()-inicioEscutaHistorico)/1000);
-            const segundos=Math.max(segundosPendentesHistorico,decorrido);
-            if(segundos>=5) await registrarEventoHistorico('tempo',musicaAtualYouTube,segundos);
-            inicioEscutaHistorico=null; segundosPendentesHistorico=0;
+            if(!inicioEscutaHistorico || !musicaHistoricoAtual) return;
+            const segundos=(Date.now()-inicioEscutaHistorico)/1000;
+            const musica={...musicaHistoricoAtual};
+            inicioEscutaHistorico=null; musicaHistoricoAtual=null; ultimaMusicaRegistrada=null;
+            if(segundos>=5) await registrarEventoHistorico('tempo',musica,segundos);
         }
         window.addEventListener('pagehide',()=>{ finalizarHistoricoMusica(); });
 
         function formatarMinutosHistorico(seg){ const min=Math.floor((seg||0)/60); const h=Math.floor(min/60); const m=min%60; return h?`${h}h ${m}min`:`${m} min`; }
+        function chaveEventoHistorico(x){return [x.usuario,x.tipo,x.musicaId,x.criadoEm].join('|')}
         async function carregarHistoricoTodos(){
-            const agora=Date.now();
-            if(cacheHistorico.dados && agora-cacheHistorico.atualizado<30000) return cacheHistorico.dados;
-            const snap=await getDocs(collection(db,'historico_reproducoes'));
-            const dados=snap.docs.map(d=>d.data());
-            cacheHistorico={dados,atualizado:agora}; return dados;
+            const agora=Date.now(); if(cacheHistorico.dados && agora-cacheHistorico.atualizado<10000) return cacheHistorico.dados;
+            const local=lerHistoricoLocal(); let remoto=[];
+            try{const snap=await getDocs(collection(db,'historico_reproducoes')); remoto=snap.docs.map(d=>d.data());}
+            catch(e){console.warn('Usando histórico local:',e);}
+            const mapa=new Map(); [...remoto,...local].forEach(x=>mapa.set(chaveEventoHistorico(x),x));
+            const dados=[...mapa.values()]; cacheHistorico={dados,atualizado:agora}; return dados;
         }
         function resumirHistorico(dados,usuario){
-            const u=normalizarUsuarioHistorico(usuario);
-            const itens=dados.filter(x=>normalizarUsuarioHistorico(x.usuario)===u);
-            const plays=itens.filter(x=>x.tipo==='play');
-            const tempos=itens.filter(x=>x.tipo==='tempo');
+            const u=normalizarUsuarioHistorico(usuario), itens=dados.filter(x=>normalizarUsuarioHistorico(x.usuario)===u);
+            const plays=itens.filter(x=>x.tipo==='play'), tempos=itens.filter(x=>x.tipo==='tempo');
             const totalSegundos=tempos.reduce((a,x)=>a+(Number(x.segundos)||0),0);
-            const unicas=new Set(plays.map(x=>x.musicaId)).size;
-            const mapa={};
-            plays.forEach(x=>{const k=x.musicaId||x.titulo; if(!mapa[k]) mapa[k]={titulo:x.titulo,capa:x.capa,vezes:0}; mapa[k].vezes++;});
-            const top5=Object.values(mapa).sort((a,b)=>b.vezes-a.vezes).slice(0,5);
-            return {usuario:u,totalSegundos,musicasOuvidas:unicas,totalReproducoes:plays.length,top5};
+            const mapa={}; plays.forEach(x=>{const k=x.musicaId||x.titulo;if(!mapa[k])mapa[k]={titulo:x.titulo,capa:x.capa,vezes:0};mapa[k].vezes++;});
+            return {usuario:u,totalSegundos,musicasOuvidas:new Set(plays.map(x=>x.musicaId)).size,totalReproducoes:plays.length,top5:Object.values(mapa).sort((a,b)=>b.vezes-a.vezes).slice(0,5)};
         }
-        function cardResumo(h){
-            return `<div class="historico-resumo">
-                <div class="historico-card destaque"><span class="historico-numero">${formatarMinutosHistorico(h.totalSegundos)}</span><span class="historico-label">Tempo total ouvindo</span></div>
-                <div class="historico-card"><span class="historico-numero">${h.musicasOuvidas}</span><span class="historico-label">Músicas diferentes</span></div>
-                <div class="historico-card"><span class="historico-numero">${h.totalReproducoes}</span><span class="historico-label">Reproduções no geral</span></div>
-            </div>`;
-        }
-        function top5Html(top){
-            if(!top.length) return `<div class="historico-vazio">Ainda não há músicas registradas. 🎧</div>`;
-            return `<div class="historico-titulo-lista">🏆 Top 5 músicas mais ouvidas</div><div class="historico-top5">${top.map((m,i)=>`<div class="historico-musica"><span class="historico-posicao">${i+1}</span><img class="historico-capa" src="${m.capa||''}" onerror="this.style.visibility='hidden'"><span class="historico-nome">${m.titulo}</span><span class="historico-vezes">${m.vezes}x</span></div>`).join('')}</div>`;
-        }
-        async function mostrarMeuHistorico(){
-            const box=document.getElementById('historico-conteudo'); if(!box)return;
-            box.innerHTML='<div class="historico-carregando">Carregando seu histórico…</div>';
-            try{const dados=await carregarHistoricoTodos(); const h=resumirHistorico(dados,usuarioLogado); box.innerHTML=cardResumo(h)+top5Html(h.top5);}
-            catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar o histórico agora.</div>';}
-        }
-        function linhaComparacao(rotulo,a,b,formato=x=>x){
-            const max=Math.max(a,b,1),pa=a/max*50,pb=b/max*50;
-            return `<div class="comparacao-linha"><span class="comparacao-nome esquerda">${formato(a)}</span><span class="comparacao-centro">${rotulo}</span><span class="comparacao-nome direita">${formato(b)}</span><div class="comparacao-barra"><span class="comparacao-barra-a" style="width:${pa}%"></span><span class="comparacao-barra-b" style="width:${pb}%"></span></div></div>`;
-        }
-        async function mostrarComparacao(){
-            const box=document.getElementById('historico-conteudo'); if(!box)return;
-            box.innerHTML=`<div class="historico-carregando">Preparando comparação…</div>`;
-            try{
-                const dados=await carregarHistoricoTodos();
-                const usuarios=[...new Set(dados.map(x=>normalizarUsuarioHistorico(x.usuario)))];
-                ['Maria','Fabricio'].forEach(u=>{if(!usuarios.includes(u))usuarios.push(u)});
-                const op=usuarios.map(u=>`<option value="${u}">${u}</option>`).join('');
-                box.innerHTML=`<div class="comparacao-seletores"><select id="comparar-a">${op}</select><span class="comparacao-vs">VS</span><select id="comparar-b">${op}</select></div><div id="comparacao-resultado"></div>`;
-                const a=document.getElementById('comparar-a'),b=document.getElementById('comparar-b');
-                a.value=normalizarUsuarioHistorico(usuarioLogado); b.value=a.value==='Maria'?'Fabricio':'Maria';
-                const atualizar=()=>{const ha=resumirHistorico(dados,a.value),hb=resumirHistorico(dados,b.value);document.getElementById('comparacao-resultado').innerHTML=linhaComparacao('tempo ouvido',ha.totalSegundos,hb.totalSegundos,formatarMinutosHistorico)+linhaComparacao('músicas diferentes',ha.musicasOuvidas,hb.musicasOuvidas)+linhaComparacao('reproduções',ha.totalReproducoes,hb.totalReproducoes)+`<div class="historico-titulo-lista">🏆 Favoritas de ${ha.usuario}</div>`+top5Html(ha.top5)+`<div class="historico-titulo-lista" style="margin-top:18px">🏆 Favoritas de ${hb.usuario}</div>`+top5Html(hb.top5);};
-                a.onchange=atualizar;b.onchange=atualizar;atualizar();
-            }catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar a comparação.</div>';}
-        }
-        document.addEventListener('DOMContentLoaded',()=>{
-            document.querySelectorAll('.historico-aba').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.historico-aba').forEach(x=>x.classList.remove('ativa'));btn.classList.add('ativa');btn.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico();}));
-            document.getElementById('btn-atualizar-historico')?.addEventListener('click',()=>{cacheHistorico={};const ativo=document.querySelector('.historico-aba.ativa')?.dataset.historicoUsuario;ativo==='comparar'?mostrarComparacao():mostrarMeuHistorico();});
-            mostrarMeuHistorico();
-        });
+        function cardResumo(h){return `<div class="historico-resumo"><div class="historico-card destaque"><span class="historico-numero">${formatarMinutosHistorico(h.totalSegundos)}</span><span class="historico-label">Tempo total ouvindo</span></div><div class="historico-card"><span class="historico-numero">${h.musicasOuvidas}</span><span class="historico-label">Músicas diferentes</span></div><div class="historico-card"><span class="historico-numero">${h.totalReproducoes}</span><span class="historico-label">Reproduções no geral</span></div></div>`}
+        function top5Html(top){if(!top.length)return `<div class="historico-vazio">Comece a ouvir músicas para criar seu histórico. 🎧</div>`;return `<div class="historico-titulo-lista">🏆 Top 5 músicas mais ouvidas</div><div class="historico-top5">${top.map((m,i)=>`<div class="historico-musica"><span class="historico-posicao">${i+1}</span><img class="historico-capa" src="${m.capa||''}" onerror="this.style.visibility='hidden'"><span class="historico-nome">${m.titulo}</span><span class="historico-vezes">${m.vezes}x</span></div>`).join('')}</div>`}
+        async function mostrarMeuHistorico(){const box=document.getElementById('historico-conteudo');if(!box)return;box.innerHTML='<div class="historico-carregando">Carregando seu histórico…</div>';try{const h=resumirHistorico(await carregarHistoricoTodos(),usuarioLogado);box.innerHTML=cardResumo(h)+top5Html(h.top5)}catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar o histórico.</div>'}}
+        function linhaComparacao(rotulo,a,b,formato=x=>x){const max=Math.max(a,b,1);return `<div class="comparacao-linha"><span class="comparacao-nome esquerda">${formato(a)}</span><span class="comparacao-centro">${rotulo}</span><span class="comparacao-nome direita">${formato(b)}</span><div class="comparacao-barra"><span class="comparacao-barra-a" style="width:${a/max*50}%"></span><span class="comparacao-barra-b" style="width:${b/max*50}%"></span></div></div>`}
+        async function mostrarComparacao(){const box=document.getElementById('historico-conteudo');if(!box)return;box.innerHTML='<div class="historico-carregando">Preparando comparação…</div>';try{const dados=await carregarHistoricoTodos();const usuarios=[...new Set([...dados.map(x=>normalizarUsuarioHistorico(x.usuario)),'Maria','Fabricio'])];const op=usuarios.map(u=>`<option value="${u}">${u}</option>`).join('');box.innerHTML=`<div class="comparacao-seletores"><select id="comparar-a">${op}</select><span class="comparacao-vs">VS</span><select id="comparar-b">${op}</select></div><div id="comparacao-resultado"></div>`;const a=document.getElementById('comparar-a'),b=document.getElementById('comparar-b');a.value=normalizarUsuarioHistorico(usuarioLogado);b.value=a.value==='Maria'?'Fabricio':'Maria';const atualizar=()=>{const ha=resumirHistorico(dados,a.value),hb=resumirHistorico(dados,b.value);document.getElementById('comparacao-resultado').innerHTML=linhaComparacao('tempo ouvido',ha.totalSegundos,hb.totalSegundos,formatarMinutosHistorico)+linhaComparacao('músicas diferentes',ha.musicasOuvidas,hb.musicasOuvidas)+linhaComparacao('reproduções',ha.totalReproducoes,hb.totalReproducoes)+`<div class="historico-titulo-lista">🏆 Favoritas de ${ha.usuario}</div>`+top5Html(ha.top5)+`<div class="historico-titulo-lista" style="margin-top:18px">🏆 Favoritas de ${hb.usuario}</div>`+top5Html(hb.top5)};a.onchange=atualizar;b.onchange=atualizar;atualizar()}catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar a comparação.</div>'}}
+        document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.historico-aba').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.historico-aba').forEach(x=>x.classList.remove('ativa'));btn.classList.add('ativa');btn.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico()}));document.getElementById('btn-atualizar-historico')?.addEventListener('click',()=>{cacheHistorico={};document.querySelector('.historico-aba.ativa')?.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico()});mostrarMeuHistorico()});
 
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
