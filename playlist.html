@@ -723,6 +723,12 @@ body.dark-mode #bloco-historico{background:linear-gradient(145deg,#282224,#211d1
 body.dark-mode .historico-card,body.dark-mode .historico-aba.ativa,body.dark-mode .historico-atualizar,body.dark-mode .comparacao-seletores select{background:#302a2d;color:#eee6e4;border-color:#514448}
 body.dark-mode .historico-musica{background:rgba(255,255,255,.05)}
 body.dark-mode .historico-nome{color:#eee6e4}
+/* Histórico compacto: fechado por padrão e aberto sob demanda */
+#bloco-historico{display:none!important}
+#bloco-historico.historico-aberto{display:block!important;animation:histEntrada .25s ease}
+.btn-abrir-historico{width:100%;border:0;border-radius:18px;padding:15px 16px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;font:800 .9rem var(--font-main);box-shadow:0 10px 24px rgba(140,98,93,.18);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.btn-abrir-historico span{font-size:.74rem;opacity:.86;font-weight:600}.btn-abrir-historico.aberto{background:rgba(140,98,93,.11);color:var(--primary);box-shadow:none;border:1px solid rgba(140,98,93,.2)}
+.historico-destaque-texto{padding:14px;border-radius:18px;background:linear-gradient(135deg,rgba(140,98,93,.11),rgba(166,133,128,.06));margin-bottom:14px}.historico-destaque-texto strong{display:block;color:var(--primary);font-size:.98rem}.historico-destaque-texto span{display:block;color:var(--secondary);font-size:.76rem;margin-top:4px}.historico-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}.historico-kpi{padding:11px 7px;text-align:center;border-radius:15px;background:rgba(140,98,93,.06)}.historico-kpi b{display:block;color:var(--primary);font-size:1rem}.historico-kpi small{display:block;margin-top:3px;color:var(--secondary);font-size:.62rem}.historico-insight{font-size:.75rem;color:var(--secondary);padding:10px 2px 2px}.historico-musica{grid-template-columns:26px 44px minmax(0,1fr) auto}.historico-vezes small{display:block;font-weight:500;opacity:.7}.historico-card.destaque{min-height:94px;display:flex;flex-direction:column;justify-content:center}@keyframes histEntrada{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
 </style>
 
 <style id="ajuste-botao-criar-player">
@@ -1029,21 +1035,17 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             </div>
         </div>
 
-        <section class="bloco-separado" id="bloco-historico">
+        <button type="button" class="btn-abrir-historico" id="btn-abrir-historico">
+            <span>📊 <strong>Seu histórico musical</strong></span><span id="historico-resumo-botao">Ver estatísticas ▾</span>
+        </button>
+
+        <section class="bloco-separado" id="bloco-historico" aria-hidden="true">
             <div class="historico-topo">
-                <div>
-                    <div class="titulo-secao" style="margin-bottom:4px">📊 Nosso histórico</div>
-                    <p class="historico-subtitulo">Tudo o que cada um já ouviu no Nosso Canto.</p>
-                </div>
-                <button class="historico-atualizar" id="btn-atualizar-historico" type="button">↻</button>
+                <div><div class="titulo-secao" style="margin-bottom:4px">📊 Seu som em números</div><p class="historico-subtitulo">Uma visão pessoal da sua jornada no Nosso Canto.</p></div>
+                <button class="historico-atualizar" id="btn-atualizar-historico" type="button" aria-label="Atualizar histórico">↻</button>
             </div>
-            <div class="historico-seletor">
-                <button class="historico-aba ativa" data-historico-usuario="meu">Meu histórico</button>
-                <button class="historico-aba" data-historico-usuario="comparar">Comparar</button>
-            </div>
-            <div id="historico-conteudo">
-                <div class="historico-carregando">Carregando seu histórico…</div>
-            </div>
+            <div class="historico-seletor"><button class="historico-aba ativa" data-historico-usuario="meu">Meu histórico</button><button class="historico-aba" data-historico-usuario="comparar">Comparar</button></div>
+            <div id="historico-conteudo"><div class="historico-carregando">Carregando seu histórico…</div></div>
         </section>
 
         <section class="bloco-separado" id="bloco-playlist">
@@ -1087,80 +1089,34 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
 
         /* ================= HISTÓRICO DE REPRODUÇÃO ================= */
         let cacheHistorico = {};
-        let ultimaMusicaRegistrada = null;
-        let inicioEscutaHistorico = null;
-        let musicaHistoricoAtual = null;
-        let timerHistorico = null;
-        const CHAVE_HISTORICO_LOCAL='nosso_canto_historico_v2';
-
-        function normalizarUsuarioHistorico(nome){
-            const n=String(nome||'').trim().toLowerCase();
-            if(n.includes('maria')) return 'Maria';
-            if(n.includes('fabricio')||n.includes('fabrício')) return 'Fabricio';
-            return String(nome||'Usuário').trim()||'Usuário';
+        const CHAVE_HISTORICO_LOCAL='nosso_canto_historico_v3';
+        // Uma sessão continua através de pausas. Só uma nova música cria uma nova sessão.
+        let sessaoHistorico=null;
+        function normalizarUsuarioHistorico(nome){const n=String(nome||'').trim().toLowerCase();if(n.includes('maria'))return'Maria';if(n.includes('fabricio')||n.includes('fabrício'))return'Fabricio';return String(nome||'Usuário').trim()||'Usuário'}
+        function chaveMusicaHistorico(m){return String(m?.id||m?.link||m?.titulo||'musica')}
+        function lerHistoricoLocal(){try{return JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]')}catch(e){return[]}}
+        function salvarHistoricoLocal(d){try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify(d.slice(-2000)))}catch(e){}}
+        async function registrarEventoHistorico(tipo,musica,segundos=0,sessionId=null){if(!usuarioLogado||!musica)return;const evento={usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:'playlist'};const local=lerHistoricoLocal();local.push(evento);salvarHistoricoLocal(local);cacheHistorico={};try{await addDoc(collection(db,'historico_reproducoes'),evento)}catch(e){console.warn('Histórico salvo localmente.',e)}}
+        function tempoAtualHistorico(){try{return Number(youtubePlayer?.getCurrentTime?.())||0}catch(e){return 0}}
+        async function iniciarHistoricoMusica(musica){if(!musica)return;const chave=chaveMusicaHistorico(musica);if(sessaoHistorico&&sessaoHistorico.chave===chave){if(!sessaoHistorico.ativo){sessaoHistorico.ativo=true;sessaoHistorico.inicioTrecho=Date.now();sessaoHistorico.posicaoInicio=tempoAtualHistorico()}return}await finalizarHistoricoMusica('troca');sessaoHistorico={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,chave,musica:{...musica},ativo:true,inicioTrecho:Date.now(),posicaoInicio:tempoAtualHistorico(),segundos:0,playRegistrado:false}}
+        function acumularTrechoHistorico(){if(!sessaoHistorico?.ativo)return;const parede=(Date.now()-sessaoHistorico.inicioTrecho)/1000;const atual=tempoAtualHistorico();const peloPlayer=Math.max(0,atual-sessaoHistorico.posicaoInicio);const ganho=Math.min(Math.max(parede,0),peloPlayer>0?peloPlayer+3:parede);sessaoHistorico.segundos+=Math.min(ganho,parede+1);sessaoHistorico.ativo=false}
+        async function pausarHistoricoMusica(){acumularTrechoHistorico()}
+        async function finalizarHistoricoMusica(motivo='fim'){if(!sessaoHistorico)return;acumularTrechoHistorico();const s=sessaoHistorico;sessaoHistorico=null;const segundos=Math.round(s.segundos); // play qualificado: evita contar apenas um toque rápido ou pausa acidental
+            if(segundos>=30){await registrarEventoHistorico('play',s.musica,0,s.id)}
+            if(segundos>=1){await registrarEventoHistorico('tempo',s.musica,segundos,s.id)}
         }
-        function chaveMusicaHistorico(m){ return String(m?.id || m?.link || m?.titulo || 'musica'); }
-        function lerHistoricoLocal(){ try{return JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]')}catch(e){return []} }
-        function salvarHistoricoLocal(dados){ try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify(dados.slice(-2000)))}catch(e){} }
-
-        async function registrarEventoHistorico(tipo,musica,segundos=0){
-            if(!usuarioLogado || !musica) return;
-            const evento={
-                usuario:normalizarUsuarioHistorico(usuarioLogado), tipo,
-                musicaId:chaveMusicaHistorico(musica), titulo:musica.titulo||'Música',
-                capa:musica.capa||musica.imagem||'', segundos:Math.max(0,Math.round(segundos||0)),
-                criadoEm:Date.now(), origem:'playlist'
-            };
-            const local=lerHistoricoLocal(); local.push(evento); salvarHistoricoLocal(local);
-            cacheHistorico={};
-            try{ await addDoc(collection(db,'historico_reproducoes'),evento); }
-            catch(e){ console.warn('Histórico salvo apenas neste aparelho. Verifique as regras do Firestore.',e); }
-        }
-        async function iniciarHistoricoMusica(musica){
-            if(!musica || !musica.id && !musica.link) return;
-            const chave=chaveMusicaHistorico(musica);
-            if(ultimaMusicaRegistrada===chave && inicioEscutaHistorico) return;
-            await finalizarHistoricoMusica();
-            ultimaMusicaRegistrada=chave;
-            musicaHistoricoAtual={...musica};
-            inicioEscutaHistorico=Date.now();
-            await registrarEventoHistorico('play',musicaHistoricoAtual,0);
-            if(timerHistorico) clearInterval(timerHistorico);
-            timerHistorico=setInterval(()=>{ /* mantém o tempo ativo; cálculo final usa o relógio real */ },15000);
-        }
-        async function finalizarHistoricoMusica(){
-            if(timerHistorico){clearInterval(timerHistorico);timerHistorico=null;}
-            if(!inicioEscutaHistorico || !musicaHistoricoAtual) return;
-            const segundos=(Date.now()-inicioEscutaHistorico)/1000;
-            const musica={...musicaHistoricoAtual};
-            inicioEscutaHistorico=null; musicaHistoricoAtual=null; ultimaMusicaRegistrada=null;
-            if(segundos>=5) await registrarEventoHistorico('tempo',musica,segundos);
-        }
-        window.addEventListener('pagehide',()=>{ finalizarHistoricoMusica(); });
-
-        function formatarMinutosHistorico(seg){ const min=Math.floor((seg||0)/60); const h=Math.floor(min/60); const m=min%60; return h?`${h}h ${m}min`:`${m} min`; }
-        function chaveEventoHistorico(x){return [x.usuario,x.tipo,x.musicaId,x.criadoEm].join('|')}
-        async function carregarHistoricoTodos(){
-            const agora=Date.now(); if(cacheHistorico.dados && agora-cacheHistorico.atualizado<10000) return cacheHistorico.dados;
-            const local=lerHistoricoLocal(); let remoto=[];
-            try{const snap=await getDocs(collection(db,'historico_reproducoes')); remoto=snap.docs.map(d=>d.data());}
-            catch(e){console.warn('Usando histórico local:',e);}
-            const mapa=new Map(); [...remoto,...local].forEach(x=>mapa.set(chaveEventoHistorico(x),x));
-            const dados=[...mapa.values()]; cacheHistorico={dados,atualizado:agora}; return dados;
-        }
-        function resumirHistorico(dados,usuario){
-            const u=normalizarUsuarioHistorico(usuario), itens=dados.filter(x=>normalizarUsuarioHistorico(x.usuario)===u);
-            const plays=itens.filter(x=>x.tipo==='play'), tempos=itens.filter(x=>x.tipo==='tempo');
-            const totalSegundos=tempos.reduce((a,x)=>a+(Number(x.segundos)||0),0);
-            const mapa={}; plays.forEach(x=>{const k=x.musicaId||x.titulo;if(!mapa[k])mapa[k]={titulo:x.titulo,capa:x.capa,vezes:0};mapa[k].vezes++;});
-            return {usuario:u,totalSegundos,musicasOuvidas:new Set(plays.map(x=>x.musicaId)).size,totalReproducoes:plays.length,top5:Object.values(mapa).sort((a,b)=>b.vezes-a.vezes).slice(0,5)};
-        }
-        function cardResumo(h){return `<div class="historico-resumo"><div class="historico-card destaque"><span class="historico-numero">${formatarMinutosHistorico(h.totalSegundos)}</span><span class="historico-label">Tempo total ouvindo</span></div><div class="historico-card"><span class="historico-numero">${h.musicasOuvidas}</span><span class="historico-label">Músicas diferentes</span></div><div class="historico-card"><span class="historico-numero">${h.totalReproducoes}</span><span class="historico-label">Reproduções no geral</span></div></div>`}
-        function top5Html(top){if(!top.length)return `<div class="historico-vazio">Comece a ouvir músicas para criar seu histórico. 🎧</div>`;return `<div class="historico-titulo-lista">🏆 Top 5 músicas mais ouvidas</div><div class="historico-top5">${top.map((m,i)=>`<div class="historico-musica"><span class="historico-posicao">${i+1}</span><img class="historico-capa" src="${m.capa||''}" onerror="this.style.visibility='hidden'"><span class="historico-nome">${m.titulo}</span><span class="historico-vezes">${m.vezes}x</span></div>`).join('')}</div>`}
-        async function mostrarMeuHistorico(){const box=document.getElementById('historico-conteudo');if(!box)return;box.innerHTML='<div class="historico-carregando">Carregando seu histórico…</div>';try{const h=resumirHistorico(await carregarHistoricoTodos(),usuarioLogado);box.innerHTML=cardResumo(h)+top5Html(h.top5)}catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar o histórico.</div>'}}
-        function linhaComparacao(rotulo,a,b,formato=x=>x){const max=Math.max(a,b,1);return `<div class="comparacao-linha"><span class="comparacao-nome esquerda">${formato(a)}</span><span class="comparacao-centro">${rotulo}</span><span class="comparacao-nome direita">${formato(b)}</span><div class="comparacao-barra"><span class="comparacao-barra-a" style="width:${a/max*50}%"></span><span class="comparacao-barra-b" style="width:${b/max*50}%"></span></div></div>`}
-        async function mostrarComparacao(){const box=document.getElementById('historico-conteudo');if(!box)return;box.innerHTML='<div class="historico-carregando">Preparando comparação…</div>';try{const dados=await carregarHistoricoTodos();const usuarios=[...new Set([...dados.map(x=>normalizarUsuarioHistorico(x.usuario)),'Maria','Fabricio'])];const op=usuarios.map(u=>`<option value="${u}">${u}</option>`).join('');box.innerHTML=`<div class="comparacao-seletores"><select id="comparar-a">${op}</select><span class="comparacao-vs">VS</span><select id="comparar-b">${op}</select></div><div id="comparacao-resultado"></div>`;const a=document.getElementById('comparar-a'),b=document.getElementById('comparar-b');a.value=normalizarUsuarioHistorico(usuarioLogado);b.value=a.value==='Maria'?'Fabricio':'Maria';const atualizar=()=>{const ha=resumirHistorico(dados,a.value),hb=resumirHistorico(dados,b.value);document.getElementById('comparacao-resultado').innerHTML=linhaComparacao('tempo ouvido',ha.totalSegundos,hb.totalSegundos,formatarMinutosHistorico)+linhaComparacao('músicas diferentes',ha.musicasOuvidas,hb.musicasOuvidas)+linhaComparacao('reproduções',ha.totalReproducoes,hb.totalReproducoes)+`<div class="historico-titulo-lista">🏆 Favoritas de ${ha.usuario}</div>`+top5Html(ha.top5)+`<div class="historico-titulo-lista" style="margin-top:18px">🏆 Favoritas de ${hb.usuario}</div>`+top5Html(hb.top5)};a.onchange=atualizar;b.onchange=atualizar;atualizar()}catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar a comparação.</div>'}}
-        document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.historico-aba').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.historico-aba').forEach(x=>x.classList.remove('ativa'));btn.classList.add('ativa');btn.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico()}));document.getElementById('btn-atualizar-historico')?.addEventListener('click',()=>{cacheHistorico={};document.querySelector('.historico-aba.ativa')?.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico()});mostrarMeuHistorico()});
+        window.addEventListener('pagehide',()=>{finalizarHistoricoMusica('saida')});
+        document.addEventListener('visibilitychange',()=>{if(document.hidden) pausarHistoricoMusica()});
+        function formatarMinutosHistorico(seg){const min=Math.floor((seg||0)/60),h=Math.floor(min/60),m=min%60;return h?`${h}h ${m}min`:`${m} min`}
+        function chaveEventoHistorico(x){return[x.usuario,x.tipo,x.musicaId,x.sessionId||x.criadoEm].join('|')}
+        async function carregarHistoricoTodos(){const agora=Date.now();if(cacheHistorico.dados&&agora-cacheHistorico.atualizado<5000)return cacheHistorico.dados;const local=lerHistoricoLocal();let remoto=[];try{const snap=await getDocs(collection(db,'historico_reproducoes'));remoto=snap.docs.map(d=>d.data())}catch(e){console.warn('Usando histórico local:',e)}const mapa=new Map();[...remoto,...local].forEach(x=>mapa.set(chaveEventoHistorico(x),x));const dados=[...mapa.values()];cacheHistorico={dados,atualizado:agora};return dados}
+        function resumirHistorico(dados,usuario){const u=normalizarUsuarioHistorico(usuario),itens=dados.filter(x=>normalizarUsuarioHistorico(x.usuario)===u),plays=itens.filter(x=>x.tipo==='play'),tempos=itens.filter(x=>x.tipo==='tempo');const totalSegundos=tempos.reduce((a,x)=>a+(Number(x.segundos)||0),0);const mapa={};plays.forEach(x=>{const k=x.musicaId||x.titulo;if(!mapa[k])mapa[k]={titulo:x.titulo,capa:x.capa,vezes:0};mapa[k].vezes++});return{usuario:u,totalSegundos,musicasOuvidas:new Set(plays.map(x=>x.musicaId)).size,totalReproducoes:plays.length,top5:Object.values(mapa).sort((a,b)=>b.vezes-a.vezes).slice(0,5)}}
+        function cardResumo(h){const favorita=h.top5[0];return `<div class="historico-destaque-texto"><strong>${h.totalReproducoes?`Sua jornada já tem ${h.totalReproducoes} reprodução${h.totalReproducoes===1?'':'ões'} qualificadas 🎧`:'Sua jornada musical começa na próxima música 🎧'}</strong><span>${favorita?`No topo até agora: ${favorita.titulo} (${favorita.vezes}x).`:'Uma reprodução entra no ranking após 30 segundos de escuta real.'}</span></div><div class="historico-resumo"><div class="historico-card destaque"><span class="historico-numero">${formatarMinutosHistorico(h.totalSegundos)}</span><span class="historico-label">Tempo real de escuta</span></div><div class="historico-card"><span class="historico-numero">${h.musicasOuvidas}</span><span class="historico-label">Músicas diferentes</span></div><div class="historico-card"><span class="historico-numero">${h.totalReproducoes}</span><span class="historico-label">Reproduções</span></div></div>`}
+        function top5Html(top){if(!top.length)return`<div class="historico-vazio">Continue ouvindo para desbloquear seu ranking. 🎧</div>`;const max=Math.max(...top.map(x=>x.vezes));return`<div class="historico-titulo-lista">🏆 Suas músicas mais repetidas</div><div class="historico-top5">${top.map((m,i)=>`<div class="historico-musica"><span class="historico-posicao">${i+1}</span><img class="historico-capa" src="${m.capa||''}" onerror="this.style.visibility='hidden'"><span class="historico-nome">${m.titulo}</span><span class="historico-vezes">${m.vezes}x<small>${Math.round(m.vezes/max*100)}%</small></span></div>`).join('')}</div>`}
+        async function mostrarMeuHistorico(){const box=document.getElementById('historico-conteudo');if(!box)return;box.innerHTML='<div class="historico-carregando">Carregando seu histórico…</div>';try{const h=resumirHistorico(await carregarHistoricoTodos(),usuarioLogado);box.innerHTML=cardResumo(h)+top5Html(h.top5);document.getElementById('historico-resumo-botao').textContent=h.totalReproducoes?`${formatarMinutosHistorico(h.totalSegundos)} • Ver ▾`:'Ver estatísticas ▾'}catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar o histórico.</div>'}}
+        function linhaComparacao(r,a,b,f=x=>x){const max=Math.max(a,b,1);return`<div class="comparacao-linha"><span class="comparacao-nome esquerda">${f(a)}</span><span class="comparacao-centro">${r}</span><span class="comparacao-nome direita">${f(b)}</span><div class="comparacao-barra"><span class="comparacao-barra-a" style="width:${a/max*50}%"></span><span class="comparacao-barra-b" style="width:${b/max*50}%"></span></div></div>`}
+        async function mostrarComparacao(){const box=document.getElementById('historico-conteudo');if(!box)return;box.innerHTML='<div class="historico-carregando">Preparando comparação…</div>';try{const dados=await carregarHistoricoTodos(),usuarios=[...new Set([...dados.map(x=>normalizarUsuarioHistorico(x.usuario)),'Maria','Fabricio'])],op=usuarios.map(u=>`<option value="${u}">${u}</option>`).join('');box.innerHTML=`<div class="comparacao-seletores"><select id="comparar-a">${op}</select><span class="comparacao-vs">VS</span><select id="comparar-b">${op}</select></div><div id="comparacao-resultado"></div>`;const a=document.getElementById('comparar-a'),b=document.getElementById('comparar-b');a.value=normalizarUsuarioHistorico(usuarioLogado);b.value=a.value==='Maria'?'Fabricio':'Maria';const atualizar=()=>{const ha=resumirHistorico(dados,a.value),hb=resumirHistorico(dados,b.value);document.getElementById('comparacao-resultado').innerHTML=linhaComparacao('tempo ouvido',ha.totalSegundos,hb.totalSegundos,formatarMinutosHistorico)+linhaComparacao('músicas diferentes',ha.musicasOuvidas,hb.musicasOuvidas)+linhaComparacao('reproduções',ha.totalReproducoes,hb.totalReproducoes)+`<div class="historico-titulo-lista">🏆 Favoritas de ${ha.usuario}</div>`+top5Html(ha.top5)+`<div class="historico-titulo-lista" style="margin-top:18px">🏆 Favoritas de ${hb.usuario}</div>`+top5Html(hb.top5)};a.onchange=atualizar;b.onchange=atualizar;atualizar()}catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar a comparação.</div>'}}
+        document.addEventListener('DOMContentLoaded',()=>{const painel=document.getElementById('bloco-historico'),abrir=document.getElementById('btn-abrir-historico');abrir?.addEventListener('click',()=>{const aberto=painel.classList.toggle('historico-aberto');painel.setAttribute('aria-hidden',String(!aberto));abrir.classList.toggle('aberto',aberto);document.getElementById('historico-resumo-botao').textContent=aberto?'Fechar ▴':document.getElementById('historico-resumo-botao').textContent.replace('Fechar ▴','Ver estatísticas ▾');if(aberto){mostrarMeuHistorico();setTimeout(()=>painel.scrollIntoView({behavior:'smooth',block:'start'}),80)}});document.querySelectorAll('.historico-aba').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.historico-aba').forEach(x=>x.classList.remove('ativa'));btn.classList.add('ativa');btn.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico()}));document.getElementById('btn-atualizar-historico')?.addEventListener('click',()=>{cacheHistorico={};document.querySelector('.historico-aba.ativa')?.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico()});mostrarMeuHistorico()});
 
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
@@ -1733,7 +1689,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
                 iniciarSalvamentoPosicao();
                 atualizarBotaoExpandido(); atualizarProgressoExpandido();
             } else if (event.data === YT.PlayerState.PAUSED) {
-                finalizarHistoricoMusica();
+                pausarHistoricoMusica();
                 if (status) status.textContent = 'Pausada';
                 if (controle) {
                     controle.textContent = '▶';
