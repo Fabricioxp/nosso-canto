@@ -685,6 +685,44 @@ body.player-expandido-aberto .menu-criar{opacity:0!important;pointer-events:none
 .player-expandido-controles{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:8px 0 2px!important}
 .player-expandido-controles button{margin:0!important;flex:0 0 auto!important}
 .player-expandido-controles .player-expandido-play{margin:0 2px!important}
+
+
+/* Painel de histórico de reprodução */
+#bloco-historico{background:linear-gradient(145deg,#fff,#fff7f5);overflow:hidden}
+.historico-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.historico-subtitulo{margin:0;color:var(--secondary);font-size:.8rem}
+.historico-atualizar{width:38px;height:38px;border:1px solid var(--border-color);border-radius:50%;background:#fff;color:var(--primary);font-size:1.1rem;font-weight:bold;cursor:pointer}
+.historico-seletor{display:flex;gap:7px;padding:5px;background:rgba(140,98,93,.08);border-radius:15px;margin-bottom:15px}
+.historico-aba{flex:1;border:0;background:transparent;color:var(--secondary);padding:9px 7px;border-radius:11px;font:700 .78rem var(--font-main);cursor:pointer}
+.historico-aba.ativa{background:#fff;color:var(--primary);box-shadow:0 3px 10px rgba(140,98,93,.12)}
+.historico-resumo{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:18px}
+.historico-card{padding:13px;border:1px solid rgba(230,179,168,.5);border-radius:16px;background:rgba(255,255,255,.82)}
+.historico-card.destaque{grid-column:1/-1;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:0}
+.historico-numero{display:block;font-size:1.35rem;font-weight:800;line-height:1.1}
+.historico-label{display:block;margin-top:5px;font-size:.72rem;opacity:.82;font-weight:600}
+.historico-card:not(.destaque) .historico-numero{color:var(--primary)}
+.historico-titulo-lista{font-size:.86rem;color:var(--primary);font-weight:800;margin:4px 0 9px}
+.historico-top5{display:flex;flex-direction:column;gap:8px}
+.historico-musica{display:grid;grid-template-columns:30px 42px minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px;border-radius:14px;background:rgba(140,98,93,.055)}
+.historico-posicao{font-weight:800;color:var(--secondary);text-align:center}
+.historico-capa{width:42px;height:42px;object-fit:cover;border-radius:10px;background:#f1e4e2}
+.historico-nome{font-size:.78rem;font-weight:750;color:var(--text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.historico-vezes{font-size:.7rem;font-weight:800;color:var(--primary);white-space:nowrap}
+.historico-vazio,.historico-carregando{text-align:center;padding:22px 10px;color:var(--secondary);font-size:.82rem}
+.comparacao-seletores{display:grid;grid-template-columns:1fr 36px 1fr;gap:8px;align-items:center;margin-bottom:14px}
+.comparacao-seletores select{width:100%;min-width:0;padding:10px 8px;border:1px solid var(--border-color);border-radius:12px;background:#fff;color:var(--text-color);font:700 .78rem var(--font-main)}
+.comparacao-vs{text-align:center;font-size:.75rem;font-weight:900;color:var(--primary)}
+.comparacao-linha{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);gap:8px;align-items:center;margin-bottom:9px}
+.comparacao-nome,.comparacao-valor{font-size:.72rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.comparacao-nome.esquerda,.comparacao-valor.esquerda{text-align:right;color:var(--primary)}
+.comparacao-nome.direita,.comparacao-valor.direita{color:var(--secondary)}
+.comparacao-centro{text-align:center;font-size:.68rem;color:var(--secondary);font-weight:700}
+.comparacao-barra{grid-column:1/-1;height:7px;border-radius:99px;background:rgba(140,98,93,.1);overflow:hidden;display:flex}
+.comparacao-barra-a{height:100%;background:var(--primary)}.comparacao-barra-b{height:100%;background:var(--secondary)}
+body.dark-mode #bloco-historico{background:linear-gradient(145deg,#282224,#211d1f)!important}
+body.dark-mode .historico-card,body.dark-mode .historico-aba.ativa,body.dark-mode .historico-atualizar,body.dark-mode .comparacao-seletores select{background:#302a2d;color:#eee6e4;border-color:#514448}
+body.dark-mode .historico-musica{background:rgba(255,255,255,.05)}
+body.dark-mode .historico-nome{color:#eee6e4}
 </style>
 
 <style id="ajuste-botao-criar-player">
@@ -1003,7 +1041,25 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             <div class="playlist-hint-organizar">Segure uma música e arraste para mudar a posição.</div>
         </section>
 
-    </div>
+    
+
+        <section class="bloco-separado" id="bloco-historico">
+            <div class="historico-topo">
+                <div>
+                    <div class="titulo-secao" style="margin-bottom:4px">📊 Nosso histórico</div>
+                    <p class="historico-subtitulo">Tudo o que cada um já ouviu no Nosso Canto.</p>
+                </div>
+                <button class="historico-atualizar" id="btn-atualizar-historico" type="button">↻</button>
+            </div>
+            <div class="historico-seletor">
+                <button class="historico-aba ativa" data-historico-usuario="meu">Meu histórico</button>
+                <button class="historico-aba" data-historico-usuario="comparar">Comparar</button>
+            </div>
+            <div id="historico-conteudo">
+                <div class="historico-carregando">Carregando seu histórico…</div>
+            </div>
+        </section>
+</div>
 
     <div class="menu-criar"><button class="btn-criar" id="btn-abrir-criacao">➕ Adicionar</button></div>
 <script type="module">
@@ -1014,7 +1070,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         }
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAEyJHxEP96ZpSYfAgNO4wdQZIiArseGm4",
@@ -1027,6 +1083,119 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        /* ================= HISTÓRICO DE REPRODUÇÃO ================= */
+        let cacheHistorico = {};
+        let ultimaMusicaRegistrada = null;
+        let inicioEscutaHistorico = null;
+        let segundosPendentesHistorico = 0;
+        let timerHistorico = null;
+
+        function normalizarUsuarioHistorico(nome){
+            const n=String(nome||'').trim().toLowerCase();
+            if(n.includes('maria')) return 'Maria';
+            if(n.includes('fabricio')||n.includes('fabrício')) return 'Fabricio';
+            return String(nome||'Usuário').trim()||'Usuário';
+        }
+        function chaveMusicaHistorico(m){ return m?.id || m?.link || (m?.titulo||'Música'); }
+
+        async function registrarEventoHistorico(tipo, musica, segundos=0){
+            if(!usuarioLogado || !musica) return;
+            try{
+                await addDoc(collection(db,'historico_reproducoes'),{
+                    usuario: normalizarUsuarioHistorico(usuarioLogado),
+                    tipo, musicaId: chaveMusicaHistorico(musica),
+                    titulo: musica.titulo||'Música',
+                    capa: musica.capa||musica.imagem||'',
+                    segundos: Math.max(0,Math.round(segundos||0)),
+                    criadoEm: Date.now()
+                });
+                cacheHistorico={};
+            }catch(e){ console.warn('Não foi possível registrar o histórico:',e); }
+        }
+
+        async function iniciarHistoricoMusica(musica){
+            const chave=chaveMusicaHistorico(musica);
+            if(ultimaMusicaRegistrada===chave && inicioEscutaHistorico) return;
+            await finalizarHistoricoMusica();
+            ultimaMusicaRegistrada=chave;
+            inicioEscutaHistorico=Date.now();
+            segundosPendentesHistorico=0;
+            await registrarEventoHistorico('play',musica,0);
+            if(timerHistorico) clearInterval(timerHistorico);
+            timerHistorico=setInterval(()=>{ segundosPendentesHistorico+=10; },10000);
+        }
+        async function finalizarHistoricoMusica(){
+            if(timerHistorico){clearInterval(timerHistorico);timerHistorico=null;}
+            if(!inicioEscutaHistorico||!musicaAtualYouTube) return;
+            const decorrido=Math.max(0,(Date.now()-inicioEscutaHistorico)/1000);
+            const segundos=Math.max(segundosPendentesHistorico,decorrido);
+            if(segundos>=5) await registrarEventoHistorico('tempo',musicaAtualYouTube,segundos);
+            inicioEscutaHistorico=null; segundosPendentesHistorico=0;
+        }
+        window.addEventListener('pagehide',()=>{ finalizarHistoricoMusica(); });
+
+        function formatarMinutosHistorico(seg){ const min=Math.floor((seg||0)/60); const h=Math.floor(min/60); const m=min%60; return h?`${h}h ${m}min`:`${m} min`; }
+        async function carregarHistoricoTodos(){
+            const agora=Date.now();
+            if(cacheHistorico.dados && agora-cacheHistorico.atualizado<30000) return cacheHistorico.dados;
+            const snap=await getDocs(collection(db,'historico_reproducoes'));
+            const dados=snap.docs.map(d=>d.data());
+            cacheHistorico={dados,atualizado:agora}; return dados;
+        }
+        function resumirHistorico(dados,usuario){
+            const u=normalizarUsuarioHistorico(usuario);
+            const itens=dados.filter(x=>normalizarUsuarioHistorico(x.usuario)===u);
+            const plays=itens.filter(x=>x.tipo==='play');
+            const tempos=itens.filter(x=>x.tipo==='tempo');
+            const totalSegundos=tempos.reduce((a,x)=>a+(Number(x.segundos)||0),0);
+            const unicas=new Set(plays.map(x=>x.musicaId)).size;
+            const mapa={};
+            plays.forEach(x=>{const k=x.musicaId||x.titulo; if(!mapa[k]) mapa[k]={titulo:x.titulo,capa:x.capa,vezes:0}; mapa[k].vezes++;});
+            const top5=Object.values(mapa).sort((a,b)=>b.vezes-a.vezes).slice(0,5);
+            return {usuario:u,totalSegundos,musicasOuvidas:unicas,totalReproducoes:plays.length,top5};
+        }
+        function cardResumo(h){
+            return `<div class="historico-resumo">
+                <div class="historico-card destaque"><span class="historico-numero">${formatarMinutosHistorico(h.totalSegundos)}</span><span class="historico-label">Tempo total ouvindo</span></div>
+                <div class="historico-card"><span class="historico-numero">${h.musicasOuvidas}</span><span class="historico-label">Músicas diferentes</span></div>
+                <div class="historico-card"><span class="historico-numero">${h.totalReproducoes}</span><span class="historico-label">Reproduções no geral</span></div>
+            </div>`;
+        }
+        function top5Html(top){
+            if(!top.length) return `<div class="historico-vazio">Ainda não há músicas registradas. 🎧</div>`;
+            return `<div class="historico-titulo-lista">🏆 Top 5 músicas mais ouvidas</div><div class="historico-top5">${top.map((m,i)=>`<div class="historico-musica"><span class="historico-posicao">${i+1}</span><img class="historico-capa" src="${m.capa||''}" onerror="this.style.visibility='hidden'"><span class="historico-nome">${m.titulo}</span><span class="historico-vezes">${m.vezes}x</span></div>`).join('')}</div>`;
+        }
+        async function mostrarMeuHistorico(){
+            const box=document.getElementById('historico-conteudo'); if(!box)return;
+            box.innerHTML='<div class="historico-carregando">Carregando seu histórico…</div>';
+            try{const dados=await carregarHistoricoTodos(); const h=resumirHistorico(dados,usuarioLogado); box.innerHTML=cardResumo(h)+top5Html(h.top5);}
+            catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar o histórico agora.</div>';}
+        }
+        function linhaComparacao(rotulo,a,b,formato=x=>x){
+            const max=Math.max(a,b,1),pa=a/max*50,pb=b/max*50;
+            return `<div class="comparacao-linha"><span class="comparacao-nome esquerda">${formato(a)}</span><span class="comparacao-centro">${rotulo}</span><span class="comparacao-nome direita">${formato(b)}</span><div class="comparacao-barra"><span class="comparacao-barra-a" style="width:${pa}%"></span><span class="comparacao-barra-b" style="width:${pb}%"></span></div></div>`;
+        }
+        async function mostrarComparacao(){
+            const box=document.getElementById('historico-conteudo'); if(!box)return;
+            box.innerHTML=`<div class="historico-carregando">Preparando comparação…</div>`;
+            try{
+                const dados=await carregarHistoricoTodos();
+                const usuarios=[...new Set(dados.map(x=>normalizarUsuarioHistorico(x.usuario)))];
+                ['Maria','Fabricio'].forEach(u=>{if(!usuarios.includes(u))usuarios.push(u)});
+                const op=usuarios.map(u=>`<option value="${u}">${u}</option>`).join('');
+                box.innerHTML=`<div class="comparacao-seletores"><select id="comparar-a">${op}</select><span class="comparacao-vs">VS</span><select id="comparar-b">${op}</select></div><div id="comparacao-resultado"></div>`;
+                const a=document.getElementById('comparar-a'),b=document.getElementById('comparar-b');
+                a.value=normalizarUsuarioHistorico(usuarioLogado); b.value=a.value==='Maria'?'Fabricio':'Maria';
+                const atualizar=()=>{const ha=resumirHistorico(dados,a.value),hb=resumirHistorico(dados,b.value);document.getElementById('comparacao-resultado').innerHTML=linhaComparacao('tempo ouvido',ha.totalSegundos,hb.totalSegundos,formatarMinutosHistorico)+linhaComparacao('músicas diferentes',ha.musicasOuvidas,hb.musicasOuvidas)+linhaComparacao('reproduções',ha.totalReproducoes,hb.totalReproducoes)+`<div class="historico-titulo-lista">🏆 Favoritas de ${ha.usuario}</div>`+top5Html(ha.top5)+`<div class="historico-titulo-lista" style="margin-top:18px">🏆 Favoritas de ${hb.usuario}</div>`+top5Html(hb.top5);};
+                a.onchange=atualizar;b.onchange=atualizar;atualizar();
+            }catch(e){console.error(e);box.innerHTML='<div class="historico-vazio">Não foi possível carregar a comparação.</div>';}
+        }
+        document.addEventListener('DOMContentLoaded',()=>{
+            document.querySelectorAll('.historico-aba').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.historico-aba').forEach(x=>x.classList.remove('ativa'));btn.classList.add('ativa');btn.dataset.historicoUsuario==='comparar'?mostrarComparacao():mostrarMeuHistorico();}));
+            document.getElementById('btn-atualizar-historico')?.addEventListener('click',()=>{cacheHistorico={};const ativo=document.querySelector('.historico-aba.ativa')?.dataset.historicoUsuario;ativo==='comparar'?mostrarComparacao():mostrarMeuHistorico();});
+            mostrarMeuHistorico();
+        });
 
         document.getElementById('label-parceiro').innerText = `Conectado como: ${usuarioLogado} ❤`;
 
@@ -1589,6 +1758,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             const controle = document.getElementById('player-musica-controle');
 
             if (event.data === YT.PlayerState.PLAYING) {
+                iniciarHistoricoMusica(musicaAtualYouTube);
                 if (status) status.textContent = 'Tocando agora • YouTube';
                 if (controle) {
                     controle.textContent = 'Ⅱ';
@@ -1598,6 +1768,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
                 iniciarSalvamentoPosicao();
                 atualizarBotaoExpandido(); atualizarProgressoExpandido();
             } else if (event.data === YT.PlayerState.PAUSED) {
+                finalizarHistoricoMusica();
                 if (status) status.textContent = 'Pausada';
                 if (controle) {
                     controle.textContent = '▶';
@@ -1607,6 +1778,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
                 pararSalvamentoPosicao();
                 atualizarBotaoExpandido(); atualizarProgressoExpandido();
             } else if (event.data === YT.PlayerState.ENDED) {
+                finalizarHistoricoMusica();
                 if (status) status.textContent = 'Finalizada';
                 if (controle) { controle.textContent = '▶'; controle.setAttribute('aria-label', 'Recomeçar'); }
                 setTimeout(proximaDaPlaylist, 250);
