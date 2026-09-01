@@ -1287,6 +1287,31 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         };
 
 
+        /* ================= IMPORTAÇÃO DA REPRODUÇÃO DO INDEX =================
+           A playlist é a única página que transforma a telemetria do index em histórico definitivo. */
+        const CHAVE_TELEMETRIA_INDEX='nosso_canto_telemetria_index_v1';
+        let importacaoTelemetriaEmAndamento=false;
+        async function importarTelemetriaDoIndex(){
+            if(importacaoTelemetriaEmAndamento)return;
+            importacaoTelemetriaEmAndamento=true;
+            try{
+                let lista=[];try{const raw=JSON.parse(localStorage.getItem(CHAVE_TELEMETRIA_INDEX)||'[]');lista=Array.isArray(raw)?raw:[]}catch(e){}
+                if(!lista.length)return;
+                const usuarioAtual=normalizarUsuarioHistorico(usuarioLogado);
+                const agora=Date.now(), restantes=[];
+                for(const ev of lista){
+                    if(!ev||!ev.musicaId)continue;
+                    if(ev.usuario!==usuarioAtual||agora-(Number(ev.criadoEm)||0)>1000*60*60*24*90){restantes.push(ev);continue;}
+                    const musica={id:ev.musicaId,titulo:ev.titulo||'Música',capa:ev.capa||''};
+                    if(ev.tipo==='tempo'&&Number(ev.segundos)>0){registrarEventoLocal('tempo',musica,Number(ev.segundos),`index_${ev.id}`);}
+                    else if(ev.tipo==='play'){registrarEventoLocal('play',musica,0,`index_${ev.id}`);}
+                }
+                localStorage.setItem(CHAVE_TELEMETRIA_INDEX,JSON.stringify(restantes.slice(-1200)));
+            }catch(e){console.warn('Não foi possível importar a reprodução do index.',e)}finally{importacaoTelemetriaEmAndamento=false;}
+        }
+        document.addEventListener('DOMContentLoaded',()=>{importarTelemetriaDoIndex();setTimeout(importarTelemetriaDoIndex,1500);});
+        window.addEventListener('focus',importarTelemetriaDoIndex);
+
         /* ================= PLAYER COMPARTILHADO ENTRE PÁGINAS ================= */
         const CHAVE_PLAYER_COMPARTILHADO = 'nosso_canto_player_compartilhado_v1';
         let intervaloSalvarPosicao = null;
