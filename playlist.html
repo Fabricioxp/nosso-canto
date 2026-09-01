@@ -1095,60 +1095,62 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        /* ================= HISTÓRICO DE REPRODUÇÃO ================= */
+        /* ================= HISTÓRICO DE REPRODUÇÃO — CHECKPOINT ROBUSTO ================= */
         let cacheHistorico = {};
         const CHAVE_HISTORICO_LOCAL='nosso_canto_historico_v3';
-        // Uma sessão continua através de pausas. Só uma nova música cria uma nova sessão.
+        const CHAVE_SESSAO_HISTORICO='nosso_canto_historico_sessao_v1';
         let sessaoHistorico=null;
+        let checkpointHistoricoEmAndamento=false;
         function normalizarUsuarioHistorico(nome){const n=String(nome||'').trim().toLowerCase();if(n.includes('maria'))return'Maria';if(n.includes('fabricio')||n.includes('fabrício'))return'Fabricio';return String(nome||'Usuário').trim()||'Usuário'}
         function chaveMusicaHistorico(m){return String(m?.id||m?.link||m?.titulo||'musica')}
-        function lerHistoricoLocal(){try{return JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]')}catch(e){return[]}}
-        function salvarHistoricoLocal(d){try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify(d.slice(-2000)))}catch(e){}}
-        async function registrarEventoHistorico(tipo,musica,segundos=0,sessionId=null){if(!usuarioLogado||!musica)return;const evento={usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:location.pathname.includes('index')?'index':'playlist',mes:new Date().toISOString().slice(0,7)};const local=lerHistoricoLocal();local.push(evento);salvarHistoricoLocal(local);cacheHistorico={};try{await addDoc(collection(db,'historico_reproducoes'),evento)}catch(e){console.warn('Histórico salvo localmente.',e)}}
+        function lerHistoricoLocal(){try{const d=JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]');return Array.isArray(d)?d:[]}catch(e){return[]}}
+        function salvarHistoricoLocal(d){try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify((Array.isArray(d)?d:[]).slice(-3000)))}catch(e){console.warn('Não foi possível salvar o histórico local.',e)}}
+        function salvarSessaoHistorico(){try{if(sessaoHistorico)localStorage.setItem(CHAVE_SESSAO_HISTORICO,JSON.stringify(sessaoHistorico));else localStorage.removeItem(CHAVE_SESSAO_HISTORICO)}catch(e){}}
+        function registrarEventoLocal(tipo,musica,segundos=0,sessionId=null){
+            if(!usuarioLogado||!musica)return null;
+            const evento={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:'playlist',mes:new Date().toISOString().slice(0,7)};
+            const dados=lerHistoricoLocal();dados.push(evento);salvarHistoricoLocal(dados);cacheHistorico={};return evento;
+        }
+        function registrarEventoHistorico(tipo,musica,segundos=0,sessionId=null){
+            const evento=registrarEventoLocal(tipo,musica,segundos,sessionId);
+            if(evento){addDoc(collection(db,'historico_reproducoes'),evento).catch(e=>console.warn('Histórico mantido localmente.',e));}
+            return evento;
+        }
         function tempoAtualHistorico(){try{return Number(youtubePlayer?.getCurrentTime?.())||0}catch(e){return 0}}
-        async function iniciarHistoricoMusica(musica){
+        function iniciarHistoricoMusica(musica){
             if(!musica)return;
-            const chave=chaveMusicaHistorico(musica);
+            const chave=chaveMusicaHistorico(musica),pos=tempoAtualHistorico();
             if(sessaoHistorico&&sessaoHistorico.chave===chave){
-                if(!sessaoHistorico.ativo){sessaoHistorico.ativo=true;sessaoHistorico.posicaoInicio=tempoAtualHistorico();sessaoHistorico.posicaoUltimoCheckpoint=sessaoHistorico.posicaoInicio;}
+                if(!sessaoHistorico.ativo){sessaoHistorico.ativo=true;sessaoHistorico.posicaoUltimoCheckpoint=pos;salvarSessaoHistorico();}
                 return;
             }
-            await finalizarHistoricoMusica('troca');
-            const pos=tempoAtualHistorico();
-            sessaoHistorico={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,chave,musica:{...musica},ativo:true,posicaoInicio:pos,posicaoUltimoCheckpoint:pos,segundos:0,playRegistrado:false,parte:0};
+            if(sessaoHistorico)finalizarHistoricoMusica('troca');
+            sessaoHistorico={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,chave,musica:{...musica},ativo:true,posicaoUltimoCheckpoint:pos,segundos:0,playRegistrado:false,parte:0};
+            salvarSessaoHistorico();
         }
-        async function salvarCheckpointHistorico(forcar=false){
+        function salvarCheckpointHistorico(forcar=false){
+            if(checkpointHistoricoEmAndamento)return;
             const s=sessaoHistorico;if(!s?.ativo)return;
-            const atual=tempoAtualHistorico();
-            const base=Number(s.posicaoUltimoCheckpoint)||0;
-            const delta=Math.max(0,atual-base);
-            // Só salva se o player realmente avançou. Assim, tempo parado em segundo plano não entra na conta.
-            if(delta<1)return;
-            // Checkpoint curto: salva rapidamente no aparelho para não perder tempo ao atualizar ou fechar.
-            if(!forcar&&delta<2)return;
-            s.segundos+=delta;s.posicaoUltimoCheckpoint=atual;s.parte=(s.parte||0)+1;
-            await registrarEventoHistorico('tempo',s.musica,delta,`${s.id}_tempo_${s.parte}`);
-            if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;await registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}
+            checkpointHistoricoEmAndamento=true;
+            try{
+                const atual=tempoAtualHistorico(),base=Number(s.posicaoUltimoCheckpoint)||0,delta=Math.max(0,atual-base);
+                // Só o avanço real do vídeo é contado.
+                if(delta>=0.8&&(forcar||delta>=1.5)){
+                    s.segundos+=delta;s.posicaoUltimoCheckpoint=atual;s.parte=(s.parte||0)+1;
+                    registrarEventoHistorico('tempo',s.musica,delta,`${s.id}_tempo_${s.parte}`);
+                    if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}
+                    salvarSessaoHistorico();
+                }
+            }finally{checkpointHistoricoEmAndamento=false;}
         }
-        async function pausarHistoricoMusica(){
-            if(!sessaoHistorico?.ativo)return;
-            await salvarCheckpointHistorico(true);
-            sessaoHistorico.ativo=false;
-        }
-        async function finalizarHistoricoMusica(motivo='fim'){
-            if(!sessaoHistorico)return;
-            await pausarHistoricoMusica();
-            // Se a sessão terminou antes do checkpoint de 30 s, ainda registra a reprodução quando aplicável.
-            const s=sessaoHistorico;
-            if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;await registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}
-            sessaoHistorico=null;
-        }
-        // Checkpoint periódico: o histórico sobrevive a atualização/fechamento da página sem redesenhar o painel.
-        // Checkpoint frequente e leve. A tela não é redesenhada aqui; apenas os dados são persistidos.
-        setInterval(()=>{salvarCheckpointHistorico(false).catch(()=>{});},2000);
-        window.addEventListener('pagehide',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
-        window.addEventListener('beforeunload',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
-        document.addEventListener('visibilitychange',()=>{if(document.hidden)salvarCheckpointHistorico(true).catch(()=>{});});
+        function pausarHistoricoMusica(){if(!sessaoHistorico?.ativo)return;salvarCheckpointHistorico(true);sessaoHistorico.ativo=false;salvarSessaoHistorico();}
+        function finalizarHistoricoMusica(){if(!sessaoHistorico)return;pausarHistoricoMusica();const s=sessaoHistorico;if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}sessaoHistorico=null;salvarSessaoHistorico();}
+        // Recupera somente a sessão para não perder segundos se a página for recarregada.
+        try{const antiga=JSON.parse(localStorage.getItem(CHAVE_SESSAO_HISTORICO)||'null');if(antiga&&antiga.usuario===undefined){sessaoHistorico=antiga;sessaoHistorico.ativo=false;}}catch(e){}
+        setInterval(()=>salvarCheckpointHistorico(false),1000);
+        window.addEventListener('pagehide',()=>salvarCheckpointHistorico(true));
+        window.addEventListener('beforeunload',()=>salvarCheckpointHistorico(true));
+        document.addEventListener('visibilitychange',()=>{if(document.hidden)salvarCheckpointHistorico(true)});
         function formatarMinutosHistorico(seg){seg=Math.max(0,Math.floor(Number(seg)||0));const min=Math.floor(seg/60),h=Math.floor(min/60),m=min%60;if(h)return `${h}h ${m}min`;if(min)return `${min} min`;return seg?`${seg}s`:'0 min'}
         function chaveEventoHistorico(x){return[x.usuario,x.tipo,x.musicaId,x.sessionId||x.criadoEm].join('|')}
         async function carregarHistoricoTodos(){const local=lerHistoricoLocal();let remoto=[];try{const snap=await getDocs(collection(db,'historico_reproducoes'));remoto=snap.docs.map(d=>d.data())}catch(e){console.warn('Usando histórico local:',e)}const mapa=new Map();[...remoto,...local].forEach(x=>{if(x&&x.usuario&&x.tipo)mapa.set(chaveEventoHistorico(x),x)});const dados=[...mapa.values()];cacheHistorico={dados,atualizado:Date.now()};return dados}
