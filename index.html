@@ -1732,7 +1732,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         setInterval(()=>{salvarCheckpointHistorico(false).catch(()=>{});},2000);
         window.addEventListener('pagehide',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
         window.addEventListener('beforeunload',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
-        document.addEventListener('visibilitychange',()=>{if(document.hidden)salvarCheckpointHistorico(true).catch(()=>{});});
+        document.addEventListener('visibilitychange',()=>{if(document.hidden)pausarHistoricoMusica().catch(()=>{});});
 
         let youtubePlayer = null;
         let musicaAtualYouTube = null;
@@ -1815,8 +1815,6 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             if (!musicaAtualYouTube) return;
 
             const musica = { ...musicaAtualYouTube };
-            // Define a música antes de criar/carregar o player: o evento PLAYING pode acontecer imediatamente.
-            musicaAtualYouTube = musica;
             fecharOpcoesMusica();
 
             try {
