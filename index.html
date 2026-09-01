@@ -1386,6 +1386,7 @@ body.dark-mode .youtube-busca{background:#302a2d;border-color:#514448}body.dark-
                 <div id="player-musica-status" class="player-musica-status">Tocando no Nosso Canto</div>
             </div>
             <button type="button" id="player-musica-controle" class="player-musica-controle" aria-label="Pausar">Ⅱ</button>
+            <button type="button" id="player-musica-pular" class="player-musica-controle" aria-label="Próxima música" title="Próxima música">⏭</button>
             <button type="button" id="player-musica-fechar" class="player-musica-fechar" aria-label="Parar música">✕</button>
         </div>
 
@@ -1679,60 +1680,45 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 
 
         /* ================= PLAYER YOUTUBE DA PLAYLIST ================= */
-        /* ================= HISTÓRICO DE REPRODUÇÃO ================= */
-        let cacheHistorico = {};
-        const CHAVE_HISTORICO_LOCAL='nosso_canto_historico_v3';
-        // Uma sessão continua através de pausas. Só uma nova música cria uma nova sessão.
+        /* ================= TELEMETRIA DE REPRODUÇÃO =================
+           O index NÃO salva o histórico final. Ele apenas envia pequenos dados
+           de reprodução para a playlist, que é a única página responsável por gravar o histórico. */
+        const CHAVE_TELEMETRIA_INDEX='nosso_canto_telemetria_index_v1';
         let sessaoHistorico=null;
+        let telemetriaEmAndamento=false;
         function normalizarUsuarioHistorico(nome){const n=String(nome||'').trim().toLowerCase();if(n.includes('maria'))return'Maria';if(n.includes('fabricio')||n.includes('fabrício'))return'Fabricio';return String(nome||'Usuário').trim()||'Usuário'}
         function chaveMusicaHistorico(m){return String(m?.id||m?.link||m?.titulo||'musica')}
-        function lerHistoricoLocal(){try{return JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]')}catch(e){return[]}}
-        function salvarHistoricoLocal(d){try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify(d.slice(-2000)))}catch(e){}}
-        async function registrarEventoHistorico(tipo,musica,segundos=0,sessionId=null){if(!usuarioLogado||!musica)return;const evento={usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:location.pathname.includes('index')?'index':'playlist',mes:new Date().toISOString().slice(0,7)};const local=lerHistoricoLocal();local.push(evento);salvarHistoricoLocal(local);cacheHistorico={};try{await addDoc(collection(db,'historico_reproducoes'),evento)}catch(e){console.warn('Histórico salvo localmente.',e)}}
         function tempoAtualHistorico(){try{return Number(youtubePlayer?.getCurrentTime?.())||0}catch(e){return 0}}
+        function lerTelemetriaIndex(){try{const d=JSON.parse(localStorage.getItem(CHAVE_TELEMETRIA_INDEX)||'[]');return Array.isArray(d)?d:[]}catch(e){return[]}}
+        function enviarTelemetriaIndex(tipo,musica,segundos=0,sessionId=null){
+            if(!usuarioLogado||!musica)return;
+            const lista=lerTelemetriaIndex();
+            lista.push({id:`idx_${Date.now()}_${Math.random().toString(36).slice(2)}`,usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:'index'});
+            try{localStorage.setItem(CHAVE_TELEMETRIA_INDEX,JSON.stringify(lista.slice(-1200)))}catch(e){}
+        }
         async function iniciarHistoricoMusica(musica){
             if(!musica)return;
             const chave=chaveMusicaHistorico(musica);
-            if(sessaoHistorico&&sessaoHistorico.chave===chave){
-                if(!sessaoHistorico.ativo){sessaoHistorico.ativo=true;sessaoHistorico.posicaoInicio=tempoAtualHistorico();sessaoHistorico.posicaoUltimoCheckpoint=sessaoHistorico.posicaoInicio;}
-                return;
-            }
-            await finalizarHistoricoMusica('troca');
+            if(sessaoHistorico&&sessaoHistorico.chave===chave){if(!sessaoHistorico.ativo){const p=tempoAtualHistorico();sessaoHistorico.ativo=true;sessaoHistorico.posicaoUltimoCheckpoint=p;}return;}
+            finalizarHistoricoMusica();
             const pos=tempoAtualHistorico();
-            sessaoHistorico={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,chave,musica:{...musica},ativo:true,posicaoInicio:pos,posicaoUltimoCheckpoint:pos,segundos:0,playRegistrado:false,parte:0};
+            sessaoHistorico={id:`idxsess_${Date.now()}_${Math.random().toString(36).slice(2)}`,chave,musica:{...musica},ativo:true,posicaoUltimoCheckpoint:pos,segundos:0,playEnviado:false};
         }
         async function salvarCheckpointHistorico(forcar=false){
+            if(telemetriaEmAndamento)return;
             const s=sessaoHistorico;if(!s?.ativo)return;
-            const atual=tempoAtualHistorico();
-            const base=Number(s.posicaoUltimoCheckpoint)||0;
+            const atual=tempoAtualHistorico(),base=Number(s.posicaoUltimoCheckpoint)||0;
             const delta=Math.max(0,atual-base);
-            // Só salva se o player realmente avançou. Assim, tempo parado em segundo plano não entra na conta.
-            if(delta<1)return;
-            // Checkpoint curto: salva rapidamente no aparelho para não perder tempo ao atualizar ou fechar.
-            if(!forcar&&delta<2)return;
-            s.segundos+=delta;s.posicaoUltimoCheckpoint=atual;s.parte=(s.parte||0)+1;
-            await registrarEventoHistorico('tempo',s.musica,delta,`${s.id}_tempo_${s.parte}`);
-            if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;await registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}
+            if(delta<1||(!forcar&&delta<2))return;
+            telemetriaEmAndamento=true;
+            try{s.segundos+=delta;s.posicaoUltimoCheckpoint=atual;enviarTelemetriaIndex('tempo',s.musica,delta,s.id);if(!s.playEnviado&&s.segundos>=30){s.playEnviado=true;enviarTelemetriaIndex('play',s.musica,0,s.id)}}finally{telemetriaEmAndamento=false}
         }
-        async function pausarHistoricoMusica(){
-            if(!sessaoHistorico?.ativo)return;
-            await salvarCheckpointHistorico(true);
-            sessaoHistorico.ativo=false;
-        }
-        async function finalizarHistoricoMusica(motivo='fim'){
-            if(!sessaoHistorico)return;
-            await pausarHistoricoMusica();
-            // Se a sessão terminou antes do checkpoint de 30 s, ainda registra a reprodução quando aplicável.
-            const s=sessaoHistorico;
-            if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;await registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}
-            sessaoHistorico=null;
-        }
-        // Checkpoint periódico: o histórico sobrevive a atualização/fechamento da página sem redesenhar o painel.
-        // Checkpoint frequente e leve. A tela não é redesenhada aqui; apenas os dados são persistidos.
-        setInterval(()=>{salvarCheckpointHistorico(false).catch(()=>{});},2000);
+        async function pausarHistoricoMusica(){if(!sessaoHistorico?.ativo)return;await salvarCheckpointHistorico(true);sessaoHistorico.ativo=false;}
+        async function finalizarHistoricoMusica(){if(!sessaoHistorico)return;await pausarHistoricoMusica();sessaoHistorico=null;}
+        setInterval(()=>{salvarCheckpointHistorico(false).catch(()=>{});},1000);
         window.addEventListener('pagehide',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
         window.addEventListener('beforeunload',()=>{salvarCheckpointHistorico(true).catch(()=>{});});
-        document.addEventListener('visibilitychange',()=>{if(document.hidden)pausarHistoricoMusica().catch(()=>{});});
+        document.addEventListener('visibilitychange',()=>{if(document.hidden)salvarCheckpointHistorico(true).catch(()=>{});});
 
         let youtubePlayer = null;
         let musicaAtualYouTube = null;
@@ -1815,6 +1801,8 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             if (!musicaAtualYouTube) return;
 
             const musica = { ...musicaAtualYouTube };
+            // Define a música antes de criar/carregar o player: o evento PLAYING pode acontecer imediatamente.
+            musicaAtualYouTube = musica;
             fecharOpcoesMusica();
 
             try {
@@ -1874,6 +1862,41 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
             }
         }
 
+        // Fila compartilhada da página inicial. É preenchida pelo mesmo onSnapshot que carrega as músicas.
+        let filaMusicasIndex = [];
+        let indiceMusicaIndexAtual = -1;
+        let avancandoAutomaticamenteIndex = false;
+
+        function localizarIndiceMusicaIndex(musica){
+            if(!musica) return -1;
+            const chave = chaveMusicaHistorico(musica);
+            return filaMusicasIndex.findIndex(item => chaveMusicaHistorico(item) === chave);
+        }
+
+        async function tocarProximaMusicaIndex(){
+            if(avancandoAutomaticamenteIndex || !filaMusicasIndex.length) return;
+            avancandoAutomaticamenteIndex = true;
+            try {
+                const atual = localizarIndiceMusicaIndex(musicaAtualYouTube);
+                indiceMusicaIndexAtual = atual >= 0 ? atual : indiceMusicaIndexAtual;
+                const proximo = indiceMusicaIndexAtual >= 0
+                    ? (indiceMusicaIndexAtual + 1) % filaMusicasIndex.length
+                    : 0;
+                indiceMusicaIndexAtual = proximo;
+                const item = filaMusicasIndex[proximo];
+                const id = extrairIDYouTube(item.link || '') || item.id;
+                if(!id) return;
+                musicaAtualYouTube = {
+                    ...item,
+                    id,
+                    capa: item.capa || item.imagem || `https://img.youtube.com/vi/${id}/hqdefault.jpg`
+                };
+                await escutarYouTubeAgora();
+            } finally {
+                setTimeout(() => { avancandoAutomaticamenteIndex = false; }, 400);
+            }
+        }
+
         function atualizarEstadoPlayerYouTube(event) {
             const status = document.getElementById('player-musica-status');
             const controle = document.getElementById('player-musica-controle');
@@ -1902,7 +1925,8 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                     controle.textContent = '▶';
                     controle.setAttribute('aria-label', 'Recomeçar');
                 }
-                finalizarHistoricoMusica('fim').catch(()=>{});
+                // Fecha e salva a sessão atual antes de trocar, evitando perder os últimos segundos.
+                finalizarHistoricoMusica('fim').finally(() => tocarProximaMusicaIndex());
             }
         }
 
@@ -1942,6 +1966,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
         document.getElementById('btn-escutar-agora').addEventListener('click', escutarYouTubeAgora);
         document.getElementById('btn-fechar-opcoes-musica').addEventListener('click', fecharOpcoesMusica);
         document.getElementById('player-musica-controle').addEventListener('click', alternarPlayerYouTube);
+        document.getElementById('player-musica-pular')?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); tocarProximaMusicaIndex(); });
         document.getElementById('player-musica-fechar').addEventListener('click', pararPlayerYouTube);
 
         document.getElementById('menu-opcoes-musica').addEventListener('click', function(event) {
@@ -2314,6 +2339,9 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
                 if (destaqueA !== destaqueB) return destaqueB - destaqueA;
                 return (b.criadoEm || 0) - (a.criadoEm || 0);
             });
+            // Mantém a fila atualizada para o botão ⏭ e para a reprodução automática no fim da música.
+            filaMusicasIndex = playlistOrdenada.map(item => ({ ...item }));
+            if (musicaAtualYouTube) indiceMusicaIndexAtual = localizarIndiceMusicaIndex(musicaAtualYouTube);
             // Lógica de Limite da Playlist Principal (Exibe apenas as 5 mais recentes)
             const playlistExibida = playlistOrdenada.slice(0, 5);
             const btnPlaylistRestante = document.getElementById('btn-ver-restante-playlist');
