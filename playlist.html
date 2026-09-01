@@ -1101,14 +1101,14 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         const CHAVE_SESSAO_HISTORICO='nosso_canto_historico_sessao_v1';
         let sessaoHistorico=null;
         let checkpointHistoricoEmAndamento=false;
-        function normalizarUsuarioHistorico(nome){const n=String(nome||'').trim().toLowerCase();if(n.includes('maria'))return'Maria';if(n.includes('fabricio')||n.includes('fabrício'))return'Fabricio';return String(nome||'Usuário').trim()||'Usuário'}
+        function normalizarUsuarioHistorico(nome){const n=String(nome||'').trim().toLowerCase();if(n==='maria'||n.includes('maria'))return'Maria';if(n==='fabricio'||n==='fabrício'||n.includes('fabricio')||n.includes('fabrício'))return'Fabricio';return null}
         function chaveMusicaHistorico(m){return String(m?.id||m?.link||m?.titulo||'musica')}
         function lerHistoricoLocal(){try{const d=JSON.parse(localStorage.getItem(CHAVE_HISTORICO_LOCAL)||'[]');return Array.isArray(d)?d:[]}catch(e){return[]}}
         function salvarHistoricoLocal(d){try{localStorage.setItem(CHAVE_HISTORICO_LOCAL,JSON.stringify((Array.isArray(d)?d:[]).slice(-3000)))}catch(e){console.warn('Não foi possível salvar o histórico local.',e)}}
         function salvarSessaoHistorico(){try{if(sessaoHistorico)localStorage.setItem(CHAVE_SESSAO_HISTORICO,JSON.stringify(sessaoHistorico));else localStorage.removeItem(CHAVE_SESSAO_HISTORICO)}catch(e){}}
         function registrarEventoLocal(tipo,musica,segundos=0,sessionId=null){
-            if(!usuarioLogado||!musica)return null;
-            const evento={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,usuario:normalizarUsuarioHistorico(usuarioLogado),tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:'playlist',mes:chaveMesHistorico(Date.now())};
+            const usuario=normalizarUsuarioHistorico(usuarioLogado);if(!usuario||!musica)return null;
+            const evento={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,usuario,tipo,musicaId:chaveMusicaHistorico(musica),titulo:musica.titulo||'Música',capa:musica.capa||musica.imagem||'',segundos:Math.max(0,Math.round(segundos||0)),sessionId,criadoEm:Date.now(),origem:'playlist',mes:chaveMesHistorico(Date.now())};
             const dados=lerHistoricoLocal();dados.push(evento);salvarHistoricoLocal(dados);cacheHistorico={};return evento;
         }
         function registrarEventoHistorico(tipo,musica,segundos=0,sessionId=null){
@@ -1120,12 +1120,12 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         function iniciarHistoricoMusica(musica){
             if(!musica)return;
             const chave=chaveMusicaHistorico(musica),pos=tempoAtualHistorico();
-            if(sessaoHistorico&&sessaoHistorico.chave===chave){
+            if(sessaoHistorico&&sessaoHistorico.chave===chave&&sessaoHistorico.usuario===normalizarUsuarioHistorico(usuarioLogado)){
                 if(!sessaoHistorico.ativo){sessaoHistorico.ativo=true;sessaoHistorico.posicaoUltimoCheckpoint=pos;salvarSessaoHistorico();}
                 return;
             }
             if(sessaoHistorico)finalizarHistoricoMusica('troca');
-            sessaoHistorico={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,chave,musica:{...musica},ativo:true,posicaoUltimoCheckpoint:pos,segundos:0,playRegistrado:false,parte:0};
+            sessaoHistorico={id:`${Date.now()}_${Math.random().toString(36).slice(2)}`,usuario:normalizarUsuarioHistorico(usuarioLogado),chave,musica:{...musica},ativo:true,posicaoUltimoCheckpoint:pos,segundos:0,playRegistrado:false,parte:0};
             salvarSessaoHistorico();
         }
         function salvarCheckpointHistorico(forcar=false){
@@ -1133,9 +1133,9 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
             const s=sessaoHistorico;if(!s?.ativo)return;
             checkpointHistoricoEmAndamento=true;
             try{
-                const atual=tempoAtualHistorico(),base=Number(s.posicaoUltimoCheckpoint)||0,delta=Math.max(0,atual-base);
+                const atual=tempoAtualHistorico(),base=Number(s.posicaoUltimoCheckpoint)||0,deltaBruto=Math.max(0,atual-base),delta=Math.min(deltaBruto,4);
                 // Só o avanço real do vídeo é contado.
-                if(delta>=0.8&&(forcar||delta>=1.5)){
+                if(delta>=0.5&&(forcar||delta>=0.9)){
                     s.segundos+=delta;s.posicaoUltimoCheckpoint=atual;s.parte=(s.parte||0)+1;
                     registrarEventoHistorico('tempo',s.musica,delta,`${s.id}_tempo_${s.parte}`);
                     if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}
@@ -1146,7 +1146,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         function pausarHistoricoMusica(){if(!sessaoHistorico?.ativo)return;salvarCheckpointHistorico(true);sessaoHistorico.ativo=false;salvarSessaoHistorico();}
         function finalizarHistoricoMusica(){if(!sessaoHistorico)return;pausarHistoricoMusica();const s=sessaoHistorico;if(!s.playRegistrado&&s.segundos>=30){s.playRegistrado=true;registrarEventoHistorico('play',s.musica,0,`${s.id}_play`);}sessaoHistorico=null;salvarSessaoHistorico();}
         // Recupera somente a sessão para não perder segundos se a página for recarregada.
-        try{const antiga=JSON.parse(localStorage.getItem(CHAVE_SESSAO_HISTORICO)||'null');if(antiga&&antiga.usuario===undefined){sessaoHistorico=antiga;sessaoHistorico.ativo=false;}}catch(e){}
+        try{const antiga=JSON.parse(localStorage.getItem(CHAVE_SESSAO_HISTORICO)||'null');const usuarioAtual=normalizarUsuarioHistorico(usuarioLogado);if(antiga&&antiga.usuario===usuarioAtual){sessaoHistorico=antiga;sessaoHistorico.ativo=false;}else{localStorage.removeItem(CHAVE_SESSAO_HISTORICO);}}catch(e){localStorage.removeItem(CHAVE_SESSAO_HISTORICO);}
         setInterval(()=>salvarCheckpointHistorico(false),1000);
         window.addEventListener('pagehide',()=>salvarCheckpointHistorico(true));
         window.addEventListener('beforeunload',()=>salvarCheckpointHistorico(true));
@@ -1154,7 +1154,7 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
         function formatarMinutosHistorico(seg){seg=Math.max(0,Math.floor(Number(seg)||0));const min=Math.floor(seg/60),h=Math.floor(min/60),m=min%60;if(h)return `${h}h ${m}min`;if(min)return `${min} min`;return seg?`${seg}s`:'0 min'}
         function chaveEventoHistorico(x){return[x.usuario,x.tipo,x.musicaId,x.sessionId||x.criadoEm].join('|')}
         async function carregarHistoricoTodos(){const local=lerHistoricoLocal();let remoto=[];try{const snap=await getDocs(collection(db,'historico_reproducoes'));remoto=snap.docs.map(d=>d.data())}catch(e){console.warn('Usando histórico local:',e)}const mapa=new Map();[...remoto,...local].forEach(x=>{if(x&&x.usuario&&x.tipo)mapa.set(chaveEventoHistorico(x),x)});const dados=[...mapa.values()];cacheHistorico={dados,atualizado:Date.now()};return dados}
-        function resumirHistorico(dados,usuario){const u=normalizarUsuarioHistorico(usuario),itens=dados.filter(x=>normalizarUsuarioHistorico(x.usuario)===u),plays=itens.filter(x=>x.tipo==='play'),tempos=itens.filter(x=>x.tipo==='tempo');let totalSegundos=tempos.reduce((a,x)=>a+(Number(x.segundos)||0),0);/* Inclui ao vivo o trecho da música atual, sem esperar a música terminar. */if(sessaoHistorico&&normalizarUsuarioHistorico(usuarioLogado)===u){let vivo=Number(sessaoHistorico.segundos)||0;if(sessaoHistorico.ativo){vivo+=Math.max(0,tempoAtualHistorico()-(Number(sessaoHistorico.posicaoUltimoCheckpoint)||0))}totalSegundos+=vivo;}const mapa={};plays.forEach(x=>{const k=x.musicaId||x.titulo;if(!mapa[k])mapa[k]={titulo:x.titulo,capa:x.capa,vezes:0};mapa[k].vezes++});return{usuario:u,totalSegundos,musicasOuvidas:new Set(plays.map(x=>x.musicaId)).size,totalReproducoes:plays.length,top5:Object.values(mapa).sort((a,b)=>b.vezes-a.vezes).slice(0,5)}}
+        function resumirHistorico(dados,usuario){const u=normalizarUsuarioHistorico(usuario),itens=dados.filter(x=>normalizarUsuarioHistorico(x.usuario)===u),plays=itens.filter(x=>x.tipo==='play'),tempos=itens.filter(x=>x.tipo==='tempo');let totalSegundos=tempos.reduce((a,x)=>a+(Number(x.segundos)||0),0);/* Eventos já gravados não podem ser somados novamente. Exibe apenas o trecho ainda não confirmado. */if(sessaoHistorico&&sessaoHistorico.usuario===u&&sessaoHistorico.ativo){const bruto=Math.max(0,tempoAtualHistorico()-(Number(sessaoHistorico.posicaoUltimoCheckpoint)||0));totalSegundos+=Math.min(bruto,4); }const mapa={};plays.forEach(x=>{const k=x.musicaId||x.titulo;if(!mapa[k])mapa[k]={titulo:x.titulo,capa:x.capa,vezes:0};mapa[k].vezes++});return{usuario:u,totalSegundos,musicasOuvidas:new Set(plays.map(x=>x.musicaId)).size,totalReproducoes:plays.length,top5:Object.values(mapa).sort((a,b)=>b.vezes-a.vezes).slice(0,5)}}
         function chaveMesHistorico(ts){const d=new Date(Number(ts)||Date.now());return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
         function nomeMesHistorico(chave){const [a,m]=chave.split('-');return new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(Number(a),Number(m)-1,1))}
         function dadosDoMesHistorico(dados,mes){/* Usa a data real do evento como fonte de verdade; evita erro de mês causado por UTC. */return dados.filter(x=>chaveMesHistorico(x.criadoEm)===mes)}
@@ -1301,10 +1301,11 @@ body.dark-mode .fila-player-item{background:rgba(255,255,255,.06)}body.dark-mode
                 const agora=Date.now(), restantes=[];
                 for(const ev of lista){
                     if(!ev||!ev.musicaId)continue;
-                    if(ev.usuario!==usuarioAtual||agora-(Number(ev.criadoEm)||0)>1000*60*60*24*90){restantes.push(ev);continue;}
+                    if(normalizarUsuarioHistorico(ev.usuario)!==usuarioAtual||agora-(Number(ev.criadoEm)||0)>1000*60*60*24*90){restantes.push(ev);continue;}
                     const musica={id:ev.musicaId,titulo:ev.titulo||'Música',capa:ev.capa||''};
-                    if(ev.tipo==='tempo'&&Number(ev.segundos)>0){registrarEventoLocal('tempo',musica,Number(ev.segundos),`index_${ev.id}`);}
-                    else if(ev.tipo==='play'){registrarEventoLocal('play',musica,0,`index_${ev.id}`);}
+                    const sid=`index_${ev.id}`; const ja=lerHistoricoLocal().some(x=>x.sessionId===sid); if(ja)continue;
+                    if(ev.tipo==='tempo'&&Number(ev.segundos)>0){registrarEventoLocal('tempo',musica,Math.min(4,Number(ev.segundos)),sid);}
+                    else if(ev.tipo==='play'){registrarEventoLocal('play',musica,0,sid);}
                 }
                 localStorage.setItem(CHAVE_TELEMETRIA_INDEX,JSON.stringify(restantes.slice(-1200)));
             }catch(e){console.warn('Não foi possível importar a reprodução do index.',e)}finally{importacaoTelemetriaEmAndamento=false;}
