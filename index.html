@@ -2687,7 +2687,7 @@ let usuarioLogado = sessionStorage.getItem('user_canto') || null;
 </script>
 
     <script>
-        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 0, 0, 0), namoro: new Date(2026, 8, 26, 15, 0, 0) };
+        const CONFIG_DATAS = { amor: new Date(2026, 4, 14, 21, 6, 0), namoro: new Date(2026, 8, 26, 15, 0, 0) };
         function atualizarContadores() { renderizarTempo(CONFIG_DATAS.amor, 'contador-amor'); renderizarTempo(CONFIG_DATAS.namoro, 'contador-namoro'); }
         function renderizarTempo(dataAlvo, elementoId) {
             const elemento = document.getElementById(elementoId); if (!elemento) return;
