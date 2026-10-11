@@ -1440,6 +1440,35 @@ body.dark-mode .ben-quarto-acao{background:#413238;border-color:#615158;color:#f
 #ben-quarto-cenario[data-scene="sono"] .ben-quarto-janela{background:#c4c8ef}
 #ben-quarto-cenario.dormindo[data-scene="sono"] .ben-quarto-lua{opacity:1}
 @media (prefers-reduced-motion:reduce){#ben-bola .ben-bola-desenho{transition:none!important}}
+/* V17 — cenários limpos e bola com textura */
+#ben-quarto-cenario{overflow:hidden}
+#ben-quarto-props .ben-prop{z-index:1;opacity:.96}
+#ben-quarto-cenario[data-scene="comer"]{background:linear-gradient(180deg,#fff2ee 0 58%,#f7dfcb 58% 72%,#e4c1a1 72% 100%)}
+#ben-quarto-cenario[data-scene="comer"]::before{content:"";position:absolute;left:22px;top:22px;width:52px;height:40px;border-radius:10px;background:#fffaf7;box-shadow:0 0 0 2px #f0d8ce inset,82px 0 0 0 #fffaf7,82px 0 0 2px #f0d8ce inset}
+#ben-quarto-cenario[data-scene="banho"]{background:linear-gradient(180deg,#eefaff 0 56%,#d9eff8 56% 74%,#bfd4de 74% 100%)}
+#ben-quarto-cenario[data-scene="banho"]::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#ffffff34 1px,transparent 1px) 0 0/28px 28px,linear-gradient(#ffffff2a 1px,transparent 1px) 0 0/28px 28px;opacity:.65}
+#ben-quarto-cenario[data-scene="sono"]{background:linear-gradient(180deg,#fff0f5 0 56%,#efd9cf 56% 72%,#d9b7a8 72% 100%)}
+#ben-quarto-cenario[data-scene="sono"]::before{content:"";position:absolute;right:24px;top:22px;width:92px;height:50px;border-radius:18px;background:radial-gradient(circle at 68% 36%,#fff8cc 0 10px,#0000 11px),#fff8fb;box-shadow:0 0 0 2px #efdbe2 inset}
+#ben-quarto-cenario.dormindo[data-scene="sono"]::before{background:radial-gradient(circle at 68% 36%,#fff7b0 0 10px,#0000 11px),#2d3358;box-shadow:0 0 0 2px #50567c inset}
+#ben-quarto-cenario[data-scene="brincar"]{background:linear-gradient(180deg,#fff2ee 0 58%,#ffd9d2 58% 72%,#efc28f 72% 100%)}
+#ben-quarto-cenario[data-scene="brincar"]::before{content:"";position:absolute;left:26px;top:24px;width:120px;height:18px;border-radius:14px;background:#fff8f2;box-shadow:0 0 0 2px #f0dad0 inset}
+#ben-quarto-cenario[data-scene="brincar"]::after{content:"";position:absolute;left:40px;top:62px;width:28px;height:28px;border-radius:50%;background:#ffbf8f;box-shadow:36px 2px 0 0 #ffcfe0,72px -2px 0 0 #ffd98f}
+#ben-quarto-cenario[data-scene="brincar"] .ben-prop-prateleira{display:none!important}
+#ben-quarto-cenario[data-scene="brincar"] .ben-prop-nuvem{display:none!important}
+#ben-quarto-cenario[data-scene="comer"] .ben-prop-mesa{width:158px;bottom:18px;z-index:4}
+#ben-quarto-cenario[data-scene="comer"] #ben-quarto-ursinho{bottom:54px;left:calc(50% - 52px)}
+#ben-quarto-cenario[data-scene="banho"] .ben-prop-banheira{width:196px;bottom:18px;z-index:5}
+#ben-quarto-cenario[data-scene="banho"] .ben-quarto-chuveiro{top:22px;right:20px;z-index:6}
+#ben-quarto-cenario[data-scene="banho"] #ben-quarto-ursinho{bottom:44px;left:calc(50% - 52px)}
+#ben-quarto-cenario[data-scene="sono"] #ben-quarto-cama{width:182px;height:92px;bottom:18px;z-index:5}
+#ben-quarto-cenario[data-scene="sono"] #ben-quarto-ursinho{bottom:56px;left:calc(50% - 52px);z-index:6}
+#ben-quarto-cenario[data-scene="sono"] .ben-quarto-lua{display:block;opacity:.9}
+#ben-quarto-cenario[data-scene="comer"] .ben-quarto-lua,#ben-quarto-cenario[data-scene="banho"] .ben-quarto-lua,#ben-quarto-cenario[data-scene="brincar"] .ben-quarto-lua{display:none}
+#ben-quarto-cenario[data-scene="banho"] .ben-quarto-janela,#ben-quarto-cenario[data-scene="brincar"] .ben-quarto-janela{opacity:.0}
+#ben-bola,#ben-bola.ativa{width:64px!important;height:64px!important}
+#ben-bola .ben-bola-sombra{left:10px;right:10px;bottom:-7px;height:12px;background:#5f45424d;filter:blur(5px)}
+#ben-bola .ben-bola-desenho{filter:drop-shadow(0 4px 4px #7e4d5668)}
+
 
 </style>
 </head>
@@ -3172,11 +3201,29 @@ let usuarioLogado = null;
 <div id="ben-bola" role="button" tabindex="0" aria-label="Bolinha do Ben: arraste e solte para jogar" title="Arraste a bolinha, ou deixe o Ben brincar sozinho!">
   <span class="ben-bola-sombra" aria-hidden="true"></span>
   <svg class="ben-bola-desenho" viewBox="0 0 100 100" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-    <defs><radialGradient id="ben-bola-gradiente" cx="31%" cy="24%" r="78%"><stop offset="0" stop-color="#fff1e7"/><stop offset="0.40" stop-color="#ffc0bb"/><stop offset="0.76" stop-color="#ee8e9f"/><stop offset="1" stop-color="#ba667f"/></radialGradient><clipPath id="ben-bola-recorte"><circle cx="50" cy="50" r="44"/></clipPath></defs>
-    <circle cx="50" cy="50" r="45" fill="url(#ben-bola-gradiente)" stroke="#fff5ec" stroke-width="3"/>
-    <g clip-path="url(#ben-bola-recorte)" fill="none" stroke="#fff8e9" stroke-width="4" opacity=".78">
-      <path d="M12 40 Q50 24 90 42"/><path d="M12 65 Q50 48 92 68"/><path d="M45 5 Q61 50 46 96"/><path d="M12 25 Q53 43 19 87"/><path d="M84 13 Q55 51 88 84"/>
-    </g><path d="M50 67c-8-7-18-12-18-22 0-8 10-12 18-3 8-9 18-5 18 3 0 10-10 15-18 22Z" fill="#fff6ec"/><ellipse cx="31" cy="24" rx="16" ry="10" transform="rotate(-26 31 24)" fill="#fff" opacity=".36"/>
+    <defs>
+      <radialGradient id="ben-bola-gradiente" cx="32%" cy="24%" r="80%">
+        <stop offset="0" stop-color="#fffaf4"/>
+        <stop offset="0.54" stop-color="#ffd7df"/>
+        <stop offset="1" stop-color="#ef9db2"/>
+      </radialGradient>
+      <clipPath id="ben-bola-recorte"><circle cx="50" cy="50" r="45"/></clipPath>
+    </defs>
+    <circle cx="50" cy="50" r="46" fill="url(#ben-bola-gradiente)" stroke="#fff7f0" stroke-width="3"/>
+    <g clip-path="url(#ben-bola-recorte)">
+      <g fill="#fff7ef" stroke="#d78098" stroke-width="2.6" stroke-linejoin="round">
+        <polygon points="50,20 60,27 56,39 44,39 40,27"/>
+        <polygon points="28,32 38,37 36,49 24,53 18,42"/>
+        <polygon points="72,32 82,42 76,53 64,49 62,37"/>
+        <polygon points="36,58 48,60 50,73 39,80 29,71"/>
+        <polygon points="64,58 71,71 61,80 50,73 52,60"/>
+      </g>
+      <g fill="none" stroke="#fff9f6" stroke-width="2.2" opacity=".9">
+        <path d="M50 20 28 32 36 58 64 58 72 32Z"/>
+        <path d="M40 27 28 32M60 27 72 32M44 39 36 58M56 39 64 58M24 53 29 71M76 53 71 71"/>
+      </g>
+    </g>
+    <ellipse cx="31" cy="24" rx="15" ry="10" transform="rotate(-24 31 24)" fill="#fff" opacity=".42"/>
   </svg>
 </div>
 <div id="ben-config-modal" role="dialog" aria-label="Configurações do Ben" aria-modal="true">
@@ -3791,8 +3838,8 @@ function tick(t){
   x+=vx*dt;y+=vy*dt;
   const noChao=y>=chão-1&&vy>=0;
   if(!noChao)vy+=.24*dt;
-  vx*=Math.pow(noChao?.969:.994,dt);
-  vy*=Math.pow(.996,dt);
+  vx*=Math.pow(noChao?.978:.996,dt);
+  vy*=Math.pow(.998,dt);
   if(x<=2){x=2;vx=Math.abs(vx)*.73}if(x>=bordaX()){x=bordaX();vx=-Math.abs(vx)*.73}
   if(y<=2){y=2;vy=Math.abs(vy)*.65}
   if(y>=chão){y=chão;vy=Math.abs(vy)>1.25?-Math.abs(vy)*.57:0;if(Math.abs(vx)<.11)vx=0}
@@ -3808,23 +3855,27 @@ function tick(t){
    const w=pet.offsetWidth||76,h=pet.offsetHeight||88;
    const alvoX=Math.max(4,Math.min(innerWidth-w-4,x+BALL_SIZE/2-w/2));
    const alvoY=Math.max(60,Math.min(innerHeight-h-4,y+BALL_SIZE/2-h/2));
-   root.style.transition='left .72s ease-in-out,top .72s ease-in-out';
+   root.style.transition='left .55s ease-in-out,top .55s ease-in-out';
    root.style.left=alvoX+'px';root.style.top=alvoY+'px';root.style.bottom='auto';
  }
  // Depois que vocês param de brincar, Ben pode dar outro chutinho — com pausas naturais.
  // Nunca inicia enquanto a bola está sendo arrastada, o quarto/chat aberto ou Ben dormindo.
- const parada=Math.abs(vx)+Math.abs(vy)<.45&&y>=bordaY()-3;
- if(parada&&t-ultimaInteracao>4200&&t-ultimoChute>5000&&t-paradaDesde>1400){
+ const parada=Math.abs(vx)+Math.abs(vy)<.55&&y>=bordaY()-3;
+ if(parada&&t-ultimaInteracao>3600&&t-ultimoChute>4200&&t-paradaDesde>1000){
    const r=pet.getBoundingClientRect();
-   const perto=Math.hypot(r.left+r.width/2-(x+BALL_SIZE/2),r.top+r.height/2-(y+BALL_SIZE/2))<110;
+   const centroPetX=r.left+r.width/2, centroPetY=r.top+r.height/2;
+   const centroBolaX=x+BALL_SIZE/2, centroBolaY=y+BALL_SIZE/2;
+   const perto=Math.hypot(centroPetX-centroBolaX,centroPetY-centroBolaY)<180;
    if(perto){
      ultimoChute=t;paradaDesde=t;chutando=true;
-     const lado=(Math.random()<.5?-1:1);
-     vx=lado*(3.6+Math.random()*2.5);vy=-(6.5+Math.random()*2.5);
+     const alvoX=Math.random()*(innerWidth*0.8)+innerWidth*0.1;
+     const dx=alvoX-centroBolaX;
+     const lado=Math.sign(dx)|| (Math.random()<.5?-1:1);
+     vx=lado*(7.2+Math.random()*4.4)+dx*0.012;
+     vy=-(8.5+Math.random()*4.2);
      pet.classList.remove('ben-pulando');void pet.offsetWidth;pet.classList.add('ben-pulando');
-     setTimeout(()=>pet.classList.remove('ben-pulando'),700);
-     // Espontâneo e sem falas cobrindo a página.
-     setTimeout(()=>{chutando=false},700);
+     setTimeout(()=>pet.classList.remove('ben-pulando'),760);
+     setTimeout(()=>{chutando=false},760);
    }
  }
 }
@@ -3846,9 +3897,9 @@ bola.addEventListener('pointermove',e=>{
 function soltou(e){
  if(!drag||e.pointerId!==drag.id)return;
  const cancelado=e.type==='pointercancel';
- vx=cancelado?0:Math.max(-16,Math.min(16,drag.dx*1.35));
- vy=cancelado?0:Math.max(-16,Math.min(16,drag.dy*1.35));
- if(!cancelado&&Math.abs(vx)+Math.abs(vy)<.75){vx=(Math.random()<.5?-1:1)*2.8;vy=-5}
+ vx=cancelado?0:Math.max(-22,Math.min(22,drag.dx*1.8));
+ vy=cancelado?0:Math.max(-22,Math.min(22,drag.dy*1.8));
+ if(!cancelado&&Math.abs(vx)+Math.abs(vy)<.75){vx=(Math.random()<.5?-1:1)*5.2;vy=-7.8}
  drag=null;ultimaInteracao=performance.now();paradaDesde=ultimaInteracao;ultimoChute=ultimaInteracao;
 }
 bola.addEventListener('pointerup',soltou);bola.addEventListener('pointercancel',soltou);
@@ -3856,7 +3907,7 @@ bola.addEventListener('pointerup',soltou);bola.addEventListener('pointercancel',
 bola.addEventListener('keydown',e=>{
  if(!estado.bolaAtiva||!['Enter',' '].includes(e.key))return;
  e.preventDefault();ultimaInteracao=performance.now();ultimoChute=ultimaInteracao;
- vx=(Math.random()<.5?-1:1)*4.2;vy=-8;
+ vx=(Math.random()<.5?-1:1)*8.5;vy=-11.5;
 });
 window.addEventListener('resize',()=>{clampBall();draw()});
 // Espelha o estado de sono no site mesmo sem abrir o painel.
@@ -3865,4 +3916,4 @@ window.benObterCuidados=()=>({...atual(),dormindo:estado.acordado===false,bolaAt
 
 </script>
 </body>
-</html>
+    </html>
